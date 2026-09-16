@@ -8,11 +8,11 @@
  *  2. 「拡張機能」→「Apps Script」を開く
  *  3. このファイルの中身を丸ごと貼り付けて保存
  *  4. 左メニュー「サービス」→「+」→「YouTube Data API v3」を追加（識別子は YouTube のまま）
- *  5. 関数 pickupMinowaRecords を実行し、初回の権限承認を許可する
- *
- *  ※ スクリプトを実行する Google アカウントが、対象 YouTube チャンネルの
- *    オーナー（またはチャンネル切り替え済みのアカウント）である必要があります。
+ *  5. まず checkChannel を実行して、対象チャンネルが正しいか確認する
+ *  6. 問題なければ pickupMinowaRecords を実行する
  */
+
+// ========== 設定 ==========
 
 // 書き出し先スプレッドシート
 var SPREADSHEET_ID = '1y9KR9SwZTlKfHr0J8AirIaYC1aT38s6LfxU79qAJy7U';
@@ -20,9 +20,45 @@ var SPREADSHEET_ID = '1y9KR9SwZTlKfHr0J8AirIaYC1aT38s6LfxU79qAJy7U';
 // 書き出し先シート名（存在しなければ自動作成）
 var SHEET_NAME = '箕輪レコーズ';
 
+// 対象チャンネルID。
+// 空文字のままなら「スクリプトを実行している Google アカウント自身のチャンネル」を使う。
+// ブランドアカウントで checkChannel が別のチャンネルを指した場合は、
+// ここに UCxxxxxxxx... 形式のチャンネルIDを直接書く。
+var CHANNEL_ID = '';
+
 // 概要欄の判定条件。
 // 全角／半角コロン、括弧の有無、前後の空白のゆらぎを吸収する。
+// 厳密に【楽曲提供：箕輪レコーズ】だけに限定したい場合は /【楽曲提供：箕輪レコーズ】/ に変更する。
 var MATCH_PATTERN = /楽曲提供\s*[：:]\s*箕輪レコーズ/;
+
+// ========== 事前確認 ==========
+
+/**
+ * 対象チャンネルが意図どおりか確認する。
+ * 実行後、メニュー「実行数」またはログ表示で結果を見る。
+ */
+function checkChannel() {
+  var params = CHANNEL_ID ? { id: CHANNEL_ID } : { mine: true };
+  var res = YouTube.Channels.list('snippet,contentDetails,statistics', params);
+
+  if (!res.items || res.items.length === 0) {
+    throw new Error(
+      'チャンネルが取得できませんでした。\n' +
+      '・実行中の Google アカウントを確認してください\n' +
+      '・ブランドアカウントの場合は CHANNEL_ID に直接チャンネルIDを設定してください'
+    );
+  }
+
+  var ch = res.items[0];
+  Logger.log('チャンネル名: ' + ch.snippet.title);
+  Logger.log('チャンネルID: ' + ch.id);
+  Logger.log('公開動画数: ' + ch.statistics.videoCount + '本');
+  Logger.log('');
+  Logger.log('↑ これが対象のチャンネルで合っていれば pickupMinowaRecords を実行してください。');
+  Logger.log('違う場合は CHANNEL_ID に上記とは別の正しいチャンネルIDを設定してください。');
+}
+
+// ========== メイン処理 ==========
 
 function pickupMinowaRecords() {
   var videos = fetchAllUploads_();
@@ -38,17 +74,29 @@ function pickupMinowaRecords() {
 
   Logger.log('チャンネル内の動画: ' + videos.length + '本');
   Logger.log('該当した動画: ' + matched.length + '本');
+
+  // 1本も引っかからなかった場合、表記ゆれを疑えるよう実物の概要欄を出す
+  if (matched.length === 0 && videos.length > 0) {
+    Logger.log('');
+    Logger.log('--- 該当ゼロでした。概要欄の実際の表記を確認してください ---');
+    videos.slice(0, 3).forEach(function (v) {
+      Logger.log('[' + v.title + ']');
+      Logger.log((v.description || '(概要欄なし)').slice(0, 300));
+      Logger.log('---');
+    });
+  }
 }
 
 /**
- * 自分のチャンネルのアップロード動画をすべて取得する。
+ * 対象チャンネルのアップロード動画をすべて取得する。
  * playlistItems の description は省略されることがあるため、
  * videos.list で概要欄の全文を取り直している。
  */
 function fetchAllUploads_() {
-  var channels = YouTube.Channels.list('contentDetails', { mine: true });
+  var params = CHANNEL_ID ? { id: CHANNEL_ID } : { mine: true };
+  var channels = YouTube.Channels.list('contentDetails', params);
   if (!channels.items || channels.items.length === 0) {
-    throw new Error('チャンネルが取得できませんでした。実行中の Google アカウントを確認してください。');
+    throw new Error('チャンネルが取得できませんでした。先に checkChannel を実行して確認してください。');
   }
   var uploadsPlaylistId = channels.items[0].contentDetails.relatedPlaylists.uploads;
 
