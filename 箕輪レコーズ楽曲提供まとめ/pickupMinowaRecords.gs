@@ -10,6 +10,8 @@
  *  4. 左メニュー「サービス」→「+」→「YouTube Data API v3」を追加（識別子は YouTube のまま）
  *  5. まず checkChannel を実行して、対象チャンネルが正しいか確認する
  *  6. 問題なければ pickupMinowaRecords を実行する
+ *
+ *  ※ シートに書かず、一覧テキストだけ欲しい場合は printUrlList を実行する
  */
 
 // ========== 設定 ==========
@@ -74,6 +76,11 @@ function pickupMinowaRecords() {
 
   Logger.log('チャンネル内の動画: ' + videos.length + '本');
   Logger.log('該当した動画: ' + matched.length + '本');
+
+  if (matched.length > 0) {
+    Logger.log('');
+    Logger.log(buildCopyBlock_(matched));
+  }
 
   // 1本も引っかからなかった場合、表記ゆれを疑えるよう実物の概要欄を出す
   if (matched.length === 0 && videos.length > 0) {
@@ -159,4 +166,54 @@ function writeToSheet_(matched, totalCount) {
 
   sheet.setFrozenRows(1);
   sheet.autoResizeColumns(1, header.length);
+}
+
+// ========== コピー用テキスト出力 ==========
+
+/**
+ * シートには書かず、該当動画の一覧をログにテキストで出すだけの関数。
+ * ログの内容をそのままコピーして貼り付けられる。
+ */
+function printUrlList() {
+  var videos = fetchAllUploads_();
+  var matched = videos.filter(function (v) {
+    return MATCH_PATTERN.test(v.description || '');
+  });
+
+  matched.sort(function (a, b) {
+    return b.publishedAt.localeCompare(a.publishedAt);
+  });
+
+  Logger.log('チャンネル内の動画: ' + videos.length + '本');
+  Logger.log('該当した動画: ' + matched.length + '本');
+  Logger.log('');
+
+  if (matched.length === 0) {
+    Logger.log('--- 該当ゼロでした。概要欄の実際の表記を確認してください ---');
+    videos.slice(0, 3).forEach(function (v) {
+      Logger.log('[' + v.title + ']');
+      Logger.log((v.description || '(概要欄なし)').slice(0, 300));
+      Logger.log('---');
+    });
+    return;
+  }
+
+  Logger.log(buildCopyBlock_(matched));
+}
+
+/**
+ * 「公開日<TAB>タイトル<TAB>URL」形式の一行データを組み立てる。
+ * タブ区切りなので、そのままスプレッドシートにも貼り付けられる。
+ */
+function buildCopyBlock_(matched) {
+  var lines = ['===== ここから下をコピー ====='];
+  matched.forEach(function (v) {
+    lines.push([
+      Utilities.formatDate(new Date(v.publishedAt), 'Asia/Tokyo', 'yyyy/MM/dd'),
+      v.title.replace(/[\t\r\n]+/g, ' '),
+      'https://www.youtube.com/watch?v=' + v.id
+    ].join('\t'));
+  });
+  lines.push('===== ここまで =====');
+  return lines.join('\n');
 }
