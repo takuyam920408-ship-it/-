@@ -1,6 +1,7 @@
 /**
- * 概要欄に「【楽曲提供：箕輪レコーズ】」と記載されている自分のチャンネルの動画を
+ * 「【楽曲提供：箕輪レコーズ】」と記載されている自分のチャンネルの動画を
  * すべて抽出し、指定のスプレッドシートに URL 一覧として書き出す。
+ * 概要欄とタイトルの両方を判定対象にしている。
  *
  * ■ 使い方
  *  1. 対象のスプレッドシートを開く
@@ -74,7 +75,7 @@ function checkChannel() {
 function pickupMinowaRecords() {
   var videos = fetchAllUploads_();
   var matched = videos.filter(function (v) {
-    return MATCH_PATTERN.test(v.description || '');
+    return MATCH_PATTERN.test(v.description || '') || MATCH_PATTERN.test(v.title || '');
   });
 
   matched.sort(function (a, b) {
@@ -214,7 +215,7 @@ function getSheetByGid_(ss, gid) {
 function printUrlList() {
   var videos = fetchAllUploads_();
   var matched = videos.filter(function (v) {
-    return MATCH_PATTERN.test(v.description || '');
+    return MATCH_PATTERN.test(v.description || '') || MATCH_PATTERN.test(v.title || '');
   });
 
   matched.sort(function (a, b) {
