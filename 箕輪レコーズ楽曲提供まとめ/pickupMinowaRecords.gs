@@ -19,8 +19,17 @@
 // 書き出し先スプレッドシート
 var SPREADSHEET_ID = '1y9KR9SwZTlKfHr0J8AirIaYC1aT38s6LfxU79qAJy7U';
 
-// 書き出し先シート名（存在しなければ自動作成）
-var SHEET_NAME = '箕輪レコーズ';
+// 書き出し先タブの gid。
+// シートURL末尾の #gid=xxxxx の数字。
+var SHEET_GID = 2005983596;
+
+// 書き出しの起点セル。
+var START_CELL = 'A1';
+
+// true にすると書き込み前にタブ全体を消去する。
+// そのタブに残したい既存データがある場合は false にし、
+// START_CELL を空いている列（例: 'F1'）に変更すること。
+var CLEAR_BEFORE_WRITE = true;
 
 // 対象チャンネルID。
 // 空文字のままなら「スクリプトを実行している Google アカウント自身のチャンネル」を使う。
@@ -142,8 +151,15 @@ function fetchAllUploads_() {
 
 function writeToSheet_(matched, totalCount) {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
-  sheet.clear();
+  var sheet = getSheetByGid_(ss, SHEET_GID);
+
+  if (CLEAR_BEFORE_WRITE) {
+    sheet.clear();
+  }
+
+  var anchor = sheet.getRange(START_CELL);
+  var row0 = anchor.getRow();
+  var col0 = anchor.getColumn();
 
   var header = ['No.', '動画URL', 'タイトル', '公開日'];
   var rows = matched.map(function (v, i) {
@@ -155,17 +171,38 @@ function writeToSheet_(matched, totalCount) {
     ];
   });
 
-  sheet.getRange(1, 1, 1, header.length).setValues([header]).setFontWeight('bold');
+  sheet.getRange(row0, col0, 1, header.length).setValues([header]).setFontWeight('bold');
   if (rows.length > 0) {
-    sheet.getRange(2, 1, rows.length, header.length).setValues(rows);
+    sheet.getRange(row0 + 1, col0, rows.length, header.length).setValues(rows);
   }
 
   var note = '【楽曲提供：箕輪レコーズ】該当 ' + matched.length + '本 / 全 ' + totalCount + '本'
     + '（更新: ' + Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy/MM/dd HH:mm') + '）';
-  sheet.getRange(rows.length + 3, 1).setValue(note);
+  sheet.getRange(row0 + rows.length + 2, col0).setValue(note);
 
-  sheet.setFrozenRows(1);
-  sheet.autoResizeColumns(1, header.length);
+  if (row0 === 1) {
+    sheet.setFrozenRows(1);
+  }
+  sheet.autoResizeColumns(col0, header.length);
+
+  Logger.log('書き込み先タブ: ' + sheet.getName() + '（gid: ' + sheet.getSheetId() + '）');
+}
+
+/**
+ * gid からタブを取得する。名前変更されても gid は変わらないため、
+ * タブ名ではなく gid で特定している。
+ */
+function getSheetByGid_(ss, gid) {
+  var sheets = ss.getSheets();
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getSheetId() === gid) {
+      return sheets[i];
+    }
+  }
+  throw new Error(
+    'gid ' + gid + ' のタブが見つかりません。\n' +
+    'シートURL末尾の #gid=xxxxx の数字を SHEET_GID に設定してください。'
+  );
 }
 
 // ========== コピー用テキスト出力 ==========
