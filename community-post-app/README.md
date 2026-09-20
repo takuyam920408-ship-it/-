@@ -22,21 +22,77 @@ YouTube Data API v3 には**コミュニティ投稿を作成するエンドポ�
 
 ---
 
-## セットアップ
+## セットアップ（Mac）
+
+### 方法A：ターミナルにコピペ（一番確実・おすすめ）
+
+「ターミナル」を開いて、下の1行をまるごとコピーして貼り付け、Enter を押すだけです。
+（Launchpad → その他 → ターミナル、または command + space で「ターミナル」と検索）
 
 ```bash
-pip install -r requirements.txt
-./run.sh              # Windows は run.bat
+cd ~/Desktop && git clone -b claude/affectionate-sagan-ur4bk7 https://github.com/takuyam920408-ship-it/-.git community-post && cd community-post/community-post-app && ./start-mac.command
 ```
 
-ブラウザで http://127.0.0.1:8000 を開く。
+デスクトップに `community-post` フォルダができて、そのままアプリが起動しブラウザが開きます。
 
-日本語フォントが見つからないと画像の文字が豆腐になります。
-自動で探す場所は `app/config.py` の `FONT_CANDIDATES`（macOS のヒラギノ、Windows のメイリオ/游ゴシック、
-Linux の IPA ゴシック）。別のフォントを使いたいときは環境変数で指定:
+- 途中で「コマンドライン・デベロッパツールをインストールしますか？」と聞かれたら **インストール** を押す
+  （git と Python がまとめて入ります。終わったらもう一度このコマンドを貼り付けてください）
+- Python が無い場合はダウンロードページが自動で開きます。入れてからやり直してください
+
+**2回目以降**は、`community-post/community-post-app` フォルダの中の
+**`start-mac.command` をダブルクリック**するだけです。
+
+### 方法B：ZIP をダウンロードする
+
+1. https://github.com/takuyam920408-ship-it/-/archive/refs/heads/claude/affectionate-sagan-ur4bk7.zip を開いてダウンロード
+2. 解凍して、中の `community-post-app` フォルダを開く
+3. `start-mac.command` を **右クリック → 開く**（ダブルクリックだと macOS に止められます）
+4. 「開発元を確認できません」と出たら、もう一度 **右クリック → 開く** → **開く**
+
+ダウンロードしたファイルは実行権限が外れていることがあります。
+「アクセス権がありません」と出たら、ターミナルで以下を1回だけ実行してください。
 
 ```bash
-CPA_FONT=/path/to/your-font.ttf ./run.sh
+chmod +x ~/Downloads/*/community-post-app/start-mac.command
+```
+
+### 起動したあと
+
+- ブラウザが自動で開きます（開かなければ、黒い窓に表示された `http://127.0.0.1:80xx` を自分で開く）
+- **終わるときは黒い窓で `control + C`**。窓を閉じるだけでも止まります
+- 黒い窓は閉じないでください。閉じるとアプリも止まります
+
+### うまくいかないとき
+
+| 症状 | 対処 |
+|---|---|
+| ブラウザに何も表示されない | 黒い窓に出ている `http://127.0.0.1:80xx` のアドレスを直接開く |
+| 「Python が見つかりません」 | 自動で開くページから macOS 用 Python を入れて、やり直す |
+| 「開発元を確認できません」 | `start-mac.command` を右クリック → 開く |
+| 準備が途中で止まる | `.venv` フォルダを削除して、もう一度起動 |
+| 画像の文字が □□□ になる | 下の「フォント」を参照 |
+
+### Windows の場合
+
+`run.bat` をダブルクリック。事前に Python（python.org 版、インストール時に
+「Add Python to PATH」にチェック）が必要です。
+
+### フォント
+
+日本語フォントが見つからないと画像の文字が豆腐（□）になります。
+自動で探す場所は `app/config.py` の `FONT_CANDIDATES`（macOS のヒラギノ、Windows のメイリオ/游ゴシック、
+Linux の IPA ゴシック）。Mac なら標準で見つかるはずです。別のフォントを使いたいときは:
+
+```bash
+CPA_FONT=/path/to/your-font.ttf ./start-mac.command
+```
+
+### 開発者向け
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+./run.sh          # --reload 付きで起動
 ```
 
 ---
@@ -175,6 +231,9 @@ data/
   templates.yaml       投稿文テンプレ ← ここを育てる
 web/                   単一ページ UI（素の HTML/CSS/JS、ビルド不要）
 output/                生成した投稿画像
+start-mac.command      Mac 用の起動ファイル（ダブルクリック）
+run.bat                Windows 用の起動ファイル
+run.sh                 開発用（--reload 付き）
 ```
 
 ## 環境変数
