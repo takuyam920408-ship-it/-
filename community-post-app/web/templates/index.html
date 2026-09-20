@@ -152,8 +152,12 @@ $('#analyze').addEventListener('click', async () => {
   try {
     const data = await api('/api/analyze', { method:'POST', body: JSON.stringify({ url, video_url: $('#videoUrl').value.trim() }) });
     state.analysisId = data.analysis_id;
-    state.candidates = data.candidates;
+    // 除外分も後ろに持っておく（「やっぱりこれを使う」と選べるように）
+    state.candidates = data.candidates.concat(data.excluded || []);
+    state.keptCount = data.candidates.length;
+    state.showExcluded = data.candidates.length === 0;
     state.selected = null; state.composed = null;
+    state.lastAnalyze = data;
     renderCards(data); renderSlots(data.slots);
     ['#secImages','#secSlots','#secCensor','#secDrafts'].forEach(s => $(s).hidden = false);
     $('#secBand').hidden = true; $('#secRecord').hidden = true;
@@ -165,18 +169,69 @@ $('#analyze').addEventListener('click', async () => {
   finally { $('#analyze').disabled = false; }
 });
 
+function diagnose(d) {
+  // 1枚も採用できなかったときに、原因を切り分けて出す
+  if (d.found_in_html === 0) {
+    return `<div class="msg err">
+      <b>このページの HTML には画像がありませんでした。</b><br>
+      JavaScript で画像を読み込むタイプのサイトだと、HTML を読むだけのこのアプリでは取れません。
+      記事中の画像を右クリックして「イメージのアドレスをコピー」し、そのURLを直接貼るか、別の記事URLで試してください。
+    </div>`;
+  }
+  if (d.downloaded === 0) {
+    return `<div class="msg err">
+      <b>画像は ${d.found_in_html} 枚見つかりましたが、1枚もダウンロードできませんでした。</b><br>
+      サイトが外部からの画像取得を拒否している可能性が高いです（ホットリンク防止）。
+      画像を右クリックして手元に保存し、それを使ってください。
+    </div>`;
+  }
+  return `<div class="msg warn">
+    <b>${d.found_in_html} 枚見つかりましたが、全部が除外ルールに引っかかりました。</b><br>
+    下に除外理由を出しています。使えそうなものがあれば、そのままクリックで選べます。
+  </div>`;
+}
+
 function renderCards(data) {
-  $('#imgStat').textContent = `採用 ${data.candidates.length} 枚 / 除外 ${data.dropped} 枚（ロゴ・アイコン・小さすぎる画像を自動で落としています）`;
-  $('#cards').innerHTML = data.candidates.map((c, i) => `
-    <div class="card" data-i="${i}">
-      <img src="${c.preview}" loading="lazy" alt="">
+  const d = data.diagnostics || {};
+  $('#imgStat').innerHTML =
+    `HTML から ${d.found_in_html} 枚見つかり、${d.downloaded} 枚ダウンロード成功 → ` +
+    `<b>採用 ${d.kept} 枚</b> / 除外 ${d.excluded} 枚` +
+    (d.excluded ? ` <button class="ghost" id="toggleExcluded" style="padding:2px 10px;font-size:12px;margin-left:8px">` +
+      `${state.showExcluded ? '除外分を隠す' : `除外された ${d.excluded} 枚も見る`}</button>` : '');
+
+  const box = $('#cards');
+  const list = state.showExcluded ? state.candidates : state.candidates.slice(0, state.keptCount);
+
+  const warn = d.kept === 0 ? diagnose(d) : '';
+  box.innerHTML = warn + (list.length ? '' : '<p class="hint">表示できる画像がありません。</p>');
+
+  const grid = document.createElement('div');
+  grid.className = 'cards';
+  grid.innerHTML = list.map((c, i) => {
+    const isExcluded = i >= state.keptCount;
+    const thumb = c.fetched
+      ? `<img src="${c.preview}" loading="lazy" alt="">`
+      : `<div class="noimg">取得できませんでした</div>`;
+    return `
+    <div class="card${isExcluded ? ' excluded' : ''}" data-i="${i}">
+      ${thumb}
       <div class="meta">
         <div><span class="sc">${c.score}</span> pt ・ ${c.width||'?'}×${c.height||'?'}</div>
-        <div style="margin-top:4px"><span class="badge">${c.source}</span>${c.already_used ? '<span class="badge used">使用済み</span>' : ''}</div>
-        <div style="margin-top:4px" title="${(c.reasons||[]).join(' / ')}">${(c.alt || c.caption || c.nearby_heading || '（説明なし）').slice(0,40)}</div>
+        <div style="margin-top:4px">
+          <span class="badge">${c.source}</span>
+          ${isExcluded ? '<span class="badge drop">除外</span>' : ''}
+          ${c.already_used ? '<span class="badge used">使用済み</span>' : ''}
+        </div>
+        <div style="margin-top:4px">${(c.alt || c.caption || c.nearby_heading || '（説明なし）').slice(0,40)}</div>
+        <div class="why">${(c.reasons||[]).join(' / ')}</div>
       </div>
-    </div>`).join('') || '<p class="hint">使えそうな画像が見つかりませんでした。</p>';
-  document.querySelectorAll('.card').forEach(el => el.addEventListener('click', () => selectCard(+el.dataset.i)));
+    </div>`;
+  }).join('');
+  box.appendChild(grid);
+
+  grid.querySelectorAll('.card').forEach(el => el.addEventListener('click', () => selectCard(+el.dataset.i)));
+  const tg = $('#toggleExcluded');
+  if (tg) tg.addEventListener('click', () => { state.showExcluded = !state.showExcluded; renderCards(data); });
 }
 
 async function selectCard(i) {

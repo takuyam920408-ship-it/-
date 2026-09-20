@@ -73,3 +73,12 @@ a { color: var(--accent); }
 .req { color: var(--accent); font-weight: 700; }
 .legend { display: inline-flex; align-items: center; gap: 5px; margin-right: 12px; font-size: 11px; }
 .legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+
+/* 除外された画像と、取得できなかった画像の見せ方 */
+.card.excluded { opacity: .62; border-style: dashed; }
+.card .noimg {
+  height: 130px; display: grid; place-items: center; background: #1a1d25;
+  color: var(--muted); font-size: 11px; text-align: center; padding: 8px;
+}
+.badge.drop { background: #7a2a2a; color: #ffd7d7; }
+.why { margin-top: 5px; font-size: 10px; color: var(--muted); line-height: 1.45; }

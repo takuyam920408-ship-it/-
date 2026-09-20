@@ -116,9 +116,14 @@ def score_candidate(
 
 def rank(
     cands: list[ImageCandidate], meta: PageMeta, work_keywords: list[str]
-) -> list[ImageCandidate]:
-    """スコア順に並べ替え、除外されたものは落とす。"""
+) -> tuple[list[ImageCandidate], list[ImageCandidate]]:
+    """スコア順に並べた採用分と、除外された分を返す。
+
+    除外分も返すのは、「1枚も出てこない」ときに理由を画面で見せるため。
+    """
     scored = [score_candidate(c, meta, work_keywords) for c in cands]
     kept = [c for c in scored if c.score > -900]
+    dropped = [c for c in scored if c.score <= -900]
     kept.sort(key=lambda c: c.score, reverse=True)
-    return kept
+    dropped.sort(key=lambda c: c.area, reverse=True)
+    return kept, dropped

@@ -103,6 +103,9 @@ def _candidate_json(cand: ImageCandidate) -> dict[str, Any]:
         "score": round(cand.score, 1),
         "reasons": cand.reasons,
         "preview": f"/img/{cand.cache_id}" if cand.cache_id else "",
+        # ダウンロードに失敗した画像はサムネが出せない。壊れた画像を見せる代わりに
+        # 「取得できなかった」と明示するためのフラグ。
+        "fetched": bool(cand.cache_id and imagefetch.cache_path(cand.cache_id).exists()),
         "already_used": bool(db.image_used(cand.url)),
     }
 
@@ -153,11 +156,16 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     imagefetch.probe_all(candidates, referer=meta.final_url or meta.url)
-    ranked = scoring.rank(candidates, meta, extract.work_keywords())
+    ranked, dropped = scoring.rank(candidates, meta, extract.work_keywords())
     slots = extract.extract_slots(meta, ranked[0] if ranked else None, req.video_url)
 
     analysis_id = imagefetch.cache_id(meta.final_url or meta.url)
-    _analyses[analysis_id] = {"meta": meta, "candidates": ranked}
+    # 除外分も保持しておく。UI から「やっぱりこれを使う」と選べるようにするため。
+    _analyses[analysis_id] = {"meta": meta, "candidates": ranked + dropped}
+
+    fetched_ok = sum(
+        1 for c in candidates if c.cache_id and imagefetch.cache_path(c.cache_id).exists()
+    )
 
     return {
         "analysis_id": analysis_id,
@@ -170,7 +178,14 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         },
         "slots": _slots_json(slots),
         "candidates": [_candidate_json(c) for c in ranked],
-        "dropped": len(candidates) - len(ranked),
+        "excluded": [_candidate_json(c) for c in dropped],
+        "dropped": len(dropped),
+        "diagnostics": {
+            "found_in_html": len(candidates),
+            "downloaded": fetched_ok,
+            "kept": len(ranked),
+            "excluded": len(dropped),
+        },
         "duplicate_warning": db.source_used(meta.final_url or meta.url),
     }
 
