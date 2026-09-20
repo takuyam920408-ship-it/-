@@ -44,10 +44,23 @@ fi
 source .venv/bin/activate || stop "準備した置き場を読み込めませんでした。.venv フォルダを削除してやり直してください。"
 
 if [ ! -f ".venv/.installed" ] || [ requirements.txt -nt ".venv/.installed" ]; then
-  echo "必要な部品をインストールしています…"
-  python -m pip install --upgrade pip --quiet
-  python -m pip install -r requirements.txt --quiet || stop "部品のインストールに失敗しました。ネット接続を確認してやり直してください。"
+  echo ""
+  echo "必要な部品をインストールします。"
+  echo "初回や更新後は数分かかります。下に進捗が流れるので、止まって見えても待ってください。"
+  echo "────────────────────────────────"
+  python -m pip install --upgrade pip --quiet 2>/dev/null
+  # 進捗を隠さない（--quiet を付けると固まったように見えるため）。
+  # まずビルド済み（wheel）だけで入れる。これならコンパイルが走らず速い。
+  if ! python -m pip install -r requirements.txt --only-binary=:all: --progress-bar on; then
+    echo ""
+    echo "ビルド済みの部品が揃っていませんでした。ソースからのビルドを含めて入れ直します…"
+    echo "（ここは時間がかかります。数分〜十数分かかることがあります）"
+    if ! python -m pip install -r requirements.txt --progress-bar on; then
+      stop "部品のインストールに失敗しました。上に出ているエラーをそのまま貼って相談してください。"
+    fi
+  fi
   touch ".venv/.installed"
+  echo "────────────────────────────────"
   echo "準備できました"
 fi
 

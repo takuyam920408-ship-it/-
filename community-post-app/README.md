@@ -69,6 +69,7 @@ chmod +x ~/Downloads/*/community-post-app/start-mac.command
 | ブラウザに何も表示されない | 黒い窓に出ている `http://127.0.0.1:80xx` のアドレスを直接開く |
 | 「Python が見つかりません」 | 自動で開くページから macOS 用 Python を入れて、やり直す |
 | 「開発元を確認できません」 | `start-mac.command` を右クリック → 開く |
+| 「必要な部品をインストールしています」から進まない | 固まっていません。進捗が流れるので待つ。数分かかります |
 | 準備が途中で止まる | `.venv` フォルダを削除して、もう一度起動 |
 | 画像の文字が □□□ になる | 下の「フォント（けいふぉんと）」を参照 |
 | 文字がけいふぉんとにならない | `assets/fonts/keifont.ttf` を置いて画面を再読み込み |
@@ -107,8 +108,13 @@ Mac なら `keifont.ttf` をダブルクリックして Font Book で入れて�
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-./run.sh          # --reload 付きで起動
+./run.sh
 ```
+
+依存はビルド済み（wheel）だけで入るものに絞ってあります。`uvicorn[standard]` は
+uvloop / httptools / watchfiles を引き込みコンパイルが走りやすいので、素の `uvicorn` を
+使っています。`lxml` も必須にしていません（無ければ標準の `html.parser` に自動で落ちます。
+入れると HTML 解析が少し速くなります）。
 
 ---
 

@@ -26,6 +26,22 @@ _LAZY_ATTRS = ("data-src", "data-original", "data-lazy-src", "data-echo", "data-
 _robots_cache: dict[str, urllib.robotparser.RobotFileParser | None] = {}
 
 
+def _pick_parser() -> str:
+    """lxml があれば使い、無ければ標準の html.parser に落ちる。
+
+    lxml は環境によってはソースからのビルドが必要で、インストールが重い。
+    必須にはせず、入っていれば速い方を使う、という扱いにしている。
+    """
+    try:
+        BeautifulSoup("<i></i>", "lxml")
+        return "lxml"
+    except Exception:
+        return "html.parser"
+
+
+PARSER = _pick_parser()
+
+
 def _robots_allows(url: str) -> bool:
     """robots.txt を尊重する。取得できなければ許可扱い。"""
     if config.IGNORE_ROBOTS:
@@ -125,7 +141,7 @@ def fetch(url: str) -> tuple[PageMeta, list[ImageCandidate]]:
     except httpx.HTTPError as exc:
         raise AdapterError(f"ページを取得できませんでした: {exc}") from exc
 
-    soup = BeautifulSoup(resp.text, "lxml")
+    soup = BeautifulSoup(resp.text, PARSER)
     base = str(resp.url)
     # <base href> があればそれを相対URL解決の基準にする
     base_tag = soup.find("base", href=True)
