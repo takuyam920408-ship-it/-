@@ -6,7 +6,8 @@ from datetime import datetime
 
 from PIL import Image, ImageDraw, ImageFont
 
-from . import config
+from . import censor, config
+from .censor import Box
 
 PRESETS: dict[str, tuple[int, int]] = {
     "square": (1080, 1080),   # コミュニティ投稿の定番
@@ -63,7 +64,7 @@ def _draw_band(
     text: str,
     *,
     height_ratio: float = 0.22,
-    bg=(0, 0, 0, 200),
+    bg=(0, 0, 0, 255),
     fg=(255, 255, 255),
 ) -> Image.Image:
     """下部に半透明の帯を敷いてキャプションを書く。"""
@@ -105,6 +106,20 @@ def _draw_badge(im: Image.Image, text: str) -> Image.Image:
     return base
 
 
+class CompositionError(ValueError):
+    """必須の工程が満たされていないときに投げる。"""
+
+
+def crop_image(image_bytes: bytes, preset: str = "square", focus: str = "center") -> Image.Image:
+    """元画像を投稿サイズに切り抜いた Image を返す（検閲・帯の前段）。"""
+    size = PRESETS.get(preset, PRESETS["square"])
+    with Image.open(io.BytesIO(image_bytes)) as src:
+        src.load()
+        if src.mode not in ("RGB", "RGBA"):
+            src = src.convert("RGB")
+        return cover_crop(src, size, focus)
+
+
 def compose(
     image_bytes: bytes,
     *,
@@ -112,20 +127,30 @@ def compose(
     focus: str = "center",
     caption: str = "",
     badge: str = "",
+    censor_boxes: list[Box] | None = None,
+    censor_mode: str = "black",
     fmt: str = "JPEG",
 ) -> tuple[bytes, str]:
-    """加工済み画像のバイト列と保存ファイル名を返す。"""
-    size = PRESETS.get(preset, PRESETS["square"])
-    with Image.open(io.BytesIO(image_bytes)) as src:
-        src.load()
-        if src.mode not in ("RGB", "RGBA"):
-            src = src.convert("RGB")
-        im = cover_crop(src, size, focus)
+    """加工済み画像のバイト列と保存ファイル名を返す。
 
+    トリミング → 露出部分の黒モザイク → 下部の黒帯解説文、の順で必ず通す。
+    解説文が空のときは CompositionError（黒帯は必須工程のため）。
+    """
+    if not caption.strip():
+        raise CompositionError("黒帯に入れる解説文は必須です。")
+
+    im = crop_image(image_bytes, preset, focus)
+
+    # 1. 露出部分を潰す（帯や バッジを描く前にやる＝帯の上から塗られないように）
+    if censor_boxes:
+        im = censor.apply(im, censor_boxes, mode=censor_mode)
+
+    # 2. バッジ
     if badge:
         im = _draw_badge(im, badge)
-    if caption:
-        im = _draw_band(im, caption)
+
+    # 3. 下部の黒帯（必須）
+    im = _draw_band(im, caption)
 
     buf = io.BytesIO()
     if fmt.upper() == "PNG":

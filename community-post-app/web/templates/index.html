@@ -10,11 +10,11 @@
 <body>
 <div class="wrap">
   <h1>コミュニティ投稿アシスタント</h1>
-  <p class="sub">URL を貼る → 画像を選ぶ → 加工 → 文面をコピー → Studio に貼って予約。AI は使っていません（テンプレートと辞書だけ）。</p>
+  <p class="sub">URL を貼る → 画像を選ぶ → トリミング＆露出を黒モザイク → 黒帯の解説文 → 文面をコピー → Studio に貼って予約。AI は使っていません。</p>
 
   <div id="msg"></div>
 
-  <!-- 1. URL 取り込み -->
+  <!-- 1 -->
   <section>
     <h2><span class="num">1</span>URL を取り込む</h2>
     <div class="row">
@@ -31,38 +31,76 @@
     <p class="hint">robots.txt を尊重します。取得できないサイトは手動保存に切り替えてください。</p>
   </section>
 
-  <!-- 2. 画像候補 -->
+  <!-- 2 -->
   <section id="secImages" hidden>
     <h2><span class="num">2</span>画像を選ぶ</h2>
     <div id="imgStat" class="hint" style="margin:0 0 12px"></div>
     <div class="cards" id="cards"></div>
   </section>
 
-  <!-- 3. 抽出スロット -->
+  <!-- 3 -->
   <section id="secSlots" hidden>
     <h2><span class="num">3</span>抽出結果を確認・修正</h2>
     <div class="grid-slots" id="slots"></div>
     <p class="hint">空欄のスロットを requires に持つテンプレートは使われません（埋まっていない値は書かない設計です）。</p>
   </section>
 
-  <!-- 4. 画像加工 -->
-  <section id="secCompose" hidden>
-    <h2><span class="num">4</span>投稿画像に加工</h2>
+  <!-- 4 -->
+  <section id="secCensor" hidden>
+    <h2><span class="num">4</span>トリミング＆露出を黒モザイク <span class="req">必須</span></h2>
     <div class="row">
       <div><label for="preset">サイズ</label><select id="preset"></select></div>
       <div><label for="focus">トリミング位置</label>
         <select id="focus"><option value="center">中央</option><option value="top">上寄せ</option><option value="bottom">下寄せ</option></select>
       </div>
-      <div><label for="badge">左上バッジ（任意）</label><input type="text" id="badge" placeholder="ヤニねこ 12話"></div>
-      <button id="composeBtn" class="ghost">プレビュー生成</button>
+      <div><label for="censorMode">隠し方</label>
+        <select id="censorMode">
+          <option value="black">黒ベタ塗り（推奨）</option>
+          <option value="mosaic">黒モザイク</option>
+          <option value="blur">ぼかし</option>
+        </select>
+      </div>
+      <button id="detectBtn" class="ghost">トリミングして検出</button>
     </div>
-    <div style="margin-top:10px"><label for="caption">下帯キャプション（任意）</label><input type="text" id="caption" placeholder="この場面の破壊力よ"></div>
+
+    <div id="editorWrap" hidden>
+      <div class="msg warn" style="margin-top:14px">
+        自動検出が拾えるのは「肌色のかたまり」だけです。<b>顔も検出されますし、見落としもあります。</b>
+        必ず目で確認し、<b>ドラッグで追加 / 枠をクリックで削除</b>して仕上げてください。
+      </div>
+      <div class="editor" id="editor">
+        <img id="cropImg" alt="トリミング後のプレビュー">
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <span class="hint" id="boxStat" style="flex:1 1 auto;margin:0"></span>
+        <button id="redetect" class="ghost" style="flex:0 0 auto">自動検出をやり直す</button>
+        <button id="clearBoxes" class="ghost" style="flex:0 0 auto">枠を全部消す</button>
+      </div>
+      <div class="hint" style="margin-top:6px">
+        <span class="legend"><i style="background:#ff5c00"></i>自動検出</span>
+        <span class="legend"><i style="background:#34d399"></i>手動で追加</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="secBand" hidden>
+    <h2><span class="num">5</span>黒帯の解説文 <span class="req">必須</span></h2>
+    <div>
+      <label for="caption">画像の下に黒帯で入る文（空だと生成できません）</label>
+      <input type="text" id="caption" placeholder="この場面、原作だともっとヤバいです">
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div><label for="badge">左上バッジ（任意）</label><input type="text" id="badge" placeholder="ヤニねこ 12話"></div>
+      <button id="composeBtn" style="flex:0 0 auto">投稿画像を生成</button>
+    </div>
     <div id="previewBox" style="margin-top:14px"></div>
   </section>
 
-  <!-- 5. 文面 -->
+  <!-- 6 -->
   <section id="secDrafts" hidden>
-    <h2><span class="num">5</span>投稿文を生成</h2>
+    <h2><span class="num">6</span>投稿文を生成</h2>
     <div class="row" style="margin-bottom:14px">
       <button id="genBtn" class="ghost" style="flex:0 0 auto">文面を作り直す</button>
       <span class="hint" id="tplStat" style="flex:1 1 auto;margin:0"></span>
@@ -70,9 +108,9 @@
     <div id="drafts"></div>
   </section>
 
-  <!-- 6. 記録 -->
+  <!-- 7 -->
   <section id="secRecord" hidden>
-    <h2><span class="num">6</span>投稿して記録</h2>
+    <h2><span class="num">7</span>投稿して記録</h2>
     <p class="hint" style="margin-top:0">文面をコピーして画像を保存したら、Studio で貼り付け・予約してからここを押してください（次回以降のネタ被り防止に使います）。</p>
     <div class="row">
       <a href="https://studio.youtube.com" target="_blank" rel="noopener" style="flex:0 0 auto"><button class="ghost">YouTube Studio を開く</button></a>
@@ -80,7 +118,6 @@
     </div>
   </section>
 
-  <!-- 履歴 -->
   <section>
     <h2>投稿履歴</h2>
     <table><thead><tr><th>日時</th><th>作品/話数</th><th>テンプレ</th><th>本文</th></tr></thead><tbody id="hist"></tbody></table>
@@ -89,7 +126,9 @@
 
 <script>
 const $ = s => document.querySelector(s);
-const state = { analysisId: '', candidates: [], selected: null, slots: {}, composed: null, draft: null };
+const state = { analysisId:'', candidates:[], selected:null, slots:{}, composed:null, draft:null };
+const ed = { boxes:[], natW:0, natH:0, drag:null, ready:false };
+window.ed = ed;  // デバッグ用に露出（枠の状態を開発者ツールから見られる）
 
 function flash(text, kind='ok') {
   $('#msg').innerHTML = `<div class="msg ${kind}">${text}</div>`;
@@ -97,13 +136,13 @@ function flash(text, kind='ok') {
 }
 
 async function api(path, opts={}) {
-  const res = await fetch(path, { headers: {'Content-Type':'application/json'}, ...opts });
+  const res = await fetch(path, { headers:{'Content-Type':'application/json'}, ...opts });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.detail || `${res.status} ${res.statusText}`);
   return data;
 }
 
-// --- 1. 解析 ---------------------------------------------------------
+// ── 1. 解析 ─────────────────────────────────
 $('#analyze').addEventListener('click', async () => {
   const url = $('#url').value.trim();
   if (!url) return flash('URL を入力してください', 'err');
@@ -113,16 +152,13 @@ $('#analyze').addEventListener('click', async () => {
     const data = await api('/api/analyze', { method:'POST', body: JSON.stringify({ url, video_url: $('#videoUrl').value.trim() }) });
     state.analysisId = data.analysis_id;
     state.candidates = data.candidates;
-    state.selected = null;
-    state.composed = null;
-    renderCards(data);
-    renderSlots(data.slots);
-    ['#secImages','#secSlots','#secCompose','#secDrafts'].forEach(s => $(s).hidden = false);
-    $('#secRecord').hidden = true;
-    $('#previewBox').innerHTML = '';
-    if (data.duplicate_warning) {
-      flash(`この URL は ${data.duplicate_warning.created_at} に使用済みです（ネタ被り注意）`, 'warn');
-    } else { $('#msg').innerHTML = ''; }
+    state.selected = null; state.composed = null;
+    renderCards(data); renderSlots(data.slots);
+    ['#secImages','#secSlots','#secCensor','#secDrafts'].forEach(s => $(s).hidden = false);
+    $('#secBand').hidden = true; $('#secRecord').hidden = true;
+    resetEditor();
+    if (data.duplicate_warning) flash(`この URL は ${data.duplicate_warning.created_at} に使用済みです（ネタ被り注意）`, 'warn');
+    else $('#msg').innerHTML = '';
     if (data.candidates.length) selectCard(0);
   } catch (e) { flash(e.message, 'err'); }
   finally { $('#analyze').disabled = false; }
@@ -135,27 +171,23 @@ function renderCards(data) {
       <img src="${c.preview}" loading="lazy" alt="">
       <div class="meta">
         <div><span class="sc">${c.score}</span> pt ・ ${c.width||'?'}×${c.height||'?'}</div>
-        <div style="margin-top:4px">
-          <span class="badge">${c.source}</span>
-          ${c.already_used ? '<span class="badge used">使用済み</span>' : ''}
-        </div>
-        <div style="margin-top:4px" title="${(c.reasons||[]).join(' / ')}">${(c.alt || c.caption || c.nearby_heading || '（説明なし）').slice(0, 40)}</div>
+        <div style="margin-top:4px"><span class="badge">${c.source}</span>${c.already_used ? '<span class="badge used">使用済み</span>' : ''}</div>
+        <div style="margin-top:4px" title="${(c.reasons||[]).join(' / ')}">${(c.alt || c.caption || c.nearby_heading || '（説明なし）').slice(0,40)}</div>
       </div>
     </div>`).join('') || '<p class="hint">使えそうな画像が見つかりませんでした。</p>';
-  document.querySelectorAll('.card').forEach(el =>
-    el.addEventListener('click', () => selectCard(+el.dataset.i)));
+  document.querySelectorAll('.card').forEach(el => el.addEventListener('click', () => selectCard(+el.dataset.i)));
 }
 
 async function selectCard(i) {
   state.selected = state.candidates[i];
   state.composed = null;
   document.querySelectorAll('.card').forEach((el, j) => el.classList.toggle('sel', i === j));
-  $('#previewBox').innerHTML = '';
-  await refreshSlots();   // 選んだ画像の alt / キャプションを文脈に加えて再抽出
+  resetEditor();
+  await refreshSlots();
   generate();
 }
 
-// --- 3. スロット -----------------------------------------------------
+// ── 3. スロット ─────────────────────────────
 const SLOT_KEYS = ['作品名','作品名タグ','話数','キャラ名','タイトル','動画URL','元記事URL'];
 
 function renderSlots(slots) {
@@ -165,7 +197,7 @@ function renderSlots(slots) {
     <input type="text" id="slot-${k}" data-slot="${k}" value="${(slots[k]||'').replace(/"/g,'&quot;')}"></div>`).join('');
   document.querySelectorAll('[data-slot]').forEach(el => el.addEventListener('change', generate));
   if (slots['作品名'] && !$('#badge').value) {
-    $('#badge').value = [slots['作品名'], slots['話数'] ? slots['話数'] + '話' : ''].filter(Boolean).join(' ');
+    $('#badge').value = [slots['作品名'], slots['話数'] ? slots['話数']+'話' : ''].filter(Boolean).join(' ');
   }
 }
 
@@ -178,35 +210,129 @@ function overrides() {
 async function refreshSlots() {
   const data = await api('/api/drafts', { method:'POST', body: JSON.stringify({
     analysis_id: state.analysisId, cache_id: state.selected?.cache_id || '',
-    video_url: $('#videoUrl').value.trim(), overrides: {}, count: 0 }) });
+    video_url: $('#videoUrl').value.trim(), overrides:{}, count:0 }) });
   renderSlots(data.slots);
 }
 
-// --- 4. 画像加工 -----------------------------------------------------
+// ── 4. トリミング＆黒モザイク ────────────────
 (async () => {
   const { presets, font } = await api('/api/presets');
-  $('#preset').innerHTML = Object.entries(presets)
-    .map(([k, v]) => `<option value="${k}">${k} (${v[0]}×${v[1]})</option>`).join('');
-  if (!font) flash('日本語フォントが見つかりません。画像の文字が豆腐になります（config.py の FONT_CANDIDATES か CPA_FONT を設定してください）', 'warn');
+  $('#preset').innerHTML = Object.entries(presets).map(([k,v]) => `<option value="${k}">${k} (${v[0]}×${v[1]})</option>`).join('');
+  if (!font) flash('日本語フォントが見つかりません。画像の文字が豆腐になります（CPA_FONT を設定してください）', 'warn');
 })();
 
+function resetEditor() {
+  ed.boxes = []; ed.ready = false; ed.drag = null;
+  $('#editorWrap').hidden = true;
+  $('#secBand').hidden = true;
+  $('#previewBox').innerHTML = '';
+}
+
+['#preset','#focus'].forEach(s => $(s).addEventListener('change', resetEditor));
+
+$('#detectBtn').addEventListener('click', () => detect(true));
+$('#redetect').addEventListener('click', () => detect(true));
+$('#clearBoxes').addEventListener('click', () => { ed.boxes = []; drawBoxes(); });
+
+async function detect(replace) {
+  if (!state.selected) return flash('先に画像を選んでください', 'err');
+  $('#detectBtn').disabled = true;
+  try {
+    const data = await api('/api/prepare', { method:'POST', body: JSON.stringify({
+      cache_id: state.selected.cache_id, preset: $('#preset').value, focus: $('#focus').value }) });
+    ed.natW = data.width; ed.natH = data.height;
+    const manual = replace ? ed.boxes.filter(b => b.source === 'manual') : [];
+    ed.boxes = data.boxes.concat(manual);
+    ed.ready = true;
+    $('#editorWrap').hidden = false;
+    $('#secBand').hidden = false;
+    const img = $('#cropImg');
+    img.onload = drawBoxes;
+    img.src = data.url + '?t=' + Date.now();
+    if (!data.boxes.length) {
+      flash('露出（肌色）は自動検出されませんでした。必要ならドラッグで手動追加してください。', 'warn');
+    }
+  } catch (e) { flash(e.message, 'err'); }
+  finally { $('#detectBtn').disabled = false; }
+}
+
+function drawBoxes() {
+  const cv = $('#cv'), img = $('#cropImg');
+  if (!img.clientWidth) return;
+  cv.width = img.clientWidth; cv.height = img.clientHeight;
+  const ctx = cv.getContext('2d');
+  const sx = cv.width / ed.natW, sy = cv.height / ed.natH;
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ed.boxes.forEach(b => {
+    ctx.fillStyle = 'rgba(0,0,0,0.82)';
+    ctx.fillRect(b.x*sx, b.y*sy, b.w*sx, b.h*sy);
+    ctx.strokeStyle = b.source === 'auto' ? '#ff5c00' : '#34d399';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x*sx, b.y*sy, b.w*sx, b.h*sy);
+  });
+  if (ed.drag) {
+    const d = ed.drag;
+    ctx.strokeStyle = '#34d399'; ctx.setLineDash([5,4]); ctx.lineWidth = 2;
+    ctx.strokeRect(Math.min(d.x0,d.x1), Math.min(d.y0,d.y1), Math.abs(d.x1-d.x0), Math.abs(d.y1-d.y0));
+    ctx.setLineDash([]);
+  }
+  const auto = ed.boxes.filter(b => b.source === 'auto').length;
+  $('#boxStat').textContent = `枠 ${ed.boxes.length} 個（自動 ${auto} / 手動 ${ed.boxes.length - auto}）・ドラッグで追加、枠をクリックで削除`;
+}
+
+function toNat(evt) {
+  const cv = $('#cv'), r = cv.getBoundingClientRect();
+  return { x: (evt.clientX - r.left) / r.width * ed.natW, y: (evt.clientY - r.top) / r.height * ed.natH };
+}
+
+$('#cv').addEventListener('mousedown', e => {
+  if (!ed.ready) return;
+  const p = toNat(e);
+  ed.drag = { x0:p.x, y0:p.y, x1:p.x, y1:p.y };
+});
+$('#cv').addEventListener('mousemove', e => {
+  if (!ed.drag) return;
+  const p = toNat(e);
+  ed.drag.x1 = p.x; ed.drag.y1 = p.y;
+  drawBoxes();
+});
+window.addEventListener('mouseup', e => {
+  if (!ed.drag) return;
+  const d = ed.drag; ed.drag = null;
+  const w = Math.abs(d.x1-d.x0), h = Math.abs(d.y1-d.y0);
+  if (w < 12 || h < 12) {
+    // ドラッグではなくクリック → その点を含む枠を削除
+    const i = ed.boxes.findIndex(b => d.x0 >= b.x && d.x0 <= b.x+b.w && d.y0 >= b.y && d.y0 <= b.y+b.h);
+    if (i >= 0) ed.boxes.splice(i, 1);
+  } else {
+    ed.boxes.push({ x:Math.round(Math.min(d.x0,d.x1)), y:Math.round(Math.min(d.y0,d.y1)),
+                    w:Math.round(w), h:Math.round(h), source:'manual' });
+  }
+  drawBoxes();
+});
+window.addEventListener('resize', () => { if (ed.ready) drawBoxes(); });
+
+// ── 5. 黒帯＋生成 ───────────────────────────
 $('#composeBtn').addEventListener('click', async () => {
   if (!state.selected) return flash('先に画像を選んでください', 'err');
+  if (!ed.ready) return flash('先に「トリミングして検出」を押してください', 'err');
+  const caption = $('#caption').value.trim();
+  if (!caption) { $('#caption').focus(); return flash('黒帯の解説文は必須です', 'err'); }
   $('#composeBtn').disabled = true;
   try {
     const data = await api('/api/compose', { method:'POST', body: JSON.stringify({
       cache_id: state.selected.cache_id, preset: $('#preset').value, focus: $('#focus').value,
-      caption: $('#caption').value, badge: $('#badge').value }) });
+      caption, badge: $('#badge').value, boxes: ed.boxes, censor_mode: $('#censorMode').value }) });
     state.composed = data;
     $('#previewBox').innerHTML = `
-      <img class="preview" src="${data.url}?t=${Date.now()}" alt="投稿画像プレビュー">
-      <p class="hint"><a href="${data.url}" download>${data.file}</a> を保存（${Math.round(data.bytes/1024)} KB） ・ output/ にも出力済み</p>`;
+      <img class="preview" src="${data.url}?t=${Date.now()}" alt="投稿画像">
+      <p class="hint"><a href="${data.url}" download>${data.file}</a> を保存（${Math.round(data.bytes/1024)} KB）・黒モザイク ${data.censored} 箇所 ・ output/ にも出力済み</p>`;
     $('#secRecord').hidden = false;
   } catch (e) { flash(e.message, 'err'); }
   finally { $('#composeBtn').disabled = false; }
 });
 
-// --- 5. 文面 ---------------------------------------------------------
+// ── 6. 文面 ─────────────────────────────────
 $('#genBtn').addEventListener('click', generate);
 
 async function generate() {
@@ -214,7 +340,7 @@ async function generate() {
   try {
     const data = await api('/api/drafts', { method:'POST', body: JSON.stringify({
       analysis_id: state.analysisId, cache_id: state.selected?.cache_id || '',
-      video_url: $('#videoUrl').value.trim(), overrides: overrides(), count: 3 }) });
+      video_url: $('#videoUrl').value.trim(), overrides: overrides(), count:3 }) });
     state.slots = data.slots;
     $('#tplStat').textContent = `使用可能テンプレ: ${data.usable_templates.length} 件（${data.usable_templates.join(', ') || 'なし'}）`;
     $('#drafts').innerHTML = data.drafts.map((d, i) => `
@@ -234,9 +360,10 @@ async function generate() {
   } catch (e) { flash(e.message, 'err'); }
 }
 
-// --- 6. 記録 ---------------------------------------------------------
+// ── 7. 記録 ─────────────────────────────────
 $('#recordBtn').addEventListener('click', async () => {
   if (!state.draft) return flash('記録する文面をコピーしてから押してください', 'err');
+  if (!state.composed) return flash('先に投稿画像を生成してください', 'err');
   try {
     await api('/api/record', { method:'POST', body: JSON.stringify({
       source_url: state.slots['元記事URL'] || $('#url').value.trim(),
@@ -252,12 +379,11 @@ $('#recordBtn').addEventListener('click', async () => {
 async function loadHistory() {
   const { posts } = await api('/api/history?limit=30');
   $('#hist').innerHTML = posts.map(p => `
-    <tr>
-      <td>${(p.created_at||'').replace('T',' ')}</td>
-      <td>${p.work_id||'-'} ${p.episode ? p.episode+'話' : ''}</td>
-      <td>${p.template_id||'-'}</td>
-      <td>${(p.text||'').split('\n')[0].slice(0,40)}</td>
-    </tr>`).join('') || '<tr><td colspan="4" class="hint">まだありません</td></tr>';
+    <tr><td>${(p.created_at||'').replace('T',' ')}</td>
+    <td>${p.work_id||'-'} ${p.episode ? p.episode+'話' : ''}</td>
+    <td>${p.template_id||'-'}</td>
+    <td>${(p.text||'').split('\n')[0].slice(0,40)}</td></tr>`).join('')
+    || '<tr><td colspan="4" class="hint">まだありません</td></tr>';
 }
 loadHistory();
 </script>

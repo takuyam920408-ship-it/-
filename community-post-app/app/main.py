@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import compose as compose_mod
-from . import config, db, extract, imagefetch, scoring, textgen
+from . import censor, config, db, extract, imagefetch, scoring, textgen
 from .adapters import AdapterError, fetch_page
 from .models import ImageCandidate, PageMeta, Slots
 
@@ -46,12 +46,24 @@ class DraftRequest(BaseModel):
     count: int = 3
 
 
+class PrepareRequest(BaseModel):
+    """トリミングして、露出部分の候補を自動検出する（黒モザイクを置く前段）。"""
+
+    cache_id: str
+    preset: str = "square"
+    focus: str = "center"
+    grid: int = censor.GRID
+    ratio: float = censor.CELL_SKIN_RATIO
+
+
 class ComposeRequest(BaseModel):
     cache_id: str
     preset: str = "square"
     focus: str = "center"
-    caption: str = ""
+    caption: str = ""          # 黒帯の解説文。必須
     badge: str = ""
+    boxes: list[dict] = Field(default_factory=list)   # 黒モザイクをかける矩形
+    censor_mode: str = "black"                         # black | mosaic | blur
     fmt: str = "JPEG"
 
 
@@ -70,6 +82,14 @@ class RecordRequest(BaseModel):
 # --------------------------------------------------------------------------
 # ヘルパ
 # --------------------------------------------------------------------------
+def _jpeg_bytes(im) -> bytes:
+    import io
+
+    buf = io.BytesIO()
+    im.convert("RGB").save(buf, "JPEG", quality=88)
+    return buf.getvalue()
+
+
 def _candidate_json(cand: ImageCandidate) -> dict[str, Any]:
     return {
         "cache_id": cand.cache_id,
@@ -191,6 +211,34 @@ def drafts(req: DraftRequest) -> dict[str, Any]:
     }
 
 
+@app.post("/api/prepare")
+def prepare_image(req: PrepareRequest) -> dict[str, Any]:
+    """指定サイズに切り抜いたプレビューを作り、露出（肌色）候補を自動検出する。
+
+    検出結果はあくまで候補。顔も肌色なので顔も拾うし、影の濃い絵は外す。
+    UI 側で人間が足し引きする前提。
+    """
+    blob = imagefetch.load_cached(req.cache_id)
+    if blob is None:
+        raise HTTPException(status_code=404, detail="元画像がキャッシュにありません")
+    try:
+        cropped = compose_mod.crop_image(blob, req.preset, req.focus)
+        boxes = censor.detect(cropped, grid=req.grid, ratio=req.ratio)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"解析できませんでした: {exc}") from exc
+
+    # 枠を描く前の素のトリミング画像をプレビュー用に保存する
+    name = f"crop_{req.cache_id}_{req.preset}_{req.focus}.jpg"
+    (config.OUTPUT_DIR / name).write_bytes(_jpeg_bytes(cropped))
+
+    return {
+        "url": f"/output/{name}",
+        "width": cropped.width,
+        "height": cropped.height,
+        "boxes": [b.as_dict() for b in boxes],
+    }
+
+
 @app.post("/api/compose")
 def compose_image(req: ComposeRequest) -> dict[str, Any]:
     blob = imagefetch.load_cached(req.cache_id)
@@ -203,8 +251,12 @@ def compose_image(req: ComposeRequest) -> dict[str, Any]:
             focus=req.focus,
             caption=req.caption,
             badge=req.badge,
+            censor_boxes=[censor.Box.from_dict(b) for b in req.boxes],
+            censor_mode=req.censor_mode,
             fmt=req.fmt,
         )
+    except compose_mod.CompositionError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"画像を加工できませんでした: {exc}") from exc
 
@@ -213,6 +265,8 @@ def compose_image(req: ComposeRequest) -> dict[str, Any]:
         "file": name,
         "url": f"/output/{name}",
         "bytes": len(data),
+        "censored": len(req.boxes),
+        "censor_mode": req.censor_mode,
         "content_type": mimetypes.guess_type(name)[0] or "image/jpeg",
     }
 
@@ -246,5 +300,6 @@ def reload_config() -> dict[str, Any]:
 def presets() -> dict[str, Any]:
     return {
         "presets": {k: list(v) for k, v in compose_mod.PRESETS.items()},
+        "censor_modes": ["black", "mosaic", "blur"],
         "font": config.resolve_font() or "",
     }
