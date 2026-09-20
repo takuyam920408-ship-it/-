@@ -224,9 +224,20 @@ async function refreshSlots() {
   } else if (!font.is_keifont) {
     $('#msg').innerHTML = `<div class="msg warn">
       <b>けいふぉんとが見つかりません。</b>いまは代替フォント（<code>${font.path.split('/').pop()}</code>）で描画しています。<br>
-      <a href="${font.download_url}" target="_blank" rel="noopener">配布元</a> から keifont.ttf をダウンロードし、
-      <code>${font.fonts_dir}</code> に置くか、ダブルクリックで Mac にインストールしてから、このページを再読み込みしてください。
+      <b>一番ラクな入れ方：</b><a href="${font.download_url}" target="_blank" rel="noopener">配布元</a>から zip をダウンロード →
+      解凍して出てきた <code>keifont.ttf</code> を<b>ダブルクリック</b> → 「インストール」を押す → このページを再読み込み（command + R）。<br>
+      フォルダに直接置きたい場合は、下のボタンで置き場を開いて <code>keifont.ttf</code> をドラッグしてください。
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghost" id="revealFonts">置き場のフォルダを開く</button>
+        <button class="ghost" id="recheckFont">入れ終わったので再確認</button>
+      </div>
+      <div class="hint" style="margin-top:8px">置き場: <code>${font.fonts_dir}</code></div>
     </div>`;
+    $('#revealFonts').addEventListener('click', async () => {
+      try { await api('/api/reveal-fonts', { method:'POST' }); }
+      catch (e) { flash(e.message, 'err'); }
+    });
+    $('#recheckFont').addEventListener('click', () => location.reload());
   }
 })();
 

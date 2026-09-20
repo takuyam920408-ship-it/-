@@ -310,6 +310,36 @@ def reload_config() -> dict[str, Any]:
     return {"works": len(dic.get("works", [])), "templates": len(tpl)}
 
 
+@app.post("/api/reveal-fonts")
+def reveal_fonts() -> dict[str, Any]:
+    """フォントの置き場を Finder（Mac）/ エクスプローラー（Windows）で開く。
+
+    ローカル専用ツールなので OS のファイラを直接呼ぶ。開ける場所は
+    assets/fonts に固定していて、任意のパスは受け取らない。
+    """
+    import subprocess
+    import sys
+
+    target = config.FONTS_DIR
+    target.mkdir(parents=True, exist_ok=True)
+
+    if sys.platform == "darwin":
+        cmd = ["open", str(target)]
+    elif sys.platform.startswith("win"):
+        cmd = ["explorer", str(target)]
+    else:
+        cmd = ["xdg-open", str(target)]
+
+    try:
+        subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"フォルダを開けませんでした。手動で開いてください: {target}（{exc}）",
+        ) from exc
+    return {"opened": str(target)}
+
+
 @app.get("/api/presets")
 def presets() -> dict[str, Any]:
     return {
