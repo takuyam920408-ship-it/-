@@ -30,22 +30,23 @@
     </div>
     <p class="hint">robots.txt を尊重します。</p>
 
-    <details id="altInput" style="margin-top:14px">
-      <summary>ページから画像が取れないとき（JavaScript で描画するサイトなど）</summary>
+    <details id="altInput" style="margin-top:14px" open>
+      <summary><b>画像ファイルから始める</b>／ページから画像が取れないとき</summary>
       <div class="alt-body">
         <div class="row" style="align-items:flex-end">
           <div style="flex:2 1 260px">
-            <label for="fileInput">画像ファイルを読み込む</label>
+            <label for="fileInput">① 画像ファイルを選ぶ（選んだ時点ですぐ読み込みます）</label>
             <input type="file" id="fileInput" accept="image/*">
           </div>
           <div style="flex:3 1 300px">
-            <label for="directUrl">または画像URLを直接貼る（右クリック →「イメージのアドレスをコピー」）</label>
+            <label for="directUrl">② または画像URLを貼る（右クリック →「イメージのアドレスをコピー」）</label>
             <input type="url" id="directUrl" placeholder="https://example.com/img/scene.jpg">
           </div>
           <button id="directBtn" class="ghost" style="flex:0 0 auto">読み込む</button>
         </div>
-        <p class="hint">この場合も、トリミング・黒モザイク・黒帯・文面生成はそのまま使えます。
-        作品名や話数は画面3で手入力してください。</p>
+        <p class="hint">①か②のどちらかだけでOKです。上の「解析」ボタンは押さなくて構いません。<br>
+        読み込むと画面2〜が出てきて、トリミング・黒モザイク・黒帯・文面生成はそのまま使えます。
+        作品名や話数は自動で取れないので、画面3で手入力してください。</p>
       </div>
     </details>
   </section>
