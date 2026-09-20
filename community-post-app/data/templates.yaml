@@ -1,0 +1,64 @@
+# 投稿文テンプレート。
+#   requires … 全部埋まっていないとこのテンプレは使われない（スロット名は
+#              models.Slots.as_dict() のキー）
+#   weight   … 抽選の重み。よく伸びたテンプレの数値を上げていく
+#   text     … {スロット名} と {感想フレーズ} を差し込む
+templates:
+  - id: shinsaku_kokuchi
+    type: 新作告知
+    requires: [作品名, 話数]
+    weight: 3
+    text: |
+      【{作品名}】{話数}話の反応まとめました！
+      {感想フレーズ}
+      ▶ {動画URL}
+      #{作品名タグ} #反応集
+
+  - id: shinsaku_kokuchi_noep
+    type: 新作告知
+    requires: [作品名]
+    weight: 2
+    text: |
+      【{作品名}】最新話の反応、まとめました。
+      {感想フレーズ}
+      ▶ {動画URL}
+      #{作品名タグ} #反応集
+
+  - id: enquete_reaction
+    type: アンケート
+    requires: [作品名, 話数]
+    weight: 2
+    text: |
+      {作品名} {話数}話、どうでした？
+      （コメントで教えてください）
+      {感想フレーズ}
+      #{作品名タグ}
+
+  - id: gazou_neta
+    type: 画像ネタ
+    requires: [作品名]
+    weight: 2
+    text: |
+      {作品名}、この場面の破壊力よ。
+      {感想フレーズ}
+      #{作品名タグ} #反応集
+
+  - id: news_share
+    type: ニュース共有
+    requires: [タイトル]
+    weight: 1
+    text: |
+      {タイトル}
+      {感想フレーズ}
+      詳細 ▶ {元記事URL}
+      #反応集
+
+  - id: generic_kokuchi
+    type: 汎用告知
+    requires: []
+    weight: 1
+    text: |
+      新しい動画あがってます！
+      {感想フレーズ}
+      ▶ {動画URL}
+      #反応集

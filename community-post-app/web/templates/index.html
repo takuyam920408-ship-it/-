@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>コミュニティ投稿アシスタント</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ff5c00'/%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle' fill='white'%3E%E2%96%B6%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>コミュニティ投稿アシスタント</h1>
+  <p class="sub">URL を貼る → 画像を選ぶ → 加工 → 文面をコピー → Studio に貼って予約。AI は使っていません（テンプレートと辞書だけ）。</p>
+
+  <div id="msg"></div>
+
+  <!-- 1. URL 取り込み -->
+  <section>
+    <h2><span class="num">1</span>URL を取り込む</h2>
+    <div class="row">
+      <div style="flex:3 1 320px">
+        <label for="url">元記事 URL（アニメ公式サイト / ニュース）</label>
+        <input type="url" id="url" placeholder="https://example.com/news/12345">
+      </div>
+      <div style="flex:2 1 240px">
+        <label for="videoUrl">自分の動画 URL（任意・{動画URL} に入ります）</label>
+        <input type="url" id="videoUrl" placeholder="https://youtu.be/xxxxxxxx">
+      </div>
+      <button id="analyze">解析</button>
+    </div>
+    <p class="hint">robots.txt を尊重します。取得できないサイトは手動保存に切り替えてください。</p>
+  </section>
+
+  <!-- 2. 画像候補 -->
+  <section id="secImages" hidden>
+    <h2><span class="num">2</span>画像を選ぶ</h2>
+    <div id="imgStat" class="hint" style="margin:0 0 12px"></div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- 3. 抽出スロット -->
+  <section id="secSlots" hidden>
+    <h2><span class="num">3</span>抽出結果を確認・修正</h2>
+    <div class="grid-slots" id="slots"></div>
+    <p class="hint">空欄のスロットを requires に持つテンプレートは使われません（埋まっていない値は書かない設計です）。</p>
+  </section>
+
+  <!-- 4. 画像加工 -->
+  <section id="secCompose" hidden>
+    <h2><span class="num">4</span>投稿画像に加工</h2>
+    <div class="row">
+      <div><label for="preset">サイズ</label><select id="preset"></select></div>
+      <div><label for="focus">トリミング位置</label>
+        <select id="focus"><option value="center">中央</option><option value="top">上寄せ</option><option value="bottom">下寄せ</option></select>
+      </div>
+      <div><label for="badge">左上バッジ（任意）</label><input type="text" id="badge" placeholder="ヤニねこ 12話"></div>
+      <button id="composeBtn" class="ghost">プレビュー生成</button>
+    </div>
+    <div style="margin-top:10px"><label for="caption">下帯キャプション（任意）</label><input type="text" id="caption" placeholder="この場面の破壊力よ"></div>
+    <div id="previewBox" style="margin-top:14px"></div>
+  </section>
+
+  <!-- 5. 文面 -->
+  <section id="secDrafts" hidden>
+    <h2><span class="num">5</span>投稿文を生成</h2>
+    <div class="row" style="margin-bottom:14px">
+      <button id="genBtn" class="ghost" style="flex:0 0 auto">文面を作り直す</button>
+      <span class="hint" id="tplStat" style="flex:1 1 auto;margin:0"></span>
+    </div>
+    <div id="drafts"></div>
+  </section>
+
+  <!-- 6. 記録 -->
+  <section id="secRecord" hidden>
+    <h2><span class="num">6</span>投稿して記録</h2>
+    <p class="hint" style="margin-top:0">文面をコピーして画像を保存したら、Studio で貼り付け・予約してからここを押してください（次回以降のネタ被り防止に使います）。</p>
+    <div class="row">
+      <a href="https://studio.youtube.com" target="_blank" rel="noopener" style="flex:0 0 auto"><button class="ghost">YouTube Studio を開く</button></a>
+      <button id="recordBtn" style="flex:0 0 auto">投稿済みとして記録</button>
+    </div>
+  </section>
+
+  <!-- 履歴 -->
+  <section>
+    <h2>投稿履歴</h2>
+    <table><thead><tr><th>日時</th><th>作品/話数</th><th>テンプレ</th><th>本文</th></tr></thead><tbody id="hist"></tbody></table>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const state = { analysisId: '', candidates: [], selected: null, slots: {}, composed: null, draft: null };
+
+function flash(text, kind='ok') {
+  $('#msg').innerHTML = `<div class="msg ${kind}">${text}</div>`;
+  if (kind === 'ok') setTimeout(() => { $('#msg').innerHTML = ''; }, 4000);
+}
+
+async function api(path, opts={}) {
+  const res = await fetch(path, { headers: {'Content-Type':'application/json'}, ...opts });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || `${res.status} ${res.statusText}`);
+  return data;
+}
+
+// --- 1. 解析 ---------------------------------------------------------
+$('#analyze').addEventListener('click', async () => {
+  const url = $('#url').value.trim();
+  if (!url) return flash('URL を入力してください', 'err');
+  $('#analyze').disabled = true;
+  $('#msg').innerHTML = '<div class="msg">解析中… 画像をダウンロードして実寸を測っています</div>';
+  try {
+    const data = await api('/api/analyze', { method:'POST', body: JSON.stringify({ url, video_url: $('#videoUrl').value.trim() }) });
+    state.analysisId = data.analysis_id;
+    state.candidates = data.candidates;
+    state.selected = null;
+    state.composed = null;
+    renderCards(data);
+    renderSlots(data.slots);
+    ['#secImages','#secSlots','#secCompose','#secDrafts'].forEach(s => $(s).hidden = false);
+    $('#secRecord').hidden = true;
+    $('#previewBox').innerHTML = '';
+    if (data.duplicate_warning) {
+      flash(`この URL は ${data.duplicate_warning.created_at} に使用済みです（ネタ被り注意）`, 'warn');
+    } else { $('#msg').innerHTML = ''; }
+    if (data.candidates.length) selectCard(0);
+  } catch (e) { flash(e.message, 'err'); }
+  finally { $('#analyze').disabled = false; }
+});
+
+function renderCards(data) {
+  $('#imgStat').textContent = `採用 ${data.candidates.length} 枚 / 除外 ${data.dropped} 枚（ロゴ・アイコン・小さすぎる画像を自動で落としています）`;
+  $('#cards').innerHTML = data.candidates.map((c, i) => `
+    <div class="card" data-i="${i}">
+      <img src="${c.preview}" loading="lazy" alt="">
+      <div class="meta">
+        <div><span class="sc">${c.score}</span> pt ・ ${c.width||'?'}×${c.height||'?'}</div>
+        <div style="margin-top:4px">
+          <span class="badge">${c.source}</span>
+          ${c.already_used ? '<span class="badge used">使用済み</span>' : ''}
+        </div>
+        <div style="margin-top:4px" title="${(c.reasons||[]).join(' / ')}">${(c.alt || c.caption || c.nearby_heading || '（説明なし）').slice(0, 40)}</div>
+      </div>
+    </div>`).join('') || '<p class="hint">使えそうな画像が見つかりませんでした。</p>';
+  document.querySelectorAll('.card').forEach(el =>
+    el.addEventListener('click', () => selectCard(+el.dataset.i)));
+}
+
+async function selectCard(i) {
+  state.selected = state.candidates[i];
+  state.composed = null;
+  document.querySelectorAll('.card').forEach((el, j) => el.classList.toggle('sel', i === j));
+  $('#previewBox').innerHTML = '';
+  await refreshSlots();   // 選んだ画像の alt / キャプションを文脈に加えて再抽出
+  generate();
+}
+
+// --- 3. スロット -----------------------------------------------------
+const SLOT_KEYS = ['作品名','作品名タグ','話数','キャラ名','タイトル','動画URL','元記事URL'];
+
+function renderSlots(slots) {
+  state.slots = slots;
+  $('#slots').innerHTML = SLOT_KEYS.map(k => `
+    <div><label for="slot-${k}">${k}</label>
+    <input type="text" id="slot-${k}" data-slot="${k}" value="${(slots[k]||'').replace(/"/g,'&quot;')}"></div>`).join('');
+  document.querySelectorAll('[data-slot]').forEach(el => el.addEventListener('change', generate));
+  if (slots['作品名'] && !$('#badge').value) {
+    $('#badge').value = [slots['作品名'], slots['話数'] ? slots['話数'] + '話' : ''].filter(Boolean).join(' ');
+  }
+}
+
+function overrides() {
+  const out = {};
+  document.querySelectorAll('[data-slot]').forEach(el => { out[el.dataset.slot] = el.value; });
+  return out;
+}
+
+async function refreshSlots() {
+  const data = await api('/api/drafts', { method:'POST', body: JSON.stringify({
+    analysis_id: state.analysisId, cache_id: state.selected?.cache_id || '',
+    video_url: $('#videoUrl').value.trim(), overrides: {}, count: 0 }) });
+  renderSlots(data.slots);
+}
+
+// --- 4. 画像加工 -----------------------------------------------------
+(async () => {
+  const { presets, font } = await api('/api/presets');
+  $('#preset').innerHTML = Object.entries(presets)
+    .map(([k, v]) => `<option value="${k}">${k} (${v[0]}×${v[1]})</option>`).join('');
+  if (!font) flash('日本語フォントが見つかりません。画像の文字が豆腐になります（config.py の FONT_CANDIDATES か CPA_FONT を設定してください）', 'warn');
+})();
+
+$('#composeBtn').addEventListener('click', async () => {
+  if (!state.selected) return flash('先に画像を選んでください', 'err');
+  $('#composeBtn').disabled = true;
+  try {
+    const data = await api('/api/compose', { method:'POST', body: JSON.stringify({
+      cache_id: state.selected.cache_id, preset: $('#preset').value, focus: $('#focus').value,
+      caption: $('#caption').value, badge: $('#badge').value }) });
+    state.composed = data;
+    $('#previewBox').innerHTML = `
+      <img class="preview" src="${data.url}?t=${Date.now()}" alt="投稿画像プレビュー">
+      <p class="hint"><a href="${data.url}" download>${data.file}</a> を保存（${Math.round(data.bytes/1024)} KB） ・ output/ にも出力済み</p>`;
+    $('#secRecord').hidden = false;
+  } catch (e) { flash(e.message, 'err'); }
+  finally { $('#composeBtn').disabled = false; }
+});
+
+// --- 5. 文面 ---------------------------------------------------------
+$('#genBtn').addEventListener('click', generate);
+
+async function generate() {
+  if (!state.analysisId) return;
+  try {
+    const data = await api('/api/drafts', { method:'POST', body: JSON.stringify({
+      analysis_id: state.analysisId, cache_id: state.selected?.cache_id || '',
+      video_url: $('#videoUrl').value.trim(), overrides: overrides(), count: 3 }) });
+    state.slots = data.slots;
+    $('#tplStat').textContent = `使用可能テンプレ: ${data.usable_templates.length} 件（${data.usable_templates.join(', ') || 'なし'}）`;
+    $('#drafts').innerHTML = data.drafts.map((d, i) => `
+      <div class="draft">
+        <div class="head">${d.template_type} / ${d.template_id}</div>
+        <pre id="d${i}">${d.text.replace(/</g,'&lt;')}</pre>
+        <button class="ghost" data-copy="${i}">この文をコピー</button>
+      </div>`).join('') || '<p class="hint">条件に合うテンプレートがありません。スロットを埋めるか templates.yaml を追加してください。</p>';
+    document.querySelectorAll('[data-copy]').forEach(el => el.addEventListener('click', () => {
+      const i = +el.dataset.copy;
+      navigator.clipboard.writeText(data.drafts[i].text);
+      state.draft = data.drafts[i];
+      el.textContent = 'コピーしました';
+      setTimeout(() => { el.textContent = 'この文をコピー'; }, 2000);
+      $('#secRecord').hidden = false;
+    }));
+  } catch (e) { flash(e.message, 'err'); }
+}
+
+// --- 6. 記録 ---------------------------------------------------------
+$('#recordBtn').addEventListener('click', async () => {
+  if (!state.draft) return flash('記録する文面をコピーしてから押してください', 'err');
+  try {
+    await api('/api/record', { method:'POST', body: JSON.stringify({
+      source_url: state.slots['元記事URL'] || $('#url').value.trim(),
+      text: state.draft.text, image_url: state.selected?.url || '',
+      image_file: state.composed?.file || '', template_id: state.draft.template_id,
+      template_type: state.draft.template_type, phrase: state.draft.phrase,
+      work_id: state.slots['_work_id'] || '', episode: state.slots['話数'] || '' }) });
+    flash('記録しました', 'ok');
+    loadHistory();
+  } catch (e) { flash(e.message, 'err'); }
+});
+
+async function loadHistory() {
+  const { posts } = await api('/api/history?limit=30');
+  $('#hist').innerHTML = posts.map(p => `
+    <tr>
+      <td>${(p.created_at||'').replace('T',' ')}</td>
+      <td>${p.work_id||'-'} ${p.episode ? p.episode+'話' : ''}</td>
+      <td>${p.template_id||'-'}</td>
+      <td>${(p.text||'').split('\n')[0].slice(0,40)}</td>
+    </tr>`).join('') || '<tr><td colspan="4" class="hint">まだありません</td></tr>';
+}
+loadHistory();
+</script>
+</body>
+</html>
