@@ -46,6 +46,39 @@ def _wrap(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
     return lines
 
 
+MAX_CAPTION_LINES = 2  # 黒帯の解説文は2行まで
+
+
+def _fit_lines(
+    text: str,
+    font_path_size: int,
+    max_width: int,
+    min_size: int,
+    max_lines: int = MAX_CAPTION_LINES,
+) -> tuple[ImageFont.FreeTypeFont, list[str], bool]:
+    """max_lines 行に収まるまで文字を縮める。
+
+    縮めても収まらなければ、最終行の末尾を「…」で詰める。
+    戻り値は (フォント, 行のリスト, 詰めたかどうか)。
+    """
+    size = font_path_size
+    while size >= min_size:
+        font = _font(size)
+        lines = _wrap(text, font, max_width)
+        if len(lines) <= max_lines:
+            return font, lines, False
+        size -= 2
+
+    font = _font(min_size)
+    lines = _wrap(text, font, max_width)[:max_lines]
+    if lines:
+        last = lines[-1]
+        while last and font.getlength(last + "…") > max_width:
+            last = last[:-1]
+        lines[-1] = last + "…"
+    return font, lines, True
+
+
 def cover_crop(im: Image.Image, size: tuple[int, int], focus: str = "center") -> Image.Image:
     """アスペクト比を保ったまま指定サイズいっぱいに切り抜く（余白なし）。"""
     target_w, target_h = size
@@ -66,17 +99,22 @@ def _draw_band(
     height_ratio: float = 0.22,
     bg=(0, 0, 0, 255),
     fg=(255, 255, 255),
-) -> Image.Image:
-    """下部に半透明の帯を敷いてキャプションを書く。"""
+) -> tuple[Image.Image, bool]:
+    """下部に黒帯を敷いて解説文を書く。文字は最大2行。
+
+    2行に収まらない場合はフォントを段階的に縮め、それでも溢れたら
+    末尾を「…」で詰める。戻り値は (画像, 詰めたかどうか)。
+    """
     width, height = im.size
     band_h = max(80, int(height * height_ratio))
-    font_size = max(22, int(band_h * 0.26))
-    font = _font(font_size)
+    base_size = max(22, int(band_h * 0.26))
     padding = int(width * 0.045)
 
-    lines = _wrap(text, font, width - padding * 2)
+    font, lines, truncated = _fit_lines(
+        text, base_size, width - padding * 2, min_size=max(16, int(base_size * 0.55))
+    )
+    font_size = getattr(font, "size", base_size)
     line_h = int(font_size * 1.35)
-    # 行数が多いときは帯を伸ばす
     band_h = max(band_h, line_h * len(lines) + padding * 2)
 
     overlay = Image.new("RGBA", (width, band_h), bg)
@@ -88,7 +126,7 @@ def _draw_band(
 
     base = im.convert("RGBA")
     base.alpha_composite(overlay, (0, height - band_h))
-    return base
+    return base, truncated
 
 
 def _draw_badge(im: Image.Image, text: str) -> Image.Image:
@@ -104,6 +142,25 @@ def _draw_badge(im: Image.Image, text: str) -> Image.Image:
     base = im.convert("RGBA")
     base.alpha_composite(badge, box)
     return base
+
+
+def measure_caption(text: str, image_width: int, height_ratio: float = 0.22) -> dict:
+    """解説文が2行に収まるかを、実際の描画と同じ計算で測る（UI の事前確認用）。"""
+    if not text.strip():
+        return {"lines": 0, "truncated": False, "shrunk": False, "max_lines": MAX_CAPTION_LINES}
+    band_h = max(80, int(image_width * height_ratio))
+    base_size = max(22, int(band_h * 0.26))
+    padding = int(image_width * 0.045)
+    font, lines, truncated = _fit_lines(
+        text, base_size, image_width - padding * 2, min_size=max(16, int(base_size * 0.55))
+    )
+    return {
+        "lines": len(lines),
+        "truncated": truncated,
+        "shrunk": getattr(font, "size", base_size) < base_size,
+        "max_lines": MAX_CAPTION_LINES,
+        "preview": lines,
+    }
 
 
 class CompositionError(ValueError):
@@ -130,8 +187,8 @@ def compose(
     censor_boxes: list[Box] | None = None,
     censor_mode: str = "black",
     fmt: str = "JPEG",
-) -> tuple[bytes, str]:
-    """加工済み画像のバイト列と保存ファイル名を返す。
+) -> tuple[bytes, str, bool]:
+    """加工済み画像のバイト列・保存ファイル名・解説文を詰めたかどうかを返す。
 
     トリミング → 露出部分の黒モザイク → 下部の黒帯解説文、の順で必ず通す。
     解説文が空のときは CompositionError（黒帯は必須工程のため）。
@@ -149,8 +206,8 @@ def compose(
     if badge:
         im = _draw_badge(im, badge)
 
-    # 3. 下部の黒帯（必須）
-    im = _draw_band(im, caption)
+    # 3. 下部の黒帯（必須・最大2行）
+    im, truncated = _draw_band(im, caption)
 
     buf = io.BytesIO()
     if fmt.upper() == "PNG":
@@ -161,4 +218,4 @@ def compose(
         ext = "jpg"
 
     name = f"post_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{preset}.{ext}"
-    return buf.getvalue(), name
+    return buf.getvalue(), name, truncated

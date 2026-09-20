@@ -245,7 +245,7 @@ def compose_image(req: ComposeRequest) -> dict[str, Any]:
     if blob is None:
         raise HTTPException(status_code=404, detail="元画像がキャッシュにありません")
     try:
-        data, name = compose_mod.compose(
+        data, name, truncated = compose_mod.compose(
             blob,
             preset=req.preset,
             focus=req.focus,
@@ -267,8 +267,22 @@ def compose_image(req: ComposeRequest) -> dict[str, Any]:
         "bytes": len(data),
         "censored": len(req.boxes),
         "censor_mode": req.censor_mode,
+        "truncated": truncated,
+        "max_lines": compose_mod.MAX_CAPTION_LINES,
         "content_type": mimetypes.guess_type(name)[0] or "image/jpeg",
     }
+
+
+class CaptionFitRequest(BaseModel):
+    caption: str = ""
+    preset: str = "square"
+
+
+@app.post("/api/caption-fit")
+def caption_fit(req: CaptionFitRequest) -> dict[str, Any]:
+    """実際に使うフォントで測って、解説文が2行に収まるかを返す（入力中の確認用）。"""
+    width = compose_mod.PRESETS.get(req.preset, compose_mod.PRESETS["square"])[0]
+    return compose_mod.measure_caption(req.caption, width)
 
 
 @app.post("/api/record")
@@ -301,5 +315,6 @@ def presets() -> dict[str, Any]:
     return {
         "presets": {k: list(v) for k, v in compose_mod.PRESETS.items()},
         "censor_modes": ["black", "mosaic", "blur"],
-        "font": config.resolve_font() or "",
+        "max_caption_lines": compose_mod.MAX_CAPTION_LINES,
+        "font": config.font_status(),
     }

@@ -25,9 +25,24 @@ IGNORE_ROBOTS = os.environ.get("CPA_IGNORE_ROBOTS", "0") == "1"
 # 取得して実寸を測る画像の上限枚数（多すぎると遅くなる）
 MAX_IMAGE_PROBES = int(os.environ.get("CPA_MAX_IMAGE_PROBES", "24"))
 
-# OS ごとの日本語フォント候補。上から順に存在するものを使う。
-FONT_CANDIDATES = [
-    os.environ.get("CPA_FONT", ""),
+# 画像に焼き込む文字は「けいふぉんと」を使う。
+# 同梱していないので（配布元が Apache License 2.0 なので同梱自体は可能だが、
+# この環境からダウンロードできなかった）、下記のいずれかに置けば自動で使われる。
+FONTS_DIR = BASE_DIR / "assets" / "fonts"
+KEIFONT_NAMES = ("keifont.ttf", "keifont.TTF", "けいふぉんと.ttf")
+
+KEIFONT_CANDIDATES = [
+    *[str(FONTS_DIR / n) for n in KEIFONT_NAMES],
+    # Mac: フォントをダブルクリックして入れた場合
+    *[str(Path.home() / "Library" / "Fonts" / n) for n in KEIFONT_NAMES],
+    *[f"/Library/Fonts/{n}" for n in KEIFONT_NAMES],
+    # Windows
+    *[f"C:/Windows/Fonts/{n}" for n in KEIFONT_NAMES],
+    *[str(Path.home() / "AppData/Local/Microsoft/Windows/Fonts" / n) for n in KEIFONT_NAMES],
+]
+
+# けいふぉんとが見つからないときの代替。文字が出ないよりはマシ、という位置づけ。
+FALLBACK_CANDIDATES = [
     # macOS
     "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
     "/System/Library/Fonts/Hiragino Sans GB.ttc",
@@ -42,10 +57,51 @@ FONT_CANDIDATES = [
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
 ]
 
+KEIFONT_DOWNLOAD_URL = "https://font.sumomo.ne.jp/font_1.html"
+
+
+def find_keifont() -> str | None:
+    """けいふぉんとのパスを返す。無ければ None。"""
+    for path in KEIFONT_CANDIDATES:
+        if Path(path).exists():
+            return path
+    # assets/fonts に別名で置かれた場合の救済（kei を含むフォントファイル）
+    if FONTS_DIR.exists():
+        for path in sorted(FONTS_DIR.iterdir()):
+            if path.suffix.lower() in (".ttf", ".otf", ".ttc") and "kei" in path.stem.lower():
+                return str(path)
+    return None
+
 
 def resolve_font() -> str | None:
-    """使える日本語フォントの絶対パスを返す。無ければ None。"""
-    for path in FONT_CANDIDATES:
-        if path and Path(path).exists():
+    """実際に描画に使うフォントの絶対パス。けいふぉんとを最優先。"""
+    override = os.environ.get("CPA_FONT", "")
+    if override and Path(override).exists():
+        return override
+
+    kei = find_keifont()
+    if kei:
+        return kei
+
+    # assets/fonts に入っている任意の日本語フォント
+    if FONTS_DIR.exists():
+        for path in sorted(FONTS_DIR.iterdir()):
+            if path.suffix.lower() in (".ttf", ".otf", ".ttc"):
+                return str(path)
+
+    for path in FALLBACK_CANDIDATES:
+        if Path(path).exists():
             return path
     return None
+
+
+def font_status() -> dict:
+    """UI に出すフォントの状態。"""
+    path = resolve_font()
+    kei = find_keifont()
+    return {
+        "path": path or "",
+        "is_keifont": bool(path and kei and path == kei),
+        "fonts_dir": str(FONTS_DIR),
+        "download_url": KEIFONT_DOWNLOAD_URL,
+    }

@@ -51,7 +51,22 @@ if [ ! -f ".venv/.installed" ] || [ requirements.txt -nt ".venv/.installed" ]; t
   echo "準備できました"
 fi
 
-# ── 3. 空いているポートを探す ─────────────────
+# ── 3. けいふぉんとの確認 ─────────────────────
+FONT_FOUND=$(python -c 'import sys; sys.path.insert(0, "."); from app import config; print(config.find_keifont() or "")' 2>/dev/null)
+if [ -z "$FONT_FOUND" ]; then
+  echo ""
+  echo "※ けいふぉんとが見つかりません。いまは代替フォントで描画します。"
+  echo "   assets/fonts/ に keifont.ttf を置くと、自動でそちらを使います。"
+  if [ ! -f ".venv/.font_notice" ]; then
+    echo "   配布ページを開きます（次回からは開きません）"
+    open "https://font.sumomo.ne.jp/font_1.html" 2>/dev/null
+    touch ".venv/.font_notice"
+  fi
+else
+  echo "けいふぉんとを使います"
+fi
+
+# ── 4. 空いているポートを探す ─────────────────
 PORT=$(python - <<'PY'
 import socket
 for p in range(8000, 8050):
@@ -70,7 +85,7 @@ PY
 
 URL="http://127.0.0.1:$PORT"
 
-# ── 4. 起動して、ブラウザを開く ───────────────
+# ── 5. 起動して、ブラウザを開く ───────────────
 echo ""
 echo "起動しています…  $URL"
 echo ""

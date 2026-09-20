@@ -88,8 +88,9 @@
   <section id="secBand" hidden>
     <h2><span class="num">5</span>黒帯の解説文 <span class="req">必須</span></h2>
     <div>
-      <label for="caption">画像の下に黒帯で入る文（空だと生成できません）</label>
+      <label for="caption">画像の下に黒帯で入る文（空だと生成できません・<b>最大2行</b>）</label>
       <input type="text" id="caption" placeholder="この場面、原作だともっとヤバいです">
+      <div class="hint" id="capStat" style="margin-top:6px">&nbsp;</div>
     </div>
     <div class="row" style="margin-top:10px">
       <div><label for="badge">左上バッジ（任意）</label><input type="text" id="badge" placeholder="ヤニねこ 12話"></div>
@@ -218,7 +219,15 @@ async function refreshSlots() {
 (async () => {
   const { presets, font } = await api('/api/presets');
   $('#preset').innerHTML = Object.entries(presets).map(([k,v]) => `<option value="${k}">${k} (${v[0]}×${v[1]})</option>`).join('');
-  if (!font) flash('日本語フォントが見つかりません。画像の文字が豆腐になります（CPA_FONT を設定してください）', 'warn');
+  if (!font.path) {
+    flash('日本語フォントが1つも見つかりません。画像の文字が豆腐（□）になります。', 'err');
+  } else if (!font.is_keifont) {
+    $('#msg').innerHTML = `<div class="msg warn">
+      <b>けいふぉんとが見つかりません。</b>いまは代替フォント（<code>${font.path.split('/').pop()}</code>）で描画しています。<br>
+      <a href="${font.download_url}" target="_blank" rel="noopener">配布元</a> から keifont.ttf をダウンロードし、
+      <code>${font.fonts_dir}</code> に置くか、ダブルクリックで Mac にインストールしてから、このページを再読み込みしてください。
+    </div>`;
+  }
 })();
 
 function resetEditor() {
@@ -313,6 +322,32 @@ window.addEventListener('mouseup', e => {
 window.addEventListener('resize', () => { if (ed.ready) drawBoxes(); });
 
 // ── 5. 黒帯＋生成 ───────────────────────────
+let capTimer = null;
+$('#caption').addEventListener('input', () => {
+  clearTimeout(capTimer);
+  capTimer = setTimeout(checkCaption, 250);
+});
+$('#preset').addEventListener('change', checkCaption);
+
+async function checkCaption() {
+  const caption = $('#caption').value;
+  const el = $('#capStat');
+  if (!caption.trim()) { el.innerHTML = '&nbsp;'; el.style.color = ''; return; }
+  try {
+    const r = await api('/api/caption-fit', { method:'POST', body: JSON.stringify({ caption, preset: $('#preset').value }) });
+    const n = caption.length;
+    if (r.truncated) {
+      el.style.color = '#fbbf24';
+      el.innerHTML = `${n} 文字・<b>長すぎます</b>。2行に収まらないので末尾が「…」で切られます`;
+    } else if (r.shrunk) {
+      el.style.color = '';
+      el.textContent = `${n} 文字・${r.lines} 行（収めるため文字を少し小さくします）`;
+    } else {
+      el.style.color = '';
+      el.textContent = `${n} 文字・${r.lines} 行`;
+    }
+  } catch (e) { el.innerHTML = '&nbsp;'; }
+}
 $('#composeBtn').addEventListener('click', async () => {
   if (!state.selected) return flash('先に画像を選んでください', 'err');
   if (!ed.ready) return flash('先に「トリミングして検出」を押してください', 'err');
@@ -325,6 +360,7 @@ $('#composeBtn').addEventListener('click', async () => {
       caption, badge: $('#badge').value, boxes: ed.boxes, censor_mode: $('#censorMode').value }) });
     state.composed = data;
     $('#previewBox').innerHTML = `
+      ${data.truncated ? `<div class="msg warn">解説文が ${data.max_lines} 行に収まらなかったので、末尾を「…」で切りました。短くすると全部入ります。</div>` : ''}
       <img class="preview" src="${data.url}?t=${Date.now()}" alt="投稿画像">
       <p class="hint"><a href="${data.url}" download>${data.file}</a> を保存（${Math.round(data.bytes/1024)} KB）・黒モザイク ${data.censored} 箇所 ・ output/ にも出力済み</p>`;
     $('#secRecord').hidden = false;
