@@ -7,9 +7,10 @@ YouTube Studio に貼る。最後の「投稿する」だけは人間の仕事�
 from __future__ import annotations
 
 import mimetypes
+from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -188,6 +189,109 @@ def analyze(req: AnalyzeRequest) -> dict[str, Any]:
         },
         "duplicate_warning": db.source_used(meta.final_url or meta.url),
     }
+
+
+def _register_single(cand: ImageCandidate, meta: PageMeta) -> dict[str, Any]:
+    """1枚だけの画像を、解析結果と同じ形で扱えるように登録する。
+
+    ページから取れない画像（JS 描画のサイト、手元のファイル）でも、
+    以降のトリミング・黒モザイク・黒帯・文面生成をそのまま使えるようにする。
+    """
+    analysis_id = imagefetch.cache_id(meta.final_url or cand.url)
+    _analyses[analysis_id] = {"meta": meta, "candidates": [cand]}
+    slots = extract.extract_slots(meta, cand, "")
+    return {
+        "analysis_id": analysis_id,
+        "meta": {
+            "title": meta.title,
+            "og_title": meta.og_title,
+            "og_description": "",
+            "site_name": meta.site_name,
+            "final_url": meta.final_url,
+        },
+        "slots": _slots_json(slots),
+        "candidates": [_candidate_json(cand)],
+        "excluded": [],
+        "dropped": 0,
+        "diagnostics": {
+            "mode": "single",
+            "label": "手元のファイル" if cand.source == "upload" else "直接指定した画像URL",
+            "found_in_html": 1,
+            "downloaded": 1,
+            "kept": 1,
+            "excluded": 0,
+        },
+        "duplicate_warning": db.image_used(cand.url) if cand.url else None,
+    }
+
+
+@app.post("/api/upload")
+async def upload_image(file: UploadFile = File(...)) -> dict[str, Any]:
+    """手元の画像ファイルを読み込む。ページから画像が取れないときの入口。"""
+    import hashlib
+    import io
+
+    from PIL import Image
+
+    blob = await file.read()
+    if not blob:
+        raise HTTPException(status_code=400, detail="ファイルが空です。")
+    if len(blob) > imagefetch.MAX_BYTES:
+        raise HTTPException(status_code=400, detail="ファイルが大きすぎます（12MB まで）。")
+
+    try:
+        with Image.open(io.BytesIO(blob)) as im:
+            width, height = im.size
+    except Exception as exc:
+        raise HTTPException(
+            status_code=400, detail=f"画像として読めませんでした: {exc}"
+        ) from exc
+
+    cid = hashlib.sha1(blob).hexdigest()[:16]
+    imagefetch.cache_path(cid).write_bytes(blob)
+
+    name = file.filename or "uploaded"
+    cand = ImageCandidate(
+        url=f"file://{name}",
+        source="upload",
+        alt=Path(name).stem,
+        width=width,
+        height=height,
+        cache_id=cid,
+        score=100.0,
+        reasons=[f"手元のファイル ({width}x{height})"],
+    )
+    meta = PageMeta(url="", final_url="", title=Path(name).stem, path_segments=[])
+    return _register_single(cand, meta)
+
+
+class ImageUrlRequest(BaseModel):
+    url: str
+    referer: str = ""
+
+
+@app.post("/api/image-url")
+def add_image_url(req: ImageUrlRequest) -> dict[str, Any]:
+    """画像の URL を直接受け取る。ページ解析では拾えない画像の入口。"""
+    url = req.url.strip()
+    if not url.lower().startswith(("http://", "https://")):
+        raise HTTPException(status_code=400, detail="http(s) の画像 URL を貼ってください。")
+
+    cand = ImageCandidate(url=url, source="direct")
+    imagefetch.probe(cand, referer=req.referer.strip())
+    if not imagefetch.cache_path(cand.cache_id).exists():
+        raise HTTPException(
+            status_code=400,
+            detail="この画像をダウンロードできませんでした。サイトが外部からの取得を拒否している可能性があります。"
+            "画像を手元に保存して、ファイルとして読み込んでください。",
+        )
+    if cand.width is None:
+        raise HTTPException(status_code=400, detail="画像として読めませんでした。")
+
+    cand.score = 100.0
+    cand.reasons = [f"直接指定 ({cand.width}x{cand.height})"]
+    meta = PageMeta(url=url, final_url=url, title="", path_segments=[])
+    return _register_single(cand, meta)
 
 
 @app.get("/img/{cache_id}")

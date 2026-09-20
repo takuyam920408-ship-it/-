@@ -82,3 +82,9 @@ a { color: var(--accent); }
 }
 .badge.drop { background: #7a2a2a; color: #ffd7d7; }
 .why { margin-top: 5px; font-size: 10px; color: var(--muted); line-height: 1.45; }
+
+/* ページから画像が取れないときの代替入力 */
+details#altInput { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+details#altInput summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details#altInput[open] summary { margin-bottom: 10px; color: var(--fg); }
+.alt-body input[type=file] { padding: 7px 9px; font-size: 12px; }

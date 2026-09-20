@@ -28,7 +28,26 @@
       </div>
       <button id="analyze">解析</button>
     </div>
-    <p class="hint">robots.txt を尊重します。取得できないサイトは手動保存に切り替えてください。</p>
+    <p class="hint">robots.txt を尊重します。</p>
+
+    <details id="altInput" style="margin-top:14px">
+      <summary>ページから画像が取れないとき（JavaScript で描画するサイトなど）</summary>
+      <div class="alt-body">
+        <div class="row" style="align-items:flex-end">
+          <div style="flex:2 1 260px">
+            <label for="fileInput">画像ファイルを読み込む</label>
+            <input type="file" id="fileInput" accept="image/*">
+          </div>
+          <div style="flex:3 1 300px">
+            <label for="directUrl">または画像URLを直接貼る（右クリック →「イメージのアドレスをコピー」）</label>
+            <input type="url" id="directUrl" placeholder="https://example.com/img/scene.jpg">
+          </div>
+          <button id="directBtn" class="ghost" style="flex:0 0 auto">読み込む</button>
+        </div>
+        <p class="hint">この場合も、トリミング・黒モザイク・黒帯・文面生成はそのまま使えます。
+        作品名や話数は画面3で手入力してください。</p>
+      </div>
+    </details>
   </section>
 
   <!-- 2 -->
@@ -151,20 +170,7 @@ $('#analyze').addEventListener('click', async () => {
   $('#msg').innerHTML = '<div class="msg">解析中… 画像をダウンロードして実寸を測っています</div>';
   try {
     const data = await api('/api/analyze', { method:'POST', body: JSON.stringify({ url, video_url: $('#videoUrl').value.trim() }) });
-    state.analysisId = data.analysis_id;
-    // 除外分も後ろに持っておく（「やっぱりこれを使う」と選べるように）
-    state.candidates = data.candidates.concat(data.excluded || []);
-    state.keptCount = data.candidates.length;
-    state.showExcluded = data.candidates.length === 0;
-    state.selected = null; state.composed = null;
-    state.lastAnalyze = data;
-    renderCards(data); renderSlots(data.slots);
-    ['#secImages','#secSlots','#secCensor','#secDrafts'].forEach(s => $(s).hidden = false);
-    $('#secBand').hidden = true; $('#secRecord').hidden = true;
-    resetEditor();
-    if (data.duplicate_warning) flash(`この URL は ${data.duplicate_warning.created_at} に使用済みです（ネタ被り注意）`, 'warn');
-    else $('#msg').innerHTML = '';
-    if (data.candidates.length) selectCard(0);
+    applyAnalysis(data);
   } catch (e) { flash(e.message, 'err'); }
   finally { $('#analyze').disabled = false; }
 });
@@ -191,13 +197,60 @@ function diagnose(d) {
   </div>`;
 }
 
+function applyAnalysis(data) {
+  state.analysisId = data.analysis_id;
+  // 除外分も後ろに持っておく（「やっぱりこれを使う」と選べるように）
+  state.candidates = data.candidates.concat(data.excluded || []);
+  state.keptCount = data.candidates.length;
+  state.showExcluded = data.candidates.length === 0;
+  state.selected = null; state.composed = null;
+  state.lastAnalyze = data;
+  renderCards(data); renderSlots(data.slots);
+  ['#secImages','#secSlots','#secCensor','#secDrafts'].forEach(s => $(s).hidden = false);
+  $('#secBand').hidden = true; $('#secRecord').hidden = true;
+  resetEditor();
+  if (data.duplicate_warning) flash(`この画像は ${data.duplicate_warning.created_at} に使用済みです（ネタ被り注意）`, 'warn');
+  else $('#msg').innerHTML = '';
+  if (state.candidates.length) selectCard(0);
+}
+
+// --- ページから取れないとき: ファイル / 画像URL の直接読み込み ---
+$('#fileInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  $('#msg').innerHTML = '<div class="msg">読み込み中…</div>';
+  try {
+    const res = await fetch('/api/upload', { method:'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || '読み込めませんでした');
+    applyAnalysis(data);
+  } catch (err) { flash(err.message, 'err'); }
+  finally { e.target.value = ''; }
+});
+
+$('#directBtn').addEventListener('click', async () => {
+  const url = $('#directUrl').value.trim();
+  if (!url) return flash('画像URLを入れるか、ファイルを選んでください', 'err');
+  $('#msg').innerHTML = '<div class="msg">読み込み中…</div>';
+  try {
+    applyAnalysis(await api('/api/image-url', { method:'POST', body: JSON.stringify({
+      url, referer: $('#url').value.trim() }) }));
+  } catch (e) { flash(e.message, 'err'); }
+});
+
 function renderCards(data) {
   const d = data.diagnostics || {};
+  if (d.mode === 'single') {
+    $('#imgStat').innerHTML = `${d.label}を読み込みました。このまま画面4に進めます。`;
+  } else {
   $('#imgStat').innerHTML =
     `HTML から ${d.found_in_html} 枚見つかり、${d.downloaded} 枚ダウンロード成功 → ` +
     `<b>採用 ${d.kept} 枚</b> / 除外 ${d.excluded} 枚` +
     (d.excluded ? ` <button class="ghost" id="toggleExcluded" style="padding:2px 10px;font-size:12px;margin-left:8px">` +
       `${state.showExcluded ? '除外分を隠す' : `除外された ${d.excluded} 枚も見る`}</button>` : '');
+  }
 
   const box = $('#cards');
   const list = state.showExcluded ? state.candidates : state.candidates.slice(0, state.keptCount);
