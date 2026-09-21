@@ -76,6 +76,14 @@ if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ..
       AFTER=$(git rev-parse HEAD 2>/dev/null)
       if [ "$BEFORE" != "$AFTER" ]; then
         echo "新しい版に更新しました"
+        # bash はスクリプトを読みながら実行するため、更新で自分自身が
+        # 書き換わると、途中から壊れた内容で動いてしまう。
+        # 新しい内容で読み直す（1回だけ。無限に繰り返さないよう印を付ける）。
+        if [ "${CPA_REEXEC:-0}" != "1" ]; then
+          echo "新しい内容で起動し直します…"
+          echo ""
+          CPA_REEXEC=1 exec "$0" "$@"
+        fi
       else
         echo "すでに最新です"
       fi
