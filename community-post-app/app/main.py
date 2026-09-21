@@ -359,9 +359,20 @@ def dmm_status() -> dict[str, Any]:
 
 @app.post("/api/dmm/credentials")
 def dmm_save_credentials(req: DmmCredentialsRequest) -> dict[str, Any]:
-    if not req.api_id.strip() or not req.affiliate_id.strip():
-        raise HTTPException(status_code=400, detail="API ID とアフィリエイト ID の両方を入れてください。")
-    creds = dmm_api.save_credentials(req.api_id, req.affiliate_id)
+    # 片方だけ直したい場合に備え、空欄は「変更しない」と解釈して既存値を残す
+    current = dmm_api.load_credentials()
+    api_id = req.api_id.strip() or current.api_id
+    affiliate_id = req.affiliate_id.strip() or current.affiliate_id
+    if not api_id or not affiliate_id:
+        missing = []
+        if not api_id:
+            missing.append("API ID")
+        if not affiliate_id:
+            missing.append("アフィリエイト ID")
+        raise HTTPException(
+            status_code=400, detail=f"{' と '.join(missing)} が未設定です。入力してください。"
+        )
+    creds = dmm_api.save_credentials(api_id, affiliate_id)
     return {
         "ready": creds.ready,
         "affiliate_id": creds.affiliate_id,
