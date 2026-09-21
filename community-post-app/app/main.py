@@ -407,7 +407,10 @@ def dmm_search(req: DmmSearchRequest) -> dict[str, Any]:
             sort=req.sort,
         )
     except dmm_api.DmmApiError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        # 生の応答まで返す。原因の特定を1往復で終わらせるため。
+        raise HTTPException(
+            status_code=400, detail={"message": str(exc), "debug": exc.debug}
+        ) from exc
 
     result = raw.get("result") or {}
     return {
@@ -425,7 +428,9 @@ def dmm_floors(site: str = "FANZA") -> dict[str, Any]:
     try:
         rows, _ = dmm_api.floors(site)
     except dmm_api.DmmApiError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=400, detail={"message": str(exc), "debug": exc.debug}
+        ) from exc
     return {"floors": rows}
 
 

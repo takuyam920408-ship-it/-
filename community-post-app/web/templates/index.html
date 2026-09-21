@@ -213,7 +213,13 @@ function flash(text, kind='ok') {
 async function api(path, opts={}) {
   const res = await fetch(path, { headers:{'Content-Type':'application/json'}, ...opts });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || `${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    const d = data.detail;
+    // detail が {message, debug} で返ることがある（DMM API のエラー）
+    const err = new Error((d && d.message) || d || `${res.status} ${res.statusText}`);
+    if (d && d.debug) err.debug = d.debug;
+    throw err;
+  }
   return data;
 }
 
@@ -363,7 +369,7 @@ $('#dmmSearchBtn').addEventListener('click', async () => {
       service: $('#dmmService').value, floor: $('#dmmFloor').value,
       sort: $('#dmmSort').value, hits: parseInt($('#dmmHits').value || '10', 10) }) });
     renderDmm(data);
-  } catch (e) { $('#dmmResult').innerHTML = `<div class="msg err">${e.message}</div>`; }
+  } catch (e) { $('#dmmResult').innerHTML = dmmErrorBlock(e); }
 });
 
 $('#dmmFloorBtn').addEventListener('click', async () => {
@@ -375,8 +381,21 @@ $('#dmmFloorBtn').addEventListener('click', async () => {
         floors.map(f => `<tr><td><code>${f.service}</code></td><td><code>${f.floor}</code></td><td>${f.floor_name}</td></tr>`).join('') +
         `</tbody></table><p class="hint">使いたい行の service / floor を上の欄に入れて検索してください。</p>`
       : '<p class="hint">floor が取得できませんでした。</p>';
-  } catch (e) { $('#dmmResult').innerHTML = `<div class="msg err">${e.message}</div>`; }
+  } catch (e) { $('#dmmResult').innerHTML = dmmErrorBlock(e); }
 });
+
+function dmmErrorBlock(e) {
+  // API のエラーは、投げたパラメータと生の応答まで一緒に出す。
+  // これを貼ってもらえれば、原因が一度で分かる。
+  const esc = t => String(t).replace(/</g, '&lt;');
+  let out = `<div class="msg err">${esc(e.message)}</div>`;
+  if (e.debug) {
+    out += `<details open style="margin-top:8px">
+      <summary class="hint">送った内容と API の生の応答（これを貼ってもらえれば原因が分かります）</summary>
+      <pre class="raw">${esc(JSON.stringify(e.debug, null, 2))}</pre></details>`;
+  }
+  return out;
+}
 
 function renderDmm(data) {
   if (!data.items.length) {

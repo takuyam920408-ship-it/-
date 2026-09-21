@@ -28,7 +28,15 @@ CREDENTIALS_PATH = config.DATA_DIR / "dmm_api.json"
 
 
 class DmmApiError(RuntimeError):
-    """API 呼び出しに失敗したときに UI へ返すエラー。"""
+    """API 呼び出しに失敗したときに UI へ返すエラー。
+
+    debug には、実際に投げたパラメータ（api_id は伏せる）と API の生の応答を
+    入れる。原因の特定を1往復で終わらせるため、UI でそのまま表示する。
+    """
+
+    def __init__(self, message: str, debug: dict | None = None) -> None:
+        super().__init__(message)
+        self.debug = debug or {}
 
 
 # API で使えるアフィリエイトID は末尾が 990〜999 のものだけ。
@@ -214,6 +222,11 @@ def _call(url: str, params: dict) -> dict:
         "output": "json",
         **{k: v for k, v in params.items() if v not in (None, "")},
     }
+    # 画面に出す用。api_id は伏せる。
+    shown = dict(query)
+    shown["api_id"] = f"（設定済み・{len(creds.api_id)}文字）" if creds.api_id else "（未設定）"
+    debug = {"endpoint": url, "params": shown}
+
     try:
         resp = httpx.get(
             url,
@@ -222,14 +235,16 @@ def _call(url: str, params: dict) -> dict:
             headers={"User-Agent": config.USER_AGENT},
         )
     except httpx.HTTPError as exc:
-        raise DmmApiError(f"API に接続できませんでした: {exc}") from exc
+        raise DmmApiError(f"API に接続できませんでした: {exc}", debug) from exc
+
+    debug["http_status"] = resp.status_code
+    debug["response"] = resp.text[:1500]
 
     try:
         data = resp.json()
     except ValueError as exc:
         raise DmmApiError(
-            f"API の応答を JSON として読めませんでした（HTTP {resp.status_code}）: "
-            f"{resp.text[:200]}"
+            f"API の応答を JSON として読めませんでした（HTTP {resp.status_code}）。", debug
         ) from exc
 
     result = data.get("result") or {}
@@ -244,7 +259,7 @@ def _call(url: str, params: dict) -> dict:
                 "API 用ではありません。API で使えるのは末尾が 990〜999 の ID だけです。"
                 "DMMアフィリエイトの管理画面で API 用の ID を発行し、入れ直してください。"
             )
-        raise DmmApiError(f"API がエラーを返しました（status={status}）: {message}{hint}")
+        raise DmmApiError(f"API がエラーを返しました（status={status}）: {message}{hint}", debug)
     return data
 
 
