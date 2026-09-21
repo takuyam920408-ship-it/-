@@ -434,6 +434,16 @@ def dmm_floors(site: str = "FANZA") -> dict[str, Any]:
     return {"floors": rows}
 
 
+@app.post("/api/dmm/diagnose")
+def dmm_diagnose(req: DmmSearchRequest) -> dict[str, Any]:
+    """認証情報の問題か、検索条件の問題かを切り分ける。"""
+    try:
+        checks = dmm_api.diagnose(cid=dmm_api.extract_cid(req.cid), site=req.site)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail={"message": str(exc), "debug": {}}) from exc
+    return {"checks": checks}
+
+
 @app.post("/api/dmm/pick")
 def dmm_pick(req: DmmPickRequest) -> dict[str, Any]:
     """選んだサンプル画像を1枚取り込み、以降の加工フローに流す。"""

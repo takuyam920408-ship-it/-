@@ -297,6 +297,61 @@ def search(
     return [_item_to_dict(r) for r in raw_items if isinstance(r, dict)], data
 
 
+def diagnose(cid: str = "", site: str = "FANZA") -> list[dict]:
+    """どこが原因かを切り分ける。呼び出しを段階的に試し、結果を並べて返す。
+
+    FloorList は api_id と affiliate_id しか要らないので、これが通るかどうかで
+    「認証情報の問題」と「検索条件の問題」を分けられる。
+    """
+    creds = load_credentials()
+    checks: list[dict] = []
+
+    def run(label: str, url: str, params: dict) -> bool:
+        try:
+            data = _call(url, params)
+        except DmmApiError as exc:
+            body = (exc.debug or {}).get("response", "")
+            checks.append({
+                "label": label,
+                "ok": False,
+                "detail": str(exc).split("\n")[0][:200],
+                "response": body[:400],
+                "params": {k: v for k, v in params.items() if v not in (None, "")},
+            })
+            return False
+        result = data.get("result") or {}
+        checks.append({
+            "label": label,
+            "ok": True,
+            "detail": f"成功（件数 {result.get('result_count', '?')} / 全 {result.get('total_count', '?')}）",
+            "params": {k: v for k, v in params.items() if v not in (None, "")},
+        })
+        return True
+
+    checks.append({
+        "label": "アフィリエイトID の形式",
+        "ok": creds.affiliate_id_valid,
+        "detail": (
+            f"{creds.affiliate_id} は API 用（末尾 990〜999）"
+            if creds.affiliate_id_valid
+            else f"{creds.affiliate_id} は API 用ではありません（末尾 990〜999 が必要）"
+        ),
+    })
+
+    # 1. 認証情報だけで通るか（検索条件の影響を受けない呼び出し）
+    creds_ok = run("認証情報の確認（FloorList）", FLOOR_LIST, {})
+
+    if creds_ok:
+        # 2. 条件を足しながら、どこで落ちるかを見る
+        run("検索：サイト指定のみ", ITEM_LIST, {"site": site, "hits": 1})
+        run("検索：service/floor 指定", ITEM_LIST,
+            {"site": site, "service": "digital", "floor": "videoa", "hits": 1})
+        if cid:
+            run("検索：商品ID 指定", ITEM_LIST, {"site": site, "cid": cid, "hits": 1})
+
+    return checks
+
+
 def floors(site: str = "FANZA") -> tuple[list[dict], dict]:
     """service / floor の一覧を取る。指定値が分からないときの確認用。"""
     data = _call(FLOOR_LIST, {})

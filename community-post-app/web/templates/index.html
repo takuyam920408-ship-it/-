@@ -92,6 +92,7 @@
             <input type="text" id="dmmHits" value="10">
           </div>
           <button id="dmmFloorBtn" class="ghost" style="flex:0 0 auto">floor 一覧</button>
+          <button id="dmmDiagBtn" class="ghost" style="flex:0 0 auto">接続テスト</button>
         </div>
 
         <p class="hint">商品ページの URL をそのまま貼れば、商品ID は自動で読み取ります。<br>
@@ -382,6 +383,25 @@ $('#dmmFloorBtn').addEventListener('click', async () => {
         `</tbody></table><p class="hint">使いたい行の service / floor を上の欄に入れて検索してください。</p>`
       : '<p class="hint">floor が取得できませんでした。</p>';
   } catch (e) { $('#dmmResult').innerHTML = dmmErrorBlock(e); }
+});
+
+$('#dmmDiagBtn').addEventListener('click', async () => {
+  const out = $('#dmmResult');
+  out.innerHTML = '<p class="hint">確認しています…</p>';
+  try {
+    const { checks } = await api('/api/dmm/diagnose', { method:'POST', body: JSON.stringify({
+      cid: $('#dmmCid').value, site: $('#dmmSite').value }) });
+    const esc = t => String(t).replace(/</g, '&lt;');
+    out.innerHTML = `<div class="msg">接続テストの結果です。<b>これをそのまま貼ってください。</b></div>
+      <table><thead><tr><th>確認項目</th><th>結果</th><th>内容</th></tr></thead><tbody>` +
+      checks.map(c => `<tr>
+        <td>${esc(c.label)}</td>
+        <td style="color:${c.ok ? 'var(--ok)' : 'var(--accent)'}">${c.ok ? 'OK' : 'NG'}</td>
+        <td>${esc(c.detail)}${c.response ? `<div class="why">応答: ${esc(c.response)}</div>` : ''}</td>
+      </tr>`).join('') + '</tbody></table>' +
+      `<p class="hint">「認証情報の確認」が NG なら API ID かアフィリエイトID が違います。
+       そこが OK で下だけ NG なら、検索条件（サイト／service／floor／商品ID）の問題です。</p>`;
+  } catch (e) { out.innerHTML = dmmErrorBlock(e); }
 });
 
 function dmmErrorBlock(e) {
