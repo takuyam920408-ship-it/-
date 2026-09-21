@@ -135,11 +135,29 @@ URL="http://127.0.0.1:$PORT"
 echo ""
 echo "起動しています…  $URL"
 echo ""
-echo "  ブラウザが自動で開きます。"
-echo "  終わるときは、この黒い窓で  control + C  を押してください。"
+echo "  準備ができ次第、ブラウザが自動で開きます（数秒〜十数秒かかります）。"
+echo "  それまで、この窓は触らずにお待ちください。"
+echo ""
+echo "  ※ control + C はアプリを終了するキーです。使い終わるまで押さないでください。"
 echo ""
 
-( sleep 3; open "$URL" 2>/dev/null ) &
+# サーバーが実際に応答するのを待ってからブラウザを開く。
+# 決め打ちで待つと、起動が遅い環境でまだ準備できていないところに
+# ブラウザが開いてしまい「接続できません」に見える。
+(
+  for _ in $(seq 1 60); do
+    sleep 1
+    if curl -s -o /dev/null --max-time 2 "$URL" 2>/dev/null; then
+      echo ""
+      echo "準備できました。ブラウザを開きます → $URL"
+      open "$URL" 2>/dev/null
+      exit 0
+    fi
+  done
+  echo ""
+  echo "ブラウザを自動で開けませんでした。次のアドレスを手で開いてください:"
+  echo "  $URL"
+) &
 
 python -m uvicorn app.main:app --host 127.0.0.1 --port "$PORT"
 
