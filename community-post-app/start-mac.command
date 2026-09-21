@@ -33,6 +33,28 @@ fi
 PYV=$(python3 -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)
 echo "Python $PYV を使います"
 
+# ── 1.5 更新の取り込み ────────────────────────
+# 毎回ターミナルで git pull させなくて済むように、ここで自動更新する。
+# 自分で編集したファイルがあるときは触らない。失敗しても起動は続ける。
+if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ../.git ]; then
+  if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+    echo "自分で編集したファイルがあるため、更新の取り込みは飛ばします"
+  else
+    echo "更新を確認しています…"
+    BEFORE=$(git rev-parse HEAD 2>/dev/null)
+    if git pull --quiet --ff-only 2>/dev/null; then
+      AFTER=$(git rev-parse HEAD 2>/dev/null)
+      if [ "$BEFORE" != "$AFTER" ]; then
+        echo "新しい版に更新しました"
+      else
+        echo "すでに最新です"
+      fi
+    else
+      echo "（更新を取得できませんでした。そのまま起動します）"
+    fi
+  fi
+fi
+
 # ── 2. 初回だけ準備（専用の置き場を作って部品を入れる）──
 if [ ! -d ".venv" ]; then
   echo ""
