@@ -202,8 +202,12 @@ const ed = { boxes:[], natW:0, natH:0, drag:null, ready:false };
 window.ed = ed;  // デバッグ用に露出（枠の状態を開発者ツールから見られる）
 
 function flash(text, kind='ok') {
-  $('#msg').innerHTML = `<div class="msg ${kind}">${text}</div>`;
-  if (kind === 'ok') setTimeout(() => { $('#msg').innerHTML = ''; }, 4000);
+  const box = $('#msg');
+  box.innerHTML = `<div class="msg ${kind}">${text}</div>`;
+  // ページ下部を操作しているとメッセージが画面外に出て気づけないため、
+  // エラーと警告は必ず見える位置まで送る。
+  if (kind !== 'ok') box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (kind === 'ok') setTimeout(() => { box.innerHTML = ''; }, 4000);
 }
 
 async function api(path, opts={}) {
@@ -292,6 +296,21 @@ $('#directBtn').addEventListener('click', async () => {
 });
 
 // --- DMM アフィリエイト API（公式）からの取り込み ---
+async function saveDmmCreds() {
+  // 結果は必ずボタンのすぐ下に出す。上部のメッセージ欄だけだと、
+  // 下にスクロールした状態では「押しても何も起きない」ように見えるため。
+  const out = $('#dmmResult');
+  out.innerHTML = '<p class="hint">保存しています…</p>';
+  try {
+    await api('/api/dmm/credentials', { method:'POST', body: JSON.stringify({
+      api_id: $('#dmmApiId').value, affiliate_id: $('#dmmAffId').value }) });
+    out.innerHTML = '<div class="msg ok">保存しました。「検索」を押してください。</div>';
+    await dmmRefreshStatus();
+  } catch (e) {
+    out.innerHTML = `<div class="msg err">保存できませんでした: ${e.message}</div>`;
+  }
+}
+
 async function dmmRefreshStatus() {
   const st = await api('/api/dmm/status');
   const badId = st.ready && !st.affiliate_id_valid;
@@ -318,15 +337,7 @@ async function dmmRefreshStatus() {
         <div class="hint" style="margin-top:6px">保存先: <code>${st.credentials_path}</code>（この PC の中だけ。git には入りません）</div>
       </div>`;
   const save = $('#dmmSaveCreds');
-  if (save) save.addEventListener('click', async () => {
-    try {
-      await api('/api/dmm/credentials', { method:'POST', body: JSON.stringify({
-        api_id: $('#dmmApiId').value, affiliate_id: $('#dmmAffId').value }) });
-      flash('認証情報を保存しました', 'ok');
-      $('#dmmResult').innerHTML = '';   // 古いエラー表示を消す
-      dmmRefreshStatus();
-    } catch (e) { flash(e.message, 'err'); }
-  });
+  if (save) save.addEventListener('click', () => saveDmmCreds());
   // 「変更」は入力欄を出し直すだけ。押した時点では保存済みの値に触らない。
   const edit = $('#dmmEdit');
   if (edit) edit.addEventListener('click', () => {
@@ -338,15 +349,7 @@ async function dmmRefreshStatus() {
         <button class="ghost" id="dmmSaveCreds2" style="flex:0 0 auto">保存</button>
         <button class="ghost" id="dmmCancelEdit" style="flex:0 0 auto">やめる</button>
       </div>`;
-    $('#dmmSaveCreds2').addEventListener('click', async () => {
-      try {
-        await api('/api/dmm/credentials', { method:'POST', body: JSON.stringify({
-          api_id: $('#dmmApiId').value, affiliate_id: $('#dmmAffId').value }) });
-        flash('認証情報を更新しました', 'ok');
-        $('#dmmResult').innerHTML = '';   // 古いエラー表示を消す
-        dmmRefreshStatus();
-      } catch (e) { flash(e.message, 'err'); }
-    });
+    $('#dmmSaveCreds2').addEventListener('click', () => saveDmmCreds());
     $('#dmmCancelEdit').addEventListener('click', () => dmmRefreshStatus());
   });
 }
