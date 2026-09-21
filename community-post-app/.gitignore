@@ -6,3 +6,9 @@ data/history.db
 .venv/
 data/dmm_api.json
 start-log.txt
+
+# 各自でダウンロードするフォント本体（README の置き場）
+assets/fonts/*.ttf
+assets/fonts/*.otf
+assets/fonts/*.ttc
+assets/fonts/*.TTF

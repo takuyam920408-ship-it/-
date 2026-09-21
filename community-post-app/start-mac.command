@@ -46,8 +46,9 @@ echo "Python $PYV を使います"
 # 毎回ターミナルで git pull させなくて済むように、ここで自動更新する。
 # 自分で編集したファイルがあるときは触らない。失敗しても起動は続ける。
 if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ../.git ]; then
-  if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
-    echo "自分で編集したファイルがあるため、更新の取り込みは飛ばします"
+  # --untracked-files=no: 置いただけのファイル（フォント等）は編集とみなさない
+  if [ -n "$(git status --porcelain --untracked-files=no 2>/dev/null)" ]; then
+    echo "追跡中のファイルを編集しているため、更新の取り込みは飛ばします"
   else
     echo "更新を確認しています…"
     BEFORE=$(git rev-parse HEAD 2>/dev/null)
