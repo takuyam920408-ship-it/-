@@ -31,6 +31,16 @@ class DmmApiError(RuntimeError):
     """API 呼び出しに失敗したときに UI へ返すエラー。"""
 
 
+# API で使えるアフィリエイトID は末尾が 990〜999 のものだけ。
+# 通常のサイト用 ID（-001 など）を渡すと API は 400 を返す。
+AFFILIATE_ID_PATTERN = re.compile(r"-(\d{3})$")
+
+
+def affiliate_id_ok(affiliate_id: str) -> bool:
+    m = AFFILIATE_ID_PATTERN.search((affiliate_id or "").strip())
+    return bool(m and 990 <= int(m.group(1)) <= 999)
+
+
 @dataclass
 class Credentials:
     api_id: str = ""
@@ -39,6 +49,10 @@ class Credentials:
     @property
     def ready(self) -> bool:
         return bool(self.api_id and self.affiliate_id)
+
+    @property
+    def affiliate_id_valid(self) -> bool:
+        return affiliate_id_ok(self.affiliate_id)
 
 
 def load_credentials() -> Credentials:
@@ -223,7 +237,14 @@ def _call(url: str, params: dict) -> dict:
     # DMM は HTTP 200 のまま result.status にエラーを入れてくることがある
     if resp.status_code >= 400 or (status not in (None, 200, "200")):
         message = result.get("message") or data.get("message") or resp.text[:200]
-        raise DmmApiError(f"API がエラーを返しました（status={status}）: {message}")
+        hint = ""
+        if not affiliate_id_ok(creds.affiliate_id):
+            hint = (
+                f"\n\n考えられる原因: アフィリエイトID「{creds.affiliate_id}」は "
+                "API 用ではありません。API で使えるのは末尾が 990〜999 の ID だけです。"
+                "DMMアフィリエイトの管理画面で API 用の ID を発行し、入れ直してください。"
+            )
+        raise DmmApiError(f"API がエラーを返しました（status={status}）: {message}{hint}")
     return data
 
 

@@ -351,6 +351,8 @@ def dmm_status() -> dict[str, Any]:
         "ready": creds.ready,
         "api_id_set": bool(creds.api_id),
         "affiliate_id": creds.affiliate_id,
+        # API で使えるのは末尾 990〜999 の ID だけ。違うと API が 400 を返す
+        "affiliate_id_valid": creds.affiliate_id_valid,
         "credentials_path": str(dmm_api.CREDENTIALS_PATH),
     }
 
@@ -360,7 +362,11 @@ def dmm_save_credentials(req: DmmCredentialsRequest) -> dict[str, Any]:
     if not req.api_id.strip() or not req.affiliate_id.strip():
         raise HTTPException(status_code=400, detail="API ID とアフィリエイト ID の両方を入れてください。")
     creds = dmm_api.save_credentials(req.api_id, req.affiliate_id)
-    return {"ready": creds.ready, "affiliate_id": creds.affiliate_id}
+    return {
+        "ready": creds.ready,
+        "affiliate_id": creds.affiliate_id,
+        "affiliate_id_valid": creds.affiliate_id_valid,
+    }
 
 
 @app.post("/api/dmm/search")

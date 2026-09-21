@@ -294,9 +294,18 @@ $('#directBtn').addEventListener('click', async () => {
 // --- DMM アフィリエイト API（公式）からの取り込み ---
 async function dmmRefreshStatus() {
   const st = await api('/api/dmm/status');
+  const badId = st.ready && !st.affiliate_id_valid;
   $('#dmmCreds').innerHTML = st.ready
-    ? `<div class="hint">認証情報 設定済み（アフィリエイトID: <code>${st.affiliate_id}</code>）
-       <button class="ghost" id="dmmEdit" style="padding:2px 10px;font-size:12px;margin-left:6px">変更</button></div>`
+    ? (badId
+        ? `<div class="msg err" style="margin:0">
+            <b>このアフィリエイトID は API では使えません：<code>${st.affiliate_id}</code></b><br>
+            API で使えるのは<b>末尾が 990〜999</b> の ID だけです（<code>-012</code> などのサイト用 ID では
+            API が 400 エラーを返します）。<a href="https://affiliate.dmm.com/api/" target="_blank" rel="noopener">DMMアフィリエイト</a>
+            の管理画面で API 用の ID を発行し、下の「変更」から入れ直してください。
+            <div style="margin-top:8px"><button class="ghost" id="dmmEdit">変更</button></div>
+          </div>`
+        : `<div class="hint">認証情報 設定済み（アフィリエイトID: <code>${st.affiliate_id}</code>）
+           <button class="ghost" id="dmmEdit" style="padding:2px 10px;font-size:12px;margin-left:6px">変更</button></div>`)
     : `<div class="msg warn" style="margin:0">
         <b>先に API ID とアフィリエイト ID を登録してください。</b>
         <a href="https://affiliate.dmm.com/api/" target="_blank" rel="noopener">DMMアフィリエイト</a> で取得できます
