@@ -48,9 +48,15 @@ def probe(cand: ImageCandidate, referer: str = "") -> ImageCandidate:
             resp.raise_for_status()
             blob = resp.content
             cand.content_type = resp.headers.get("content-type", "")
-        except httpx.HTTPError:
+        except Exception as exc:  # 1枚の失敗でページ全体の解析を落とさない
+            cand.error = str(exc)
             return cand
         if len(blob) > MAX_BYTES:
+            cand.error = "画像が大きすぎます"
+            return cand
+        # HTML などが返ってきた場合は画像キャッシュに残さない
+        if "html" in cand.content_type.lower() or "text/" in cand.content_type.lower():
+            cand.error = "画像ではなく Web ページが返ってきました"
             return cand
         cache_path(cid).write_bytes(blob)
     try:
@@ -59,6 +65,8 @@ def probe(cand: ImageCandidate, referer: str = "") -> ImageCandidate:
             cand.content_type = cand.content_type or Image.MIME.get(im.format or "", "")
     except Exception:
         cand.width = cand.height = None
+        cand.error = cand.error or "画像として読めませんでした"
+        cache_path(cid).unlink(missing_ok=True)
     return cand
 
 

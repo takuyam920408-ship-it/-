@@ -107,6 +107,7 @@ def _candidate_json(cand: ImageCandidate) -> dict[str, Any]:
         # ダウンロードに失敗した画像はサムネが出せない。壊れた画像を見せる代わりに
         # 「取得できなかった」と明示するためのフラグ。
         "fetched": bool(cand.cache_id and imagefetch.cache_path(cand.cache_id).exists()),
+        "error": cand.error,
         "already_used": bool(db.image_used(cand.url)),
     }
 
@@ -273,6 +274,15 @@ class ImageUrlRequest(BaseModel):
     referer: str = ""
 
 
+IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".avif")
+
+
+def _looks_like_page(url: str) -> bool:
+    """画像URLではなく、Webページの URL を貼られたときに気づくための判定。"""
+    path = url.split("?", 1)[0].split("#", 1)[0].lower()
+    return not path.endswith(IMAGE_SUFFIXES)
+
+
 @app.post("/api/image-url")
 def add_image_url(req: ImageUrlRequest) -> dict[str, Any]:
     """画像の URL を直接受け取る。ページ解析では拾えない画像の入口。"""
@@ -281,15 +291,27 @@ def add_image_url(req: ImageUrlRequest) -> dict[str, Any]:
         raise HTTPException(status_code=400, detail="http(s) の画像 URL を貼ってください。")
 
     cand = ImageCandidate(url=url, source="direct")
-    imagefetch.probe(cand, referer=req.referer.strip())
-    if not imagefetch.cache_path(cand.cache_id).exists():
+    try:
+        imagefetch.probe(cand, referer=req.referer.strip())
+    except Exception as exc:  # ここで落とすと UI に「Failed to fetch」しか出ない
+        raise HTTPException(status_code=400, detail=f"取得に失敗しました: {exc}") from exc
+
+    if cand.width is None or not imagefetch.cache_path(cand.cache_id).exists():
+        hint = ""
+        if _looks_like_page(url):
+            hint = (
+                "貼られたのは画像ではなく Web ページの URL のようです。"
+                "この欄には画像そのものの URL（末尾が .jpg や .png のもの）を入れてください。"
+                "ブラウザで画像を右クリック →「イメージのアドレスをコピー」で取得できます。"
+            )
+        elif cand.error:
+            hint = cand.error
+        else:
+            hint = "サイトが外部からの取得を拒否している可能性があります。"
         raise HTTPException(
             status_code=400,
-            detail="この画像をダウンロードできませんでした。サイトが外部からの取得を拒否している可能性があります。"
-            "画像を手元に保存して、ファイルとして読み込んでください。",
+            detail=f"{hint} うまくいかない場合は、画像を手元に保存して①のファイル読み込みを使ってください。",
         )
-    if cand.width is None:
-        raise HTTPException(status_code=400, detail="画像として読めませんでした。")
 
     cand.score = 100.0
     cand.reasons = [f"直接指定 ({cand.width}x{cand.height})"]
@@ -382,11 +404,15 @@ def dmm_floors(site: str = "FANZA") -> dict[str, Any]:
 def dmm_pick(req: DmmPickRequest) -> dict[str, Any]:
     """選んだサンプル画像を1枚取り込み、以降の加工フローに流す。"""
     cand = ImageCandidate(url=req.image_url.strip(), source="dmm", alt=req.title)
-    imagefetch.probe(cand, referer=req.page_url.strip() or "https://www.dmm.co.jp/")
-    if not imagefetch.cache_path(cand.cache_id).exists() or cand.width is None:
+    try:
+        imagefetch.probe(cand, referer=req.page_url.strip() or "https://www.dmm.co.jp/")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"取得に失敗しました: {exc}") from exc
+    if cand.width is None or not imagefetch.cache_path(cand.cache_id).exists():
         raise HTTPException(
             status_code=400,
-            detail="この画像をダウンロードできませんでした。画像URLを直接貼る欄で試すか、手元に保存して読み込んでください。",
+            detail=f"この画像をダウンロードできませんでした。{cand.error or ''} "
+            "手元に保存して①のファイル読み込みを使ってください。",
         )
     cand.score = 100.0
     cand.reasons = [f"DMM API のサンプル画像 ({cand.width}x{cand.height})"]

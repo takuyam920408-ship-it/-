@@ -23,6 +23,7 @@ class ImageCandidate:
     height: int | None = None
     content_type: str = ""
     cache_id: str = ""
+    error: str = ""      # 取得できなかったときの理由（UI に出す）
     score: float = 0.0
     reasons: list[str] = field(default_factory=list)
 

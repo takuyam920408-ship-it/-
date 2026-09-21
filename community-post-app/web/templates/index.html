@@ -422,7 +422,7 @@ function renderCards(data) {
     const isExcluded = i >= state.keptCount;
     const thumb = c.fetched
       ? `<img src="${c.preview}" loading="lazy" alt="">`
-      : `<div class="noimg">取得できませんでした</div>`;
+      : `<div class="noimg">取得できませんでした${c.error ? '<br>' + c.error : ''}</div>`;
     return `
     <div class="card${isExcluded ? ' excluded' : ''}" data-i="${i}">
       ${thumb}
