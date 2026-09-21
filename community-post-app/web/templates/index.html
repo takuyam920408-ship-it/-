@@ -60,9 +60,9 @@
             <label for="dmmKeyword">キーワード</label>
             <input type="text" id="dmmKeyword" placeholder="作品名・女優名など">
           </div>
-          <div style="flex:2 1 160px">
-            <label for="dmmCid">または商品ID（cid）</label>
-            <input type="text" id="dmmCid" placeholder="abcd00123">
+          <div style="flex:3 1 260px">
+            <label for="dmmCid">または<b>商品ページのURL</b>／商品ID（cid）</label>
+            <input type="text" id="dmmCid" placeholder="https://www.dmm.co.jp/.../cid=abcd00123/ を貼るだけでOK">
           </div>
           <div style="flex:0 1 130px">
             <label for="dmmSite">サイト</label>
@@ -94,7 +94,8 @@
           <button id="dmmFloorBtn" class="ghost" style="flex:0 0 auto">floor 一覧</button>
         </div>
 
-        <p class="hint">service / floor が分からないときは「floor 一覧」で確認できます。空欄のままでも検索できます。</p>
+        <p class="hint">商品ページの URL をそのまま貼れば、商品ID は自動で読み取ります。<br>
+        service / floor が分からないときは「floor 一覧」で確認できます。空欄のままでも検索できます。</p>
         <div id="dmmResult" style="margin-top:12px"></div>
       </div>
     </details>
@@ -369,7 +370,8 @@ function renderDmm(data) {
     return;
   }
   $('#dmmResult').innerHTML =
-    `<p class="hint">${data.returned} 件表示 / 全 ${data.total} 件 ・ サムネイルをクリックするとその画像を取り込みます</p>` +
+    `<p class="hint">${data.cid ? `商品ID <code>${data.cid}</code> で検索 ・ ` : ''}${data.returned} 件表示 / 全 ${data.total} 件
+      ・ <b>サムネイルをクリックするとその画像を取り込みます</b></p>` +
     data.items.map(it => `
       <div class="dmm-item">
         <div class="dmm-title">${(it.title||'').replace(/</g,'&lt;')}

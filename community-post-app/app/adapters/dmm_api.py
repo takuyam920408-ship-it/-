@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 
 import httpx
@@ -66,6 +67,35 @@ def save_credentials(api_id: str, affiliate_id: str) -> Credentials:
     except OSError:
         pass
     return creds
+
+
+# 商品ページの URL から商品ID（cid）を取り出すための並び。上から順に試す。
+# クエリ文字列は先に捨てる。?cid=... はアフィリエイトの追跡用パラメータであって
+# 商品ID ではないため、拾うと別物を検索してしまう。
+CID_PATTERNS = [
+    re.compile(r"/cid=([A-Za-z0-9_]+)"),             # .../detail/=/cid=abcd00123/
+    re.compile(r"/product/[^/]+/([A-Za-z0-9_]+)"),   # book.dmm.co.jp/product/123/xxxx/
+    re.compile(r"/detail/([A-Za-z0-9_]+)"),
+]
+
+
+def extract_cid(text: str) -> str:
+    """商品ID そのものか、商品ページの URL から商品ID を取り出す。
+
+    URL を貼られても使えるようにするためのもの。API を叩く前の下ごしらえで、
+    ページを取得したりはしない（URL の文字列を見るだけ）。
+    """
+    value = (text or "").strip()
+    if not value:
+        return ""
+    if not value.lower().startswith(("http://", "https://")):
+        return value  # すでに cid が入力されている
+    path = value.split("?", 1)[0].split("#", 1)[0]
+    for pattern in CID_PATTERNS:
+        m = pattern.search(path)
+        if m:
+            return m.group(1)
+    return ""
 
 
 @dataclass

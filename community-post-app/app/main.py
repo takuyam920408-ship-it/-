@@ -366,11 +366,22 @@ def dmm_save_credentials(req: DmmCredentialsRequest) -> dict[str, Any]:
 @app.post("/api/dmm/search")
 def dmm_search(req: DmmSearchRequest) -> dict[str, Any]:
     if not req.keyword.strip() and not req.cid.strip():
-        raise HTTPException(status_code=400, detail="キーワードか商品ID（cid）のどちらかを入れてください。")
+        raise HTTPException(
+            status_code=400,
+            detail="キーワード、または商品ID（cid）か商品ページのURLを入れてください。",
+        )
+    # 商品ページの URL を貼られた場合は、そこから商品ID を取り出す
+    cid = dmm_api.extract_cid(req.cid)
+    if req.cid.strip() and not cid:
+        raise HTTPException(
+            status_code=400,
+            detail="この URL から商品ID を読み取れませんでした。"
+            "商品ページの URL（.../cid=xxxx/ を含むもの）を貼るか、商品ID を直接入れてください。",
+        )
     try:
         items, raw = dmm_api.search(
             keyword=req.keyword.strip(),
-            cid=req.cid.strip(),
+            cid=cid,
             site=req.site,
             service=req.service.strip(),
             floor=req.floor.strip(),
@@ -386,6 +397,7 @@ def dmm_search(req: DmmSearchRequest) -> dict[str, Any]:
         "items": [i.as_dict() for i in items],
         "total": result.get("total_count"),
         "returned": result.get("result_count"),
+        "cid": cid,
         # 項目名がズレていた場合に画面で確認できるよう、1件目の生データを返す
         "raw_sample": (result.get("items") or [None])[0],
     }
