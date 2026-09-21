@@ -41,6 +41,8 @@ cd ~/Desktop && git clone -b claude/affectionate-sagan-ur4bk7 https://github.com
 
 **2回目以降**は、`community-post/community-post-app` フォルダの中の
 **`start-mac.command` をダブルクリック**するだけです。
+起動時に更新も自動で取り込むので、ターミナルで `git pull` を打つ必要はありません
+（自分でファイルを編集している場合は取り込みを飛ばします。`CPA_NO_UPDATE=1` で無効化できます）。
 
 ### 方法B：ZIP をダウンロードする
 
@@ -70,6 +72,7 @@ chmod +x ~/Downloads/*/community-post-app/start-mac.command
 | 「Python が見つかりません」 | 自動で開くページから macOS 用 Python を入れて、やり直す |
 | 「開発元を確認できません」 | `start-mac.command` を右クリック → 開く |
 | 「必要な部品をインストールしています」から進まない | 固まっていません。進捗が流れるので待つ。数分かかります |
+| 「このサイトにアクセスできません」「接続が拒否されました」 | アプリが動いていないだけ。`start-mac.command` をダブルクリックで起動 |
 | 準備が途中で止まる | `.venv` フォルダを削除して、もう一度起動 |
 | 画像の文字が □□□ になる | 下の「フォント（けいふぉんと）」を参照 |
 | 文字がけいふぉんとにならない | `assets/fonts/keifont.ttf` を置いて画面を再読み込み |
