@@ -4,3 +4,4 @@ __pycache__/
 output/
 data/history.db
 .venv/
+data/dmm_api.json

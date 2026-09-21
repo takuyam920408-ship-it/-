@@ -88,3 +88,17 @@ details#altInput { border: 1px solid var(--line); border-radius: var(--radius); 
 details#altInput summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 details#altInput[open] summary { margin-bottom: 10px; color: var(--fg); }
 .alt-body input[type=file] { padding: 7px 9px; font-size: 12px; }
+
+/* DMM API からの取り込み */
+.dmm-item { border-top: 1px solid var(--line); padding: 12px 0; }
+.dmm-title { font-size: 13px; margin-bottom: 8px; }
+.dmm-thumbs { display: flex; flex-wrap: wrap; gap: 8px; }
+.dmm-thumb {
+  height: 108px; width: auto; border-radius: 6px; border: 2px solid var(--line);
+  cursor: pointer; background: #000; transition: border-color .12s;
+}
+.dmm-thumb:hover { border-color: var(--accent); }
+pre.raw {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px; font-size: 11px; max-height: 320px; overflow: auto; white-space: pre-wrap;
+}

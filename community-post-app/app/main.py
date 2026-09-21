@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from . import compose as compose_mod
 from . import censor, config, db, extract, imagefetch, scoring, textgen
-from .adapters import AdapterError, fetch_page
+from .adapters import AdapterError, dmm_api, fetch_page
 from .models import ImageCandidate, PageMeta, Slots
 
 app = FastAPI(title="Community Post Assistant", version="1.0")
@@ -215,7 +215,10 @@ def _register_single(cand: ImageCandidate, meta: PageMeta) -> dict[str, Any]:
         "dropped": 0,
         "diagnostics": {
             "mode": "single",
-            "label": "手元のファイル" if cand.source == "upload" else "直接指定した画像URL",
+            "label": {
+                "upload": "手元のファイル",
+                "dmm": "DMM API のサンプル画像",
+            }.get(cand.source, "直接指定した画像URL"),
             "found_in_html": 1,
             "downloaded": 1,
             "kept": 1,
@@ -291,6 +294,109 @@ def add_image_url(req: ImageUrlRequest) -> dict[str, Any]:
     cand.score = 100.0
     cand.reasons = [f"直接指定 ({cand.width}x{cand.height})"]
     meta = PageMeta(url=url, final_url=url, title="", path_segments=[])
+    return _register_single(cand, meta)
+
+
+# --------------------------------------------------------------------------
+# DMM アフィリエイト API（公式）からの取り込み
+# --------------------------------------------------------------------------
+class DmmCredentialsRequest(BaseModel):
+    api_id: str
+    affiliate_id: str
+
+
+class DmmSearchRequest(BaseModel):
+    keyword: str = ""
+    cid: str = ""
+    site: str = "FANZA"
+    service: str = ""
+    floor: str = ""
+    hits: int = 20
+    offset: int = 1
+    sort: str = "rank"
+
+
+class DmmPickRequest(BaseModel):
+    image_url: str
+    title: str = ""
+    page_url: str = ""
+
+
+@app.get("/api/dmm/status")
+def dmm_status() -> dict[str, Any]:
+    creds = dmm_api.load_credentials()
+    return {
+        "ready": creds.ready,
+        "api_id_set": bool(creds.api_id),
+        "affiliate_id": creds.affiliate_id,
+        "credentials_path": str(dmm_api.CREDENTIALS_PATH),
+    }
+
+
+@app.post("/api/dmm/credentials")
+def dmm_save_credentials(req: DmmCredentialsRequest) -> dict[str, Any]:
+    if not req.api_id.strip() or not req.affiliate_id.strip():
+        raise HTTPException(status_code=400, detail="API ID とアフィリエイト ID の両方を入れてください。")
+    creds = dmm_api.save_credentials(req.api_id, req.affiliate_id)
+    return {"ready": creds.ready, "affiliate_id": creds.affiliate_id}
+
+
+@app.post("/api/dmm/search")
+def dmm_search(req: DmmSearchRequest) -> dict[str, Any]:
+    if not req.keyword.strip() and not req.cid.strip():
+        raise HTTPException(status_code=400, detail="キーワードか商品ID（cid）のどちらかを入れてください。")
+    try:
+        items, raw = dmm_api.search(
+            keyword=req.keyword.strip(),
+            cid=req.cid.strip(),
+            site=req.site,
+            service=req.service.strip(),
+            floor=req.floor.strip(),
+            hits=req.hits,
+            offset=req.offset,
+            sort=req.sort,
+        )
+    except dmm_api.DmmApiError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    result = raw.get("result") or {}
+    return {
+        "items": [i.as_dict() for i in items],
+        "total": result.get("total_count"),
+        "returned": result.get("result_count"),
+        # 項目名がズレていた場合に画面で確認できるよう、1件目の生データを返す
+        "raw_sample": (result.get("items") or [None])[0],
+    }
+
+
+@app.get("/api/dmm/floors")
+def dmm_floors(site: str = "FANZA") -> dict[str, Any]:
+    try:
+        rows, _ = dmm_api.floors(site)
+    except dmm_api.DmmApiError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return {"floors": rows}
+
+
+@app.post("/api/dmm/pick")
+def dmm_pick(req: DmmPickRequest) -> dict[str, Any]:
+    """選んだサンプル画像を1枚取り込み、以降の加工フローに流す。"""
+    cand = ImageCandidate(url=req.image_url.strip(), source="dmm", alt=req.title)
+    imagefetch.probe(cand, referer=req.page_url.strip() or "https://www.dmm.co.jp/")
+    if not imagefetch.cache_path(cand.cache_id).exists() or cand.width is None:
+        raise HTTPException(
+            status_code=400,
+            detail="この画像をダウンロードできませんでした。画像URLを直接貼る欄で試すか、手元に保存して読み込んでください。",
+        )
+    cand.score = 100.0
+    cand.reasons = [f"DMM API のサンプル画像 ({cand.width}x{cand.height})"]
+    meta = PageMeta(
+        url=req.page_url,
+        final_url=req.page_url,
+        title=req.title,
+        site_name="DMM",
+        path_segments=[],
+    )
     return _register_single(cand, meta)
 
 

@@ -49,6 +49,55 @@
         作品名や話数は自動で取れないので、画面3で手入力してください。</p>
       </div>
     </details>
+
+    <details id="dmmInput" style="margin-top:10px">
+      <summary><b>DMM アフィリエイト API から取り込む</b>（公式API・要登録）</summary>
+      <div class="alt-body">
+        <div id="dmmCreds"></div>
+
+        <div class="row" style="margin-top:10px">
+          <div style="flex:3 1 240px">
+            <label for="dmmKeyword">キーワード</label>
+            <input type="text" id="dmmKeyword" placeholder="作品名・女優名など">
+          </div>
+          <div style="flex:2 1 160px">
+            <label for="dmmCid">または商品ID（cid）</label>
+            <input type="text" id="dmmCid" placeholder="abcd00123">
+          </div>
+          <div style="flex:0 1 130px">
+            <label for="dmmSite">サイト</label>
+            <select id="dmmSite"><option value="FANZA">FANZA</option><option value="DMM.com">DMM.com</option></select>
+          </div>
+          <button id="dmmSearchBtn" class="ghost" style="flex:0 0 auto">検索</button>
+        </div>
+
+        <div class="row" style="margin-top:8px">
+          <div style="flex:1 1 120px">
+            <label for="dmmService">service（任意）</label>
+            <input type="text" id="dmmService" placeholder="digital">
+          </div>
+          <div style="flex:1 1 120px">
+            <label for="dmmFloor">floor（任意）</label>
+            <input type="text" id="dmmFloor" placeholder="videoa">
+          </div>
+          <div style="flex:0 1 120px">
+            <label for="dmmSort">並び順</label>
+            <select id="dmmSort">
+              <option value="rank">人気</option><option value="date">新着</option>
+              <option value="review">評価</option><option value="price">価格</option>
+            </select>
+          </div>
+          <div style="flex:0 1 90px">
+            <label for="dmmHits">件数</label>
+            <input type="text" id="dmmHits" value="10">
+          </div>
+          <button id="dmmFloorBtn" class="ghost" style="flex:0 0 auto">floor 一覧</button>
+        </div>
+
+        <p class="hint">service / floor が分からないときは「floor 一覧」で確認できます。空欄のままでも検索できます。</p>
+        <div id="dmmResult" style="margin-top:12px"></div>
+      </div>
+    </details>
   </section>
 
   <!-- 2 -->
@@ -240,6 +289,114 @@ $('#directBtn').addEventListener('click', async () => {
       url, referer: $('#url').value.trim() }) }));
   } catch (e) { flash(e.message, 'err'); }
 });
+
+// --- DMM アフィリエイト API（公式）からの取り込み ---
+async function dmmRefreshStatus() {
+  const st = await api('/api/dmm/status');
+  $('#dmmCreds').innerHTML = st.ready
+    ? `<div class="hint">認証情報 設定済み（アフィリエイトID: <code>${st.affiliate_id}</code>）
+       <button class="ghost" id="dmmEdit" style="padding:2px 10px;font-size:12px;margin-left:6px">変更</button></div>`
+    : `<div class="msg warn" style="margin:0">
+        <b>先に API ID とアフィリエイト ID を登録してください。</b>
+        <a href="https://affiliate.dmm.com/api/" target="_blank" rel="noopener">DMMアフィリエイト</a> で取得できます
+        （アフィリエイトIDは末尾が 990〜999 のもの）。
+        <div class="row" style="margin-top:10px">
+          <div style="flex:2 1 220px"><label for="dmmApiId">API ID</label><input type="text" id="dmmApiId"></div>
+          <div style="flex:2 1 180px"><label for="dmmAffId">アフィリエイト ID</label><input type="text" id="dmmAffId" placeholder="yourname-990"></div>
+          <button class="ghost" id="dmmSaveCreds" style="flex:0 0 auto">保存</button>
+        </div>
+        <div class="hint" style="margin-top:6px">保存先: <code>${st.credentials_path}</code>（この PC の中だけ。git には入りません）</div>
+      </div>`;
+  const save = $('#dmmSaveCreds');
+  if (save) save.addEventListener('click', async () => {
+    try {
+      await api('/api/dmm/credentials', { method:'POST', body: JSON.stringify({
+        api_id: $('#dmmApiId').value, affiliate_id: $('#dmmAffId').value }) });
+      flash('認証情報を保存しました', 'ok');
+      dmmRefreshStatus();
+    } catch (e) { flash(e.message, 'err'); }
+  });
+  // 「変更」は入力欄を出し直すだけ。押した時点では保存済みの値に触らない。
+  const edit = $('#dmmEdit');
+  if (edit) edit.addEventListener('click', () => {
+    $('#dmmCreds').innerHTML = `<div class="row">
+        <div style="flex:2 1 220px"><label for="dmmApiId">API ID</label><input type="text" id="dmmApiId"></div>
+        <div style="flex:2 1 180px"><label for="dmmAffId">アフィリエイト ID</label>
+          <input type="text" id="dmmAffId" value="${st.affiliate_id.replace(/"/g,'&quot;')}"></div>
+        <button class="ghost" id="dmmSaveCreds2" style="flex:0 0 auto">保存</button>
+        <button class="ghost" id="dmmCancelEdit" style="flex:0 0 auto">やめる</button>
+      </div>`;
+    $('#dmmSaveCreds2').addEventListener('click', async () => {
+      try {
+        await api('/api/dmm/credentials', { method:'POST', body: JSON.stringify({
+          api_id: $('#dmmApiId').value, affiliate_id: $('#dmmAffId').value }) });
+        flash('認証情報を更新しました', 'ok');
+        dmmRefreshStatus();
+      } catch (e) { flash(e.message, 'err'); }
+    });
+    $('#dmmCancelEdit').addEventListener('click', () => dmmRefreshStatus());
+  });
+}
+dmmRefreshStatus().catch(()=>{});
+
+$('#dmmSearchBtn').addEventListener('click', async () => {
+  $('#dmmResult').innerHTML = '<p class="hint">検索中…</p>';
+  try {
+    const data = await api('/api/dmm/search', { method:'POST', body: JSON.stringify({
+      keyword: $('#dmmKeyword').value, cid: $('#dmmCid').value, site: $('#dmmSite').value,
+      service: $('#dmmService').value, floor: $('#dmmFloor').value,
+      sort: $('#dmmSort').value, hits: parseInt($('#dmmHits').value || '10', 10) }) });
+    renderDmm(data);
+  } catch (e) { $('#dmmResult').innerHTML = `<div class="msg err">${e.message}</div>`; }
+});
+
+$('#dmmFloorBtn').addEventListener('click', async () => {
+  $('#dmmResult').innerHTML = '<p class="hint">取得中…</p>';
+  try {
+    const { floors } = await api(`/api/dmm/floors?site=${encodeURIComponent($('#dmmSite').value)}`);
+    $('#dmmResult').innerHTML = floors.length
+      ? `<table><thead><tr><th>service</th><th>floor</th><th>名前</th></tr></thead><tbody>` +
+        floors.map(f => `<tr><td><code>${f.service}</code></td><td><code>${f.floor}</code></td><td>${f.floor_name}</td></tr>`).join('') +
+        `</tbody></table><p class="hint">使いたい行の service / floor を上の欄に入れて検索してください。</p>`
+      : '<p class="hint">floor が取得できませんでした。</p>';
+  } catch (e) { $('#dmmResult').innerHTML = `<div class="msg err">${e.message}</div>`; }
+});
+
+function renderDmm(data) {
+  if (!data.items.length) {
+    $('#dmmResult').innerHTML = `<div class="msg warn">該当がありませんでした（total=${data.total ?? '?'}）。
+      キーワードや service / floor を変えてみてください。</div>` + dmmRawBlock(data);
+    return;
+  }
+  $('#dmmResult').innerHTML =
+    `<p class="hint">${data.returned} 件表示 / 全 ${data.total} 件 ・ サムネイルをクリックするとその画像を取り込みます</p>` +
+    data.items.map(it => `
+      <div class="dmm-item">
+        <div class="dmm-title">${(it.title||'').replace(/</g,'&lt;')}
+          <span class="hint">${it.maker ? ' / ' + it.maker : ''}${it.date ? ' / ' + it.date.slice(0,10) : ''}
+          ・サンプル ${it.sample_count} 枚</span>
+        </div>
+        <div class="dmm-thumbs">
+          ${[it.cover].filter(Boolean).concat(it.samples).map(u => `
+            <img class="dmm-thumb" src="${u}" loading="lazy" alt=""
+                 data-img="${u}" data-title="${(it.title||'').replace(/"/g,'&quot;')}" data-page="${it.url||''}">`).join('')}
+        </div>
+      </div>`).join('') + dmmRawBlock(data);
+
+  document.querySelectorAll('.dmm-thumb').forEach(el => el.addEventListener('click', async () => {
+    $('#msg').innerHTML = '<div class="msg">取り込み中…</div>';
+    try {
+      applyAnalysis(await api('/api/dmm/pick', { method:'POST', body: JSON.stringify({
+        image_url: el.dataset.img, title: el.dataset.title, page_url: el.dataset.page }) }));
+    } catch (e) { flash(e.message, 'err'); }
+  }));
+}
+
+function dmmRawBlock(data) {
+  if (!data.raw_sample) return '';
+  return `<details style="margin-top:10px"><summary class="hint">生のJSON（1件目）を見る — 項目がズレているときの確認用</summary>
+    <pre class="raw">${JSON.stringify(data.raw_sample, null, 2).replace(/</g,'&lt;')}</pre></details>`;
+}
 
 function renderCards(data) {
   const d = data.diagnostics || {};
