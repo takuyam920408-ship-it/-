@@ -30,6 +30,25 @@ stop() {
 echo "コミュニティ投稿アシスタント"
 echo ""
 
+PIDFILE=".server.pid"
+URLFILE=".server.url"
+
+is_running() {
+  [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null
+}
+
+# すでに動いていれば、二重に立ち上げずブラウザを開くだけ
+if is_running; then
+  RUNNING_URL=$(cat "$URLFILE" 2>/dev/null)
+  echo "すでに起動しています → ${RUNNING_URL:-http://127.0.0.1:8000}"
+  echo "ブラウザを開きます。"
+  open "${RUNNING_URL:-http://127.0.0.1:8000}" 2>/dev/null
+  echo ""
+  echo "終了したいときは stop-mac.command をダブルクリックしてください。"
+  exit 0
+fi
+
+
 # ── 1. Python があるか ────────────────────────
 if ! command -v python3 >/dev/null 2>&1; then
   echo "Python が見つかりませんでした。"
@@ -138,28 +157,47 @@ echo ""
 echo "  準備ができ次第、ブラウザが自動で開きます（数秒〜十数秒かかります）。"
 echo "  それまで、この窓は触らずにお待ちください。"
 echo ""
-echo "  ※ control + C はアプリを終了するキーです。使い終わるまで押さないでください。"
-echo ""
 
-# サーバーが実際に応答するのを待ってからブラウザを開く。
-# 決め打ちで待つと、起動が遅い環境でまだ準備できていないところに
-# ブラウザが開いてしまい「接続できません」に見える。
-(
-  for _ in $(seq 1 60); do
-    sleep 1
-    if curl -s -o /dev/null --max-time 2 "$URL" 2>/dev/null; then
-      echo ""
-      echo "準備できました。ブラウザを開きます → $URL"
-      open "$URL" 2>/dev/null
-      exit 0
-    fi
-  done
+# サーバーはこの窓から切り離して動かす。nohup を付けてあるので、
+# 窓を閉じてもアプリは動き続ける（毎回「接続できません」になるのを防ぐ）。
+nohup python -m uvicorn app.main:app --host 127.0.0.1 --port "$PORT" \
+  > server-log.txt 2>&1 &
+SERVER_PID=$!
+echo "$SERVER_PID" > "$PIDFILE"
+echo "$URL" > "$URLFILE"
+
+# 実際に応答するまで待つ。決め打ちで待つと、起動が遅い環境でまだ準備の
+# できていないところにブラウザが開き「接続できません」に見えるため。
+READY=0
+for _ in $(seq 1 60); do
+  sleep 1
+  if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+    echo ""
+    echo "サーバーが起動できませんでした。server-log.txt の中身を確認してください:"
+    tail -20 server-log.txt
+    rm -f "$PIDFILE" "$URLFILE"
+    stop "起動に失敗しました。上の内容をそのまま貼って相談してください。"
+  fi
+  if curl -s -o /dev/null --max-time 2 "$URL" 2>/dev/null; then
+    READY=1
+    break
+  fi
+done
+
+echo ""
+if [ "$READY" = "1" ]; then
+  open "$URL" 2>/dev/null
+  echo "════════════════════════════════"
+  echo " 起動しました → $URL"
   echo ""
-  echo "ブラウザを自動で開けませんでした。次のアドレスを手で開いてください:"
-  echo "  $URL"
-) &
+  echo " ブラウザが開きます。"
+  echo " この黒い窓は閉じて構いません（アプリは動き続けます）。"
+  echo ""
+  echo " 終了したいときは stop-mac.command をダブルクリック。"
+  echo "════════════════════════════════"
+else
+  echo "時間内に起動を確認できませんでした。"
+  echo "少し待ってから、次のアドレスを開いてみてください: $URL"
+  echo "それでも駄目なら server-log.txt の中身を貼って相談してください。"
+fi
 
-python -m uvicorn app.main:app --host 127.0.0.1 --port "$PORT"
-
-echo ""
-read -r -p "終了しました。Enter キーを押すと閉じます: " _
