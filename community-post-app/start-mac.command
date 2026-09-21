@@ -7,11 +7,20 @@
 
 cd "$(dirname "$0")" || exit 1
 
+# 何が起きたか必ず残す。窓が一瞬で閉じても、このファイルを見れば原因が分かる。
+LOG="start-log.txt"
+exec > >(tee "$LOG") 2>&1
+echo "=== $(date '+%Y-%m-%d %H:%M:%S') 起動 ==="
+
 # エラーで終わるときは、メッセージを読めるように窓を開けたままにする
 stop() {
   echo ""
   echo "────────────────────────────────"
   echo "$1"
+  echo ""
+  echo "この内容は start-log.txt にも保存してあります。"
+  echo "困ったときは、次の1行をターミナルに貼ると中身を表示できます:"
+  echo "  cat ~/Desktop/community-post/community-post-app/start-log.txt"
   echo "────────────────────────────────"
   echo ""
   read -r -p "Enter キーを押すと閉じます: " _
@@ -42,7 +51,8 @@ if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ..
   else
     echo "更新を確認しています…"
     BEFORE=$(git rev-parse HEAD 2>/dev/null)
-    if git pull --quiet --ff-only 2>/dev/null; then
+    # 認証を聞かれて固まらないようにする（聞かれたら諦めてそのまま起動する）
+    if GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=/usr/bin/true git pull --quiet --ff-only 2>/dev/null; then
       AFTER=$(git rev-parse HEAD 2>/dev/null)
       if [ "$BEFORE" != "$AFTER" ]; then
         echo "新しい版に更新しました"
