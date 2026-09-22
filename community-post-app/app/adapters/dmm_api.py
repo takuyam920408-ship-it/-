@@ -49,6 +49,38 @@ def affiliate_id_ok(affiliate_id: str) -> bool:
     return bool(m and 990 <= int(m.group(1)) <= 999)
 
 
+def api_id_problem(api_id: str) -> str:
+    """API ID として明らかにおかしい値なら、その理由を返す。問題なければ空文字。
+
+    ドキュメントのサンプル URL をそのまま貼ってしまう取り違えが起きたため、
+    保存の時点で気づけるようにする。API ID は英数字の文字列のみ。
+    """
+    value = (api_id or "").strip()
+    if not value:
+        return "API ID が空です。"
+    low = value.lower()
+    if low.startswith(("http://", "https://")) or "api.dmm.com" in low:
+        return (
+            "API ID の欄に URL が入っています。"
+            "ドキュメントのサンプル URL ではなく、API ID そのもの"
+            "（英数字だけの文字列）を入れてください。"
+        )
+    if "[" in value or "]" in value:
+        return (
+            "API ID に [ ] が含まれています。"
+            "ドキュメントの穴埋め用の表記をそのまま貼っていませんか。"
+            "実際に発行された英数字の文字列を入れてください。"
+        )
+    if any(c in value for c in "&?= /"):
+        return (
+            "API ID に URL で使う記号（& ? = / 空白）が含まれています。"
+            "API ID は英数字だけの文字列です。"
+        )
+    if len(value) < 8:
+        return f"API ID が短すぎます（{len(value)}文字）。入力し切れていないか確認してください。"
+    return ""
+
+
 @dataclass
 class Credentials:
     api_id: str = ""
@@ -253,7 +285,10 @@ def _call(url: str, params: dict) -> dict:
     if resp.status_code >= 400 or (status not in (None, 200, "200")):
         message = result.get("message") or data.get("message") or resp.text[:200]
         hint = ""
-        if not affiliate_id_ok(creds.affiliate_id):
+        problem = api_id_problem(creds.api_id)
+        if problem:
+            hint = f"\n\n考えられる原因: {problem}"
+        elif not affiliate_id_ok(creds.affiliate_id):
             hint = (
                 f"\n\n考えられる原因: アフィリエイトID「{creds.affiliate_id}」は "
                 "API 用ではありません。API で使えるのは末尾が 990〜999 の ID だけです。"
@@ -328,6 +363,12 @@ def diagnose(cid: str = "", site: str = "FANZA") -> list[dict]:
         })
         return True
 
+    problem = api_id_problem(creds.api_id)
+    checks.append({
+        "label": "API ID の形式",
+        "ok": not problem,
+        "detail": problem or f"英数字 {len(creds.api_id.strip())} 文字（形式としては問題なし）",
+    })
     checks.append({
         "label": "アフィリエイトID の形式",
         "ok": creds.affiliate_id_valid,

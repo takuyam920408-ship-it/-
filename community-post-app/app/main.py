@@ -353,6 +353,8 @@ def dmm_status() -> dict[str, Any]:
         "affiliate_id": creds.affiliate_id,
         # API で使えるのは末尾 990〜999 の ID だけ。違うと API が 400 を返す
         "affiliate_id_valid": creds.affiliate_id_valid,
+        # サンプル URL の貼り付けなど、明らかにおかしい API ID を知らせる
+        "api_id_problem": dmm_api.api_id_problem(creds.api_id),
         "credentials_path": str(dmm_api.CREDENTIALS_PATH),
     }
 
@@ -377,6 +379,7 @@ def dmm_save_credentials(req: DmmCredentialsRequest) -> dict[str, Any]:
         "ready": creds.ready,
         "affiliate_id": creds.affiliate_id,
         "affiliate_id_valid": creds.affiliate_id_valid,
+        "api_id_problem": dmm_api.api_id_problem(creds.api_id),
     }
 
 
