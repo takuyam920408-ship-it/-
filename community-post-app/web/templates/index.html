@@ -434,7 +434,9 @@ function renderDmm(data) {
       <div class="dmm-item">
         <div class="dmm-title">${(it.title||'').replace(/</g,'&lt;')}
           <span class="hint">${it.maker ? ' / ' + it.maker : ''}${it.date ? ' / ' + it.date.slice(0,10) : ''}
-          ・サンプル ${it.sample_count} 枚</span>
+          ・${it.sample_count
+              ? `サンプル ${it.sample_count} 枚`
+              : '<b>サンプル画像なし</b>（この商品は API に表紙しか登録されていません）'}</span>
         </div>
         <div class="dmm-thumbs">
           ${[it.cover].filter(Boolean).concat(it.samples).map(u => `
