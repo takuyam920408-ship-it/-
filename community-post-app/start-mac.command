@@ -27,7 +27,7 @@ stop() {
   exit 1
 }
 
-echo "コミュニティ投稿アシスタント"
+echo "スクエア変換＆モザイク"
 echo ""
 
 PIDFILE=".server.pid"
@@ -36,17 +36,6 @@ URLFILE=".server.url"
 is_running() {
   [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null
 }
-
-# すでに動いていれば、二重に立ち上げずブラウザを開くだけ
-if is_running; then
-  RUNNING_URL=$(cat "$URLFILE" 2>/dev/null)
-  echo "すでに起動しています → ${RUNNING_URL:-http://127.0.0.1:8000}"
-  echo "ブラウザを開きます。"
-  open "${RUNNING_URL:-http://127.0.0.1:8000}" 2>/dev/null
-  echo ""
-  echo "終了したいときは stop-mac.command をダブルクリックしてください。"
-  exit 0
-fi
 
 
 # ── 1. Python があるか ────────────────────────
@@ -79,10 +68,11 @@ if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ..
         # bash はスクリプトを読みながら実行するため、更新で自分自身が
         # 書き換わると、途中から壊れた内容で動いてしまう。
         # 新しい内容で読み直す（1回だけ。無限に繰り返さないよう印を付ける）。
+        UPDATED=1
         if [ "${CPA_REEXEC:-0}" != "1" ]; then
           echo "新しい内容で起動し直します…"
           echo ""
-          CPA_REEXEC=1 exec "$0" "$@"
+          CPA_REEXEC=1 CPA_UPDATED=1 exec "$0" "$@"
         fi
       else
         echo "すでに最新です"
@@ -90,6 +80,38 @@ if [ "${CPA_NO_UPDATE:-0}" != "1" ] && command -v git >/dev/null 2>&1 && [ -d ..
     else
       echo "（更新を取得できませんでした。そのまま起動します）"
     fi
+  fi
+fi
+
+# ── 1.7 すでに動いている場合の扱い ─────────────
+# 更新が入ったのに古いアプリが動いたまま、という状態を避ける。
+# 環境変数の受け渡しに頼ると移行時に取りこぼすので、起動時に記録した版と
+# いまの版を直接比べる。記録が無い場合（古い版で起動していた）も入れ替える。
+REVFILE=".server.rev"
+NOW_REV=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+RUNNING_REV=$(cat "$REVFILE" 2>/dev/null || echo "")
+
+if is_running; then
+  RUNNING_URL=$(cat "$URLFILE" 2>/dev/null)
+  if [ "$RUNNING_REV" != "$NOW_REV" ]; then
+    echo "新しい版に入れ替えるため、動いているアプリを一度止めます…"
+    OLD_PID=$(cat "$PIDFILE" 2>/dev/null)
+    kill "$OLD_PID" 2>/dev/null
+    for _ in $(seq 1 10); do
+      kill -0 "$OLD_PID" 2>/dev/null || break
+      sleep 1
+    done
+    kill -0 "$OLD_PID" 2>/dev/null && kill -9 "$OLD_PID" 2>/dev/null
+    rm -f "$PIDFILE" "$URLFILE" "$REVFILE"
+    echo "止めました。新しい版で起動します。"
+    echo ""
+  else
+    echo "すでに起動しています → ${RUNNING_URL:-http://127.0.0.1:8000}"
+    echo "ブラウザを開きます。"
+    open "${RUNNING_URL:-http://127.0.0.1:8000}" 2>/dev/null
+    echo ""
+    echo "終了したいときは stop-mac.command をダブルクリックしてください。"
+    exit 0
   fi
 fi
 
@@ -173,6 +195,8 @@ nohup python -m uvicorn app.main:app --host 127.0.0.1 --port "$PORT" \
 SERVER_PID=$!
 echo "$SERVER_PID" > "$PIDFILE"
 echo "$URL" > "$URLFILE"
+# どの版で動いているかを残す。次回の起動時に、入れ替えが要るかの判断に使う。
+echo "${NOW_REV:-unknown}" > "${REVFILE:-.server.rev}"
 
 # 実際に応答するまで待つ。決め打ちで待つと、起動が遅い環境でまだ準備の
 # できていないところにブラウザが開き「接続できません」に見えるため。

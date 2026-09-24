@@ -34,7 +34,7 @@ else
   echo "すでに終了していました。"
 fi
 
-rm -f "$PIDFILE" "$URLFILE"
+rm -f "$PIDFILE" "$URLFILE" ".server.rev"
 echo ""
 echo "また使うときは start-mac.command をダブルクリックしてください。"
 echo ""
