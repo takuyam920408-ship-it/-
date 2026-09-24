@@ -103,6 +103,8 @@ if is_running; then
     done
     kill -0 "$OLD_PID" 2>/dev/null && kill -9 "$OLD_PID" 2>/dev/null
     rm -f "$PIDFILE" "$URLFILE" "$REVFILE"
+    # ポートが解放されるまで少し待つ。すぐ次を起動すると掴んだままで失敗しうる。
+    sleep 2
     echo "止めました。新しい版で起動します。"
     echo ""
   else
@@ -230,6 +232,10 @@ if [ "$READY" = "1" ]; then
 else
   echo "時間内に起動を確認できませんでした。"
   echo "少し待ってから、次のアドレスを開いてみてください: $URL"
-  echo "それでも駄目なら server-log.txt の中身を貼って相談してください。"
+  echo ""
+  echo "──── server-log.txt の末尾（ここに原因が出ています）────"
+  tail -25 server-log.txt 2>/dev/null || echo "（ログがありません）"
+  echo "────────────────────────────────"
+  echo "この内容をそのまま貼って相談してください。"
 fi
 
