@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>スクエア変換＆モザイク</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ff5c00'/%3E%3Crect x='9' y='9' width='14' height='14' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>スクエア変換＆モザイク</h1>
+  <p class="sub">画像をまとめて読み込む → 正方形の位置を決める → 隠したい所をドラッグ → まとめて書き出し。</p>
+
+  <div id="msg"></div>
+
+  <!-- 1. 読み込み -->
+  <section>
+    <h2><span class="num">1</span>画像を読み込む（最大10枚）</h2>
+    <div class="row">
+      <div style="flex:1 1 320px">
+        <label for="files">ファイルを選ぶ（複数選択できます）</label>
+        <input type="file" id="files" accept="image/*" multiple>
+      </div>
+      <button id="clearAll" class="ghost" style="flex:0 0 auto">全部消す</button>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+  </section>
+
+  <!-- 2. 編集 -->
+  <section id="secEdit" hidden>
+    <h2><span class="num">2</span>切り抜き位置とモザイク</h2>
+
+    <div class="row" style="margin-bottom:12px">
+      <div style="flex:0 0 auto">
+        <label>操作</label>
+        <div class="seg" id="modeSeg">
+          <button data-mode="crop" class="on">切り抜き位置</button>
+          <button data-mode="mask">モザイク</button>
+        </div>
+      </div>
+      <div style="flex:0 0 auto">
+        <label for="color">色</label>
+        <select id="color"><option value="black">黒</option><option value="gray">グレー</option></select>
+      </div>
+      <div style="flex:0 0 auto">
+        <label for="style">塗り方</label>
+        <select id="style"><option value="solid">ベタ塗り</option><option value="mosaic">モザイク</option></select>
+      </div>
+      <div style="flex:1 1 auto"></div>
+      <button id="clearBoxes" class="ghost" style="flex:0 0 auto">この画像の枠を消す</button>
+      <button id="resetCrop" class="ghost" style="flex:0 0 auto">切り抜きを中央へ</button>
+    </div>
+
+    <p class="hint" id="modeHint" style="margin-top:0"></p>
+
+    <div class="editor-grid">
+      <div>
+        <div class="editor" id="editor">
+          <img id="src" alt="元画像">
+          <canvas id="cv"></canvas>
+        </div>
+        <p class="hint" id="fileInfo"></p>
+      </div>
+      <div>
+        <div class="hint" style="margin-bottom:6px">仕上がり（1080×1080）</div>
+        <img id="preview" class="preview-sq" alt="仕上がり">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 書き出し -->
+  <section id="secExport" hidden>
+    <h2><span class="num">3</span>まとめて書き出す</h2>
+    <div class="row">
+      <div style="flex:0 0 auto">
+        <label for="fmt">形式</label>
+        <select id="fmt"><option value="JPEG">JPEG</option><option value="PNG">PNG</option></select>
+      </div>
+      <div style="flex:1 1 auto"></div>
+      <button id="exportBtn" style="flex:0 0 auto">全部書き出してZIPで保存</button>
+    </div>
+    <div id="exportResult" style="margin-top:12px"></div>
+  </section>
+
+  <p class="hint" style="margin-top:24px">
+    記事URLの解析や投稿文の生成が必要なときは <a href="/full">以前の画面</a> を使ってください。
+  </p>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const S = { items: [], idx: -1, mode: 'crop', drag: null, timer: null };
+
+function flash(text, kind='ok') {
+  const box = $('#msg');
+  box.innerHTML = `<div class="msg ${kind}">${text}</div>`;
+  if (kind !== 'ok') box.scrollIntoView({ behavior:'smooth', block:'center' });
+  if (kind === 'ok') setTimeout(() => { box.innerHTML = ''; }, 4000);
+}
+
+// ── 1. 読み込み ────────────────────────────
+$('#files').addEventListener('change', async e => {
+  const files = [...e.target.files];
+  if (!files.length) return;
+  const room = 10 - S.items.length;
+  if (room <= 0) { e.target.value=''; return flash('10枚まで読み込めます。先に「全部消す」を押してください。', 'err'); }
+
+  const fd = new FormData();
+  files.slice(0, room).forEach(f => fd.append('files', f));
+  $('#msg').innerHTML = '<div class="msg">読み込み中…</div>';
+  try {
+    const res = await fetch('/api/simple/upload', { method:'POST', body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || '読み込めませんでした');
+    data.items.forEach(it => S.items.push({ ...it, boxes: [] }));
+    if (data.errors.length) flash('読み込めなかったファイル: ' + data.errors.join(' / '), 'warn');
+    else if (files.length > room) flash(`10枚までなので ${room} 枚だけ読み込みました。`, 'warn');
+    else $('#msg').innerHTML = '';
+    renderThumbs();
+    if (S.idx < 0 && S.items.length) select(0);
+  } catch (err) { flash(err.message, 'err'); }
+  finally { e.target.value = ''; }
+});
+
+$('#clearAll').addEventListener('click', () => {
+  S.items = []; S.idx = -1;
+  renderThumbs();
+  $('#secEdit').hidden = true; $('#secExport').hidden = true;
+  $('#preview').removeAttribute('src');
+});
+
+function renderThumbs() {
+  $('#thumbs').innerHTML = S.items.map((it, i) => `
+    <div class="thumb${i === S.idx ? ' sel' : ''}" data-i="${i}">
+      <img src="${it.url}" alt="">
+      <div class="tn">${i + 1}</div>
+      ${it.boxes.length ? `<div class="tb">${it.boxes.length}</div>` : ''}
+    </div>`).join('');
+  document.querySelectorAll('.thumb').forEach(el =>
+    el.addEventListener('click', () => select(+el.dataset.i)));
+  $('#secExport').hidden = S.items.length === 0;
+}
+
+function select(i) {
+  S.idx = i;
+  const it = S.items[i];
+  $('#secEdit').hidden = false;
+  const img = $('#src');
+  img.onload = () => { draw(); preview(); };
+  img.src = it.url;
+  $('#fileInfo').textContent = `${it.name} ・ ${it.width}×${it.height}`;
+  renderThumbs();
+}
+
+// ── 2. 編集 ────────────────────────────────
+const HINTS = {
+  crop: '正方形の枠を<b>ドラッグして移動</b>、右下の角を<b>ドラッグして拡大縮小</b>します。枠の中が書き出される範囲です。',
+  mask: '隠したい所を<b>ドラッグして囲む</b>と塗られます。<b>枠をクリック</b>すると消えます。',
+};
+
+document.querySelectorAll('#modeSeg button').forEach(b => b.addEventListener('click', () => {
+  S.mode = b.dataset.mode;
+  document.querySelectorAll('#modeSeg button').forEach(x => x.classList.toggle('on', x === b));
+  $('#modeHint').innerHTML = HINTS[S.mode];
+  $('#cv').style.cursor = S.mode === 'crop' ? 'move' : 'crosshair';
+  draw();
+}));
+$('#modeHint').innerHTML = HINTS.crop;
+
+['#color', '#style'].forEach(sel => $(sel).addEventListener('change', () => { draw(); preview(); }));
+
+$('#clearBoxes').addEventListener('click', () => {
+  if (S.idx < 0) return;
+  S.items[S.idx].boxes = [];
+  renderThumbs(); draw(); preview();
+});
+
+$('#resetCrop').addEventListener('click', () => {
+  if (S.idx < 0) return;
+  const it = S.items[S.idx];
+  const size = Math.min(it.width, it.height);
+  it.crop = { x: Math.round((it.width - size) / 2), y: Math.round((it.height - size) / 2), size };
+  draw(); preview();
+});
+
+function scale() {
+  const it = S.items[S.idx], img = $('#src');
+  return img.clientWidth / it.width;
+}
+
+function draw() {
+  if (S.idx < 0) return;
+  const it = S.items[S.idx], cv = $('#cv'), img = $('#src');
+  if (!img.clientWidth) return;
+  cv.width = img.clientWidth; cv.height = img.clientHeight;
+  const ctx = cv.getContext('2d'), k = scale();
+  ctx.clearRect(0, 0, cv.width, cv.height);
+
+  // 切り抜き範囲の外を暗くする
+  const c = it.crop;
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.clearRect(c.x*k, c.y*k, c.size*k, c.size*k);
+
+  // モザイクの枠（切り抜きの外側も見えるように、暗幕より後に描く）
+  const fill = $('#color').value === 'gray' ? 'rgba(128,128,128,0.85)' : 'rgba(0,0,0,0.85)';
+  it.boxes.forEach(b => {
+    ctx.fillStyle = fill;
+    ctx.fillRect(b.x*k, b.y*k, b.w*k, b.h*k);
+    ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2;
+    ctx.strokeRect(b.x*k, b.y*k, b.w*k, b.h*k);
+  });
+
+  // 切り抜き枠と、右下のつまみ
+  ctx.strokeStyle = '#ff5c00'; ctx.lineWidth = 3;
+  ctx.strokeRect(c.x*k, c.y*k, c.size*k, c.size*k);
+  if (S.mode === 'crop') {
+    ctx.fillStyle = '#ff5c00';
+    ctx.fillRect((c.x + c.size)*k - 14, (c.y + c.size)*k - 14, 14, 14);
+  }
+
+  // ドラッグ中の仮枠
+  if (S.drag && S.drag.kind === 'box') {
+    const d = S.drag;
+    ctx.strokeStyle = '#34d399'; ctx.setLineDash([5,4]); ctx.lineWidth = 2;
+    ctx.strokeRect(Math.min(d.x0,d.x1)*k, Math.min(d.y0,d.y1)*k,
+                   Math.abs(d.x1-d.x0)*k, Math.abs(d.y1-d.y0)*k);
+    ctx.setLineDash([]);
+  }
+}
+
+function toNat(evt) {
+  const cv = $('#cv'), r = cv.getBoundingClientRect(), it = S.items[S.idx];
+  return {
+    x: (evt.clientX - r.left) / r.width * it.width,
+    y: (evt.clientY - r.top) / r.height * it.height,
+  };
+}
+
+$('#cv').addEventListener('mousedown', e => {
+  if (S.idx < 0) return;
+  const it = S.items[S.idx], p = toNat(e), c = it.crop, k = scale();
+  if (S.mode === 'crop') {
+    const handle = 16 / k;   // つまみの当たり判定（元画像換算）
+    const onHandle = p.x >= c.x + c.size - handle && p.y >= c.y + c.size - handle;
+    S.drag = onHandle
+      ? { kind:'resize', ox:p.x, oy:p.y, size0:c.size }
+      : { kind:'move', ox:p.x - c.x, oy:p.y - c.y };
+  } else {
+    S.drag = { kind:'box', x0:p.x, y0:p.y, x1:p.x, y1:p.y };
+  }
+});
+
+$('#cv').addEventListener('mousemove', e => {
+  if (!S.drag || S.idx < 0) return;
+  const it = S.items[S.idx], p = toNat(e), c = it.crop, d = S.drag;
+  if (d.kind === 'move') {
+    c.x = Math.round(Math.max(0, Math.min(p.x - d.ox, it.width - c.size)));
+    c.y = Math.round(Math.max(0, Math.min(p.y - d.oy, it.height - c.size)));
+  } else if (d.kind === 'resize') {
+    const delta = Math.max(p.x - d.ox, p.y - d.oy);
+    const max = Math.min(it.width - c.x, it.height - c.y);
+    c.size = Math.round(Math.max(32, Math.min(d.size0 + delta, max)));
+  } else {
+    d.x1 = p.x; d.y1 = p.y;
+  }
+  draw();
+});
+
+window.addEventListener('mouseup', () => {
+  if (!S.drag || S.idx < 0) return;
+  const d = S.drag; S.drag = null;
+  if (d.kind === 'box') {
+    const it = S.items[S.idx];
+    const w = Math.abs(d.x1-d.x0), h = Math.abs(d.y1-d.y0);
+    if (w < 8 || h < 8) {
+      // ドラッグではなくクリック → その点を含む枠を消す
+      const i = it.boxes.findIndex(b =>
+        d.x0 >= b.x && d.x0 <= b.x+b.w && d.y0 >= b.y && d.y0 <= b.y+b.h);
+      if (i >= 0) it.boxes.splice(i, 1);
+    } else {
+      it.boxes.push({ x:Math.round(Math.min(d.x0,d.x1)), y:Math.round(Math.min(d.y0,d.y1)),
+                      w:Math.round(w), h:Math.round(h) });
+    }
+    renderThumbs();
+  }
+  draw(); preview();
+});
+
+window.addEventListener('resize', draw);
+
+// ── 仕上がりのプレビュー ───────────────────
+function preview() {
+  clearTimeout(S.timer);
+  S.timer = setTimeout(async () => {
+    if (S.idx < 0) return;
+    const it = S.items[S.idx];
+    try {
+      const res = await fetch('/api/simple/preview', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ id: it.id, crop: it.crop, boxes: it.boxes,
+                               color: $('#color').value, style: $('#style').value }) });
+      if (!res.ok) throw new Error((await res.json()).detail || 'プレビューを作れませんでした');
+      const blob = await res.blob();
+      const img = $('#preview');
+      if (img.dataset.url) URL.revokeObjectURL(img.dataset.url);
+      const url = URL.createObjectURL(blob);
+      img.dataset.url = url; img.src = url;
+    } catch (e) { flash(e.message, 'err'); }
+  }, 180);
+}
+
+// ── 3. 書き出し ────────────────────────────
+$('#exportBtn').addEventListener('click', async () => {
+  if (!S.items.length) return flash('先に画像を読み込んでください', 'err');
+  $('#exportBtn').disabled = true;
+  $('#exportResult').innerHTML = '<p class="hint">書き出しています…</p>';
+  try {
+    const res = await fetch('/api/simple/export', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        fmt: $('#fmt').value,
+        items: S.items.map(it => ({ id: it.id, crop: it.crop, boxes: it.boxes,
+                                    color: $('#color').value, style: $('#style').value })) }) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || '書き出せませんでした');
+    $('#exportResult').innerHTML = `
+      <div class="msg ok">${data.count} 枚を書き出しました。</div>
+      <p><a href="${data.zip}" download><button>${data.zip_name} をダウンロード</button></a></p>
+      <p class="hint">個別のファイルも output/ フォルダに入っています：${data.files.join('、')}</p>`;
+  } catch (e) { $('#exportResult').innerHTML = `<div class="msg err">${e.message}</div>`; }
+  finally { $('#exportBtn').disabled = false; }
+});
+</script>
+</body>
+</html>

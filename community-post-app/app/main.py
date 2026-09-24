@@ -16,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import compose as compose_mod
-from . import censor, config, db, extract, imagefetch, scoring, textgen
+from . import censor, config, db, extract, imagefetch, scoring, simple, textgen
 from .adapters import AdapterError, dmm_api, fetch_page
 from .models import ImageCandidate, PageMeta, Slots
 
@@ -146,8 +146,159 @@ def _apply_overrides(slots: Slots, overrides: dict[str, str]) -> Slots:
 # ルート
 # --------------------------------------------------------------------------
 @app.get("/", response_class=HTMLResponse)
+def simple_page() -> HTMLResponse:
+    """既定の画面。スクエア変換と手動モザイクだけの簡易ツール。"""
+    return HTMLResponse((WEB_DIR / "templates" / "simple.html").read_text(encoding="utf-8"))
+
+
+@app.get("/full", response_class=HTMLResponse)
 def index() -> HTMLResponse:
+    """従来の画面（記事の解析・投稿文の生成・DMM API 連携）。"""
     return HTMLResponse((WEB_DIR / "templates" / "index.html").read_text(encoding="utf-8"))
+
+
+# --------------------------------------------------------------------------
+# シンプルモード: 複数枚のスクエア変換と手動モザイク
+# --------------------------------------------------------------------------
+MAX_BATCH = 10
+
+
+class SimpleRenderRequest(BaseModel):
+    id: str
+    crop: dict | None = None
+    boxes: list[dict] = Field(default_factory=list)
+    color: str = "black"          # black | gray
+    style: str = "solid"          # solid | mosaic
+    out_size: int = simple.OUT_SIZE
+
+
+class SimpleExportRequest(BaseModel):
+    items: list[SimpleRenderRequest] = Field(default_factory=list)
+    fmt: str = "JPEG"
+
+
+def _simple_path(image_id: str) -> Path:
+    """アップロード画像の保存先。id は中身のハッシュなので外から任意のパスは作れない。"""
+    if not image_id.isalnum() or len(image_id) > 40:
+        raise HTTPException(status_code=400, detail="画像 ID が不正です。")
+    return config.CACHE_DIR / f"up_{image_id}.bin"
+
+
+@app.post("/api/simple/upload")
+async def simple_upload(files: list[UploadFile] = File(...)) -> dict[str, Any]:
+    """画像をまとめて受け取る（最大 MAX_BATCH 枚）。"""
+    import hashlib
+
+    if len(files) > MAX_BATCH:
+        raise HTTPException(
+            status_code=400, detail=f"一度に読み込めるのは {MAX_BATCH} 枚までです。"
+        )
+
+    items: list[dict[str, Any]] = []
+    errors: list[str] = []
+    for file in files:
+        blob = await file.read()
+        name = file.filename or "image"
+        if not blob:
+            errors.append(f"{name}: 中身が空です")
+            continue
+        if len(blob) > imagefetch.MAX_BYTES:
+            errors.append(f"{name}: 大きすぎます（12MB まで）")
+            continue
+        try:
+            im = simple.open_image(blob)
+        except simple.RenderError as exc:
+            errors.append(f"{name}: {exc}")
+            continue
+
+        image_id = hashlib.sha1(blob).hexdigest()[:16]
+        _simple_path(image_id).write_bytes(blob)
+        crop = simple.Crop.centered(im.width, im.height)
+        items.append({
+            "id": image_id,
+            "name": name,
+            "width": im.width,
+            "height": im.height,
+            "url": f"/api/simple/image/{image_id}",
+            "crop": crop.as_dict(),
+        })
+
+    return {"items": items, "errors": errors, "max": MAX_BATCH}
+
+
+@app.get("/api/simple/image/{image_id}")
+def simple_image(image_id: str) -> Response:
+    path = _simple_path(image_id)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="画像が見つかりません。")
+    return Response(content=path.read_bytes(), media_type="image/jpeg")
+
+
+@app.post("/api/simple/preview")
+def simple_preview(req: SimpleRenderRequest) -> Response:
+    """1枚の仕上がりを返す（保存はしない）。"""
+    path = _simple_path(req.id)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="画像が見つかりません。読み込み直してください。")
+    try:
+        data, _ = simple.render(
+            path.read_bytes(),
+            crop=req.crop,
+            boxes=req.boxes,
+            color=req.color,
+            style=req.style,
+            out_size=req.out_size,
+        )
+    except simple.RenderError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return Response(content=data, media_type="image/jpeg")
+
+
+@app.post("/api/simple/export")
+def simple_export(req: SimpleExportRequest) -> dict[str, Any]:
+    """まとめて書き出し、ZIP にして返す。"""
+    import zipfile
+    from datetime import datetime
+
+    if not req.items:
+        raise HTTPException(status_code=400, detail="書き出す画像がありません。")
+
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    zip_name = f"square_{stamp}.zip"
+    saved: list[str] = []
+
+    with zipfile.ZipFile(config.OUTPUT_DIR / zip_name, "w", zipfile.ZIP_DEFLATED) as zf:
+        for index, item in enumerate(req.items, start=1):
+            path = _simple_path(item.id)
+            if not path.exists():
+                continue
+            try:
+                data, ext = simple.render(
+                    path.read_bytes(),
+                    crop=item.crop,
+                    boxes=item.boxes,
+                    color=item.color,
+                    style=item.style,
+                    out_size=item.out_size,
+                    fmt=req.fmt,
+                )
+            except simple.RenderError:
+                continue
+            name = f"{stamp}_{index:02d}.{ext}"
+            (config.OUTPUT_DIR / name).write_bytes(data)
+            zf.write(config.OUTPUT_DIR / name, name)
+            saved.append(name)
+
+    if not saved:
+        (config.OUTPUT_DIR / zip_name).unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail="書き出せた画像がありませんでした。")
+
+    return {
+        "count": len(saved),
+        "files": saved,
+        "zip": f"/output/{zip_name}",
+        "zip_name": zip_name,
+    }
 
 
 @app.post("/api/analyze")
