@@ -23,7 +23,7 @@ def split_sections(text):
     sections, cur = {}, None
     for line in text.splitlines():
         m = re.match(r"^【(.+?)】(.*)$", line.strip())
-        if m and m.group(1) in {"型", "タイトル", "タイトル案", "台本", "画面・音", "ハッシュタグ", "概要欄"}:
+        if m and m.group(1) in {"型", "タイトル", "タイトル案", "台本", "サムネ文", "画面・音", "ハッシュタグ", "概要欄"}:
             cur = m.group(1)
             sections[cur] = [m.group(2).strip()] if m.group(2).strip() else []
         elif cur:
@@ -95,6 +95,12 @@ def main(path):
                 add(has_cta, "締め", "最後にCTAがある" if has_cta else "CTA締め指定なのに最後にCTAがない")
             else:
                 add(True, "締め", "CTAあり" if has_cta else "CTAなし（ぶつ切り）", soft=not has_cta)
+
+            thumb = norm(sec.get("サムネ文", "").splitlines()[0]) if sec.get("サムネ文") else ""
+            if not thumb:
+                add(False, "サムネ文", "【サムネ文】がない")
+            else:
+                add(5 <= len(thumb) <= 10, "サムネ文", f"{len(thumb)}字（目安5〜10字）", soft=True)
 
             commas = sum(t.count("、") for _, t in blocks)
             add(commas <= 3, "読点", f"{commas}個（区切りは改行か半角スペースで）", soft=True)
