@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: research-from-name
+expected_outcome: |
+  宮脇咲良さんのHKT48時代→LE SSERAFIMの今を扱う、型A（昔→今）の台本を、プレーン版とカット割り版の2つの.txtファイルで作る。
+  事実は出典で確認したものだけを使い、概要欄に出典URLを載せる。冒頭で今の姿をモザイクで隠し、真ん中あたりで公開し、最後の一言で冒頭の文を回収する。

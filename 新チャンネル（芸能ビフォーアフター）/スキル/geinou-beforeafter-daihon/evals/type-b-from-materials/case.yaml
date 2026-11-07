@@ -1,0 +1,5 @@
+schema_version: "1.1"
+name: type-b-from-materials
+expected_outcome: |
+  渡された事実だけを使って、型B（比較・逆転）のON/OFF台本を、プレーン版とカット割り版の2つの.txtファイルで作る。
+  渡されていない数字や経歴を足さない。OFFを悪く言わずに、ONとの振り幅で驚かせ、最後の一言で冒頭の文を回収する。
