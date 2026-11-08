@@ -9,7 +9,7 @@
     {
       "type": "title",
       "pattern": "B",
-      "dur": 3.73,
+      "dur": 3.99,
       "title": "同じポーズの13歳が\n19歳になったら\n大人びすぎやろｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
@@ -24,7 +24,7 @@
     },
     {
       "type": "single",
-      "dur": 3.48,
+      "dur": 3.92,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
         "label": "出典：公式X"
@@ -38,7 +38,7 @@
         {
           "text": "この時点で\n透明感すごいやん",
           "color": "red",
-          "at": 1.62,
+          "at": 1.9,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -47,7 +47,7 @@
     },
     {
       "type": "single",
-      "dur": 3.93,
+      "dur": 4.85,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
         "label": "出典：公式X"
@@ -61,16 +61,16 @@
         {
           "text": "この頃はまだ\nあどけなさ残っとる",
           "color": "purple",
-          "at": 2.08,
+          "at": 2.69,
           "se": "se/bm/B.mp3",
-          "seVolume": 0.14
+          "seVolume": 0.22
         }
       ],
       "voice": "touma-ami/voice/cut03.wav"
     },
     {
       "type": "single",
-      "dur": 3.12,
+      "dur": 3.61,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
@@ -85,7 +85,7 @@
         {
           "text": "ほな答え合わせや",
           "color": "red",
-          "at": 1.92,
+          "at": 2.34,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -94,7 +94,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.03,
+      "dur": 4.54,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -103,20 +103,20 @@
         "text": "そんで19歳がこれや",
         "color": "red",
         "se": "se/bm/D.mp3",
-        "seVolume": 0.13
+        "seVolume": 0.22
       },
       "bottom": [
         {
           "text": "6年でこうなるんか",
           "color": "purple",
-          "at": 1.62,
+          "at": 1.9,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         },
         {
           "text": "凛としすぎやろ",
           "color": "red",
-          "at": 2.94,
+          "at": 3.36,
           "se": null
         }
       ],
@@ -124,7 +124,7 @@
     },
     {
       "type": "single",
-      "dur": 3.29,
+      "dur": 3.63,
       "image": {
         "src": "touma-ami/p5_20sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -133,13 +133,13 @@
         "text": "正体は女優の當真あみ",
         "color": "blue",
         "se": "se/bm/B.mp3",
-        "seVolume": 0.14
+        "seVolume": 0.22
       },
       "bottom": [
         {
           "text": "あっという間に20歳やん",
           "color": "purple",
-          "at": 1.71,
+          "at": 1.91,
           "se": null
         }
       ],
@@ -147,7 +147,7 @@
     },
     {
       "type": "single",
-      "dur": 4.17,
+      "dur": 4.75,
       "image": {
         "src": "touma-ami/p4_post.png",
         "label": "出典：當真あみ【公式】X"
@@ -162,7 +162,7 @@
         {
           "text": "いや3枚とも\nほぼ変わらんやろ",
           "color": "purple",
-          "at": 2.45,
+          "at": 2.8,
           "se": null
         }
       ],
@@ -171,7 +171,7 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 4.77,
+      "dur": 5.36,
       "images": [
         {
           "src": "touma-ami/p1_13sai_hikaku.jpg",
@@ -186,13 +186,13 @@
         "text": "左が13歳\n右が19歳",
         "color": "green",
         "se": "se/bm/D.mp3",
-        "seVolume": 0.13
+        "seVolume": 0.22
       },
       "bottom": [
         {
           "text": "大人びても\n透明感そのままや",
           "color": "red",
-          "at": 2.08,
+          "at": 2.37,
           "se": null
         }
       ],
@@ -200,13 +200,9 @@
     }
   ],
   "voiceCredits": [
-    "VOICEVOX:春日部つむぎ",
-    "VOICEVOX:青山龍星"
+    "VOICEVOX:九州そら",
+    "VOICEVOX:白上虎太郎"
   ],
-  "voices": {
-    "a": 13,
-    "b": 8
-  },
   "sfx": {
     "title": "se/bm/T.mp3",
     "titleVolume": 0.23,

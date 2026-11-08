@@ -68,7 +68,7 @@ npx remotion studio                      # ブラウザで見ながら調整す�
    - 読み間違える言葉は、spec の一番上の `"yomi"` で直す（例：`{"20歳": "はたち", "當真あみ": "とうまあみ"}`）。先に読みを確かめてから作る
    - 声に合わせたあと、カット1は冒頭の文の字数÷7＋0.3秒以上、最後のカットは5秒くらいに延ばす
 5. 書き出し：`node scripts/render.mjs <id>`
-6. 音量をそろえる：`ffmpeg -i out/<id>.mp4 -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k out/<id>_kansei.mp4`
+6. 音量をそろえる：`ffmpeg -i out/<id>.mp4 -c:v copy -af loudnorm=I=-19.6:TP=-2.5:LRA=4 -c:a aac -b:a 192k out/<id>_kansei.mp4`
 7. サムネ：`node scripts/render.mjs <id> --stills` のカット1（`out/still/<id>_カット01.png`）
 
 クラウドの VOICEVOX CORE は、GitHub から VOICEVOX CORE 0.17.1 の wheel、VOICEVOX ONNX Runtime 1.23.2、voicevox_vvm の 15.vvm と、PyPI の pyopenjtalk-plus に入っている Open JTalk の辞書で組み立てた（2026-11-08）。

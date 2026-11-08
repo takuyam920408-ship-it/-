@@ -28,8 +28,8 @@ if [ ! -d ort ]; then
   mkdir -p ort && tar xzf ort.tgz -C ort && rm ort.tgz
 fi
 
-# 使う声の音声モデル：15.vvm＝青山龍星（説明）、0.vvm＝春日部つむぎ（ツッコミ）。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
-VVMS=${VVMS:-"15 0"}
+# 使う声の音声モデル：2.vvm＝九州そら（声a）、9.vvm＝白上虎太郎（声b）。15.vvm＝青山龍星・0.vvm＝春日部つむぎは前に使った声。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
+VVMS=${VVMS:-"2 9 15 0"}
 mkdir -p vvms
 missing=""; for v in $VVMS; do [ -f "vvms/$v.vvm" ] || missing="$missing /vvms/$v.vvm"; done
 if [ -n "$missing" ]; then

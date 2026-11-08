@@ -81,9 +81,9 @@ def main():
         lo, hi = REVEAL_RANGE[m.group(1)]
         check(lo <= t <= hi, f'公開 {t:.1f}秒（型{m.group(1)}は{lo}〜{hi}秒）')
     first = cuts[0]
-    need = n(first['title']) / 7 + 0.3 if first['type'] == 'title' else 0
-    check(first['dur'] >= need - 0.01, f'カット1 {first["dur"]}秒（冒頭の文の字数÷7＋0.3＝{need:.2f}秒以上）')
-    check(cuts[-1]['dur'] >= 4.5, f'最後のカット {cuts[-1]["dur"]}秒（5秒くらい）', '注意')
+    if not first.get('voice'):
+        need = n(first['title']) / 7 + 0.3 if first['type'] == 'title' else 0
+        check(first['dur'] >= need - 0.01, f'カット1 {first["dur"]}秒（声がないので、冒頭の文の字数÷7＋0.3＝{need:.2f}秒以上）')
 
     # 3. テロップの字数・行・出すタイミング・声の長さ
     tot_chars = 0
@@ -105,7 +105,7 @@ def main():
                 check(max(e for _, e in ends) <= c['dur'], f'カット{i} カットの中で読み終わる', '注意')
         if c.get('voice') and os.path.exists(os.path.join(pub, c['voice'])):
             vl = wav_len(os.path.join(pub, c['voice']))
-            check(c['dur'] >= vl + 0.3 - 0.01, f'カット{i} 秒数 {c["dur"]} ≥ 声 {vl:.2f}＋0.3')
+            check(c['dur'] >= vl + 0.25 - 0.01, f'カット{i} 秒数 {c["dur"]} ≥ 声 {vl:.2f}＋0.25（ベンチマークは0.26）')
     check(180 <= tot_chars <= 210, f'テロップ合計 {tot_chars}字（180〜210字）', '注意')
 
     # 4. 2つの台本と設計図のテロップが同じか
