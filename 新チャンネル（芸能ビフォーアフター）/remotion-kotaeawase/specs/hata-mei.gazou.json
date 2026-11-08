@@ -107,11 +107,11 @@
       "from": "hyoushi",
       "crop": [
         0,
-        260,
+        350,
         828,
-        820
+        910
       ],
-      "what": "通常版の表紙の顔を横長に切り取った（カット6の下）"
+      "what": "通常版の表紙の顔を横長に切り取った。目から口元までが下テロップより上に来るように（カット6の下）"
     },
     {
       "photo": "写真2",
@@ -145,6 +145,6 @@
     }
   ],
   "manual": [
-    "写真4：node scripts/xshot.js 2106227295136698801 public/hata-mei/p4_post.png（表紙2種類の投稿の画面。カット7）"
+    "写真4：node scripts/xshot.js 2106227295136698801 public/hata-mei/p4_post.png のあと、表紙2枚の画像の下の端（時刻・いいねの行の上）で切り取って public/hata-mei/p4_post_kiri.png にする（python3 -c \"from PIL import Image; Image.open('public/hata-mei/p4_post.png').crop((0,0,1096,1290)).save('public/hata-mei/p4_post_kiri.png')\"。カット7）"
   ]
 }
