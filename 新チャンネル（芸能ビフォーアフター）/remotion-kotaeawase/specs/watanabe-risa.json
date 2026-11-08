@@ -16,7 +16,7 @@
         "focusY": 0.4
       },
       "after": {
-        "src": "watanabe-risa/p5_ima_kao_kari.png",
+        "src": "watanabe-risa/p5_ima_kao.jpg",
         "label": "出典：渡邉理佐のInstagram"
       },
       "mosaic": 48,
@@ -95,7 +95,7 @@
       "type": "reveal",
       "dur": 4.79,
       "image": {
-        "src": "watanabe-risa/p5_ima_kari.png",
+        "src": "watanabe-risa/p5_ima.jpg",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
@@ -131,7 +131,7 @@
           "focusY": 0.4
         },
         {
-          "src": "watanabe-risa/p5_ima_kao_kari.png",
+          "src": "watanabe-risa/p5_ima_kao.jpg",
           "label": "出典：渡邉理佐のInstagram"
         }
       ],
@@ -155,7 +155,7 @@
       "type": "single",
       "dur": 4.94,
       "image": {
-        "src": "watanabe-risa/p6_post_kari.png",
+        "src": "watanabe-risa/p6_post.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
