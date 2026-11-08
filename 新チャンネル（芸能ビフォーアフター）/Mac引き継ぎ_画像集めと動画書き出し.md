@@ -47,7 +47,9 @@
 
 ## 2. 動画（Remotion）
 
-反応集のプロジェクトと同じ作り（spec.json → render.mjs → thumb.mjs → predeliver.mjs）で、答え合わせ速報のテーマを作る。新しいプロジェクト（例：`~/youtube-editing/remotion-kotaeawase`）でも、既存のプロジェクトに新しいテーマを足す形でもよい。
+**テンプレートはクラウド側で作成済み**（2026-11-08）：リポジトリの `新チャンネル（芸能ビフォーアフター）/remotion-kotaeawase/`。`specs/<id>.json` を書いて `node scripts/render.mjs <id>` で書き出す。使い方と spec の書き方は同じフォルダの README.md。見本（`specs/mihon.json`、グレーの仮画像、7カット・28.3秒）はユーザーに確認してもらう。
+Macでは、このフォルダを使って、画像（public/<id>/）と VOICEVOX の音声（voice）を入れて書き出す。Macの `~/youtube-editing/remotion-kotaeawase/` に以前作りかけたものがあれば、こちらにそろえる。
+以下は画面の決まり（テンプレートに入っている値）。
 
 **画面**（くわしくは edit-design.md）
 - 1080×1920、30fps

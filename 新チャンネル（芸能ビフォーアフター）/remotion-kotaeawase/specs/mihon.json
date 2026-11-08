@@ -1,0 +1,62 @@
+{
+  "id": "mihon",
+  "cuts": [
+    {
+      "type": "title",
+      "pattern": "A",
+      "dur": 3.5,
+      "title": "〇〇が今\nこうなってるらしいｗ",
+      "before": { "src": "mihon/mukashi1.png", "label": "出典：〇〇" },
+      "after": { "src": "mihon/ima_kao.png" },
+      "mosaic": 48
+    },
+    {
+      "type": "single",
+      "dur": 3.8,
+      "image": { "src": "mihon/mukashi2.png", "label": "出典：〇〇公式" },
+      "top": { "text": "2016年\n20歳の〇〇", "color": "green" },
+      "bottom": [{ "text": "この頃はまだ\n素朴な感じやった", "color": "purple", "at": 2.0 }]
+    },
+    {
+      "type": "single",
+      "dur": 3.8,
+      "image": { "src": "mihon/mukashi3.png", "label": "出典：本人のX" },
+      "top": { "text": "この時点で\n十分可愛いやろ", "color": "blue" },
+      "bottom": [{ "text": "もう完成しとるやん", "color": "purple", "at": 2.0 }]
+    },
+    {
+      "type": "wide",
+      "dur": 3.8,
+      "image": { "src": "mihon/tv_wide.png", "label": "出典：番組名" },
+      "top": { "text": "テレビで\nめっちゃ推されとったな", "color": "blue" },
+      "bottom": [{ "text": "ここから\n韓国に渡るんやけど", "color": "orange", "at": 2.0 }]
+    },
+    {
+      "type": "reveal",
+      "dur": 4.6,
+      "image": { "src": "mihon/ima1.png", "label": "出典：公式" },
+      "top": { "text": "そんで今がこれや", "color": "red" },
+      "bottom": [
+        { "text": "誰やねん", "color": "purple", "at": 1.6 },
+        { "text": "雰囲気\n変わりすぎやろ", "color": "red", "at": 2.8 }
+      ]
+    },
+    {
+      "type": "single",
+      "dur": 3.8,
+      "image": { "src": "mihon/ima2.png", "label": "出典：公式" },
+      "top": { "text": "〇〇ってグループで\nデビューしとる", "color": "green" },
+      "bottom": [{ "text": "練習生を\n5年やったんやって", "color": "blue", "at": 2.0 }]
+    },
+    {
+      "type": "compare",
+      "dur": 5.0,
+      "images": [
+        { "src": "mihon/mukashi1.png", "tag": "10年前", "label": "出典：〇〇" },
+        { "src": "mihon/ima1.png", "tag": "今", "label": "出典：公式" }
+      ],
+      "top": { "text": "上が10年前\n下が今", "color": "green" },
+      "bottom": [{ "text": "元から\n可愛かったのにな", "color": "red", "at": 2.4 }]
+    }
+  ]
+}

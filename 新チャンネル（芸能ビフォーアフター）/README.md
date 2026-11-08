@@ -7,7 +7,8 @@
 - 区切りカード・マスコット：使わない
 - 読み上げの声：VOICEVOX の青山龍星
 - アイコン・バナー：「アイコン/チャンネルアイコン_決定.png」「アイコン/チャンネルバナー_決定.png」
-- 画像集め・動画書き出し・予約投稿：Macで反応集と同じ運用（「Mac引き継ぎ_画像集めと動画書き出し.md」）
+- 動画テンプレート：「remotion-kotaeawase/」（Remotion。spec.json を書いて書き出す。見本は specs/mihon.json）
+- 画像集め・声入れ・予約投稿：Macで反応集と同じ運用（「Mac引き継ぎ_画像集めと動画書き出し.md」）
 - 画面デザイン：https://claude.ai/artifact/2rdz4rK7kPS6oo3E3BXKHW
 - 台本スキル：geinou-beforeafter-daihon（「スキル」フォルダ）。4人の審査担当（伸ばす・信頼・構成・ポリシー）つき
 - 投稿：毎日2本、18:00と21:00（日本時間）
