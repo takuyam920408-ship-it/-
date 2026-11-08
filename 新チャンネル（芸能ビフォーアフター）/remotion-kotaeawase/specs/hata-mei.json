@@ -1,0 +1,187 @@
+{
+  "id": "hata-mei",
+  "yomi": {
+    "1stと": "ふぁーすとと",
+    "畑芽育": "はためい",
+    "24歳": "にじゅうよんさい"
+  },
+  "cuts": [
+    {
+      "type": "title",
+      "pattern": "B",
+      "dur": 3.17,
+      "title": "同じ写真集の\n表紙2種類が\n別人すぎやろｗ",
+      "before": {
+        "src": "hata-mei/p1_gentei_kao.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "after": {
+        "src": "hata-mei/p2_tsujo_kao.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "mosaic": 40,
+      "voice": "hata-mei/voice/cut01.wav"
+    },
+    {
+      "type": "single",
+      "dur": 3.85,
+      "image": {
+        "src": "hata-mei/p1_gentei.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "まずはこっち\n限定版の表紙",
+        "color": "green",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "あどけなさ全開やん",
+          "color": "red",
+          "at": 2.27,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        }
+      ],
+      "voice": "hata-mei/voice/cut02.wav"
+    },
+    {
+      "type": "reveal",
+      "dur": 4.45,
+      "image": {
+        "src": "hata-mei/p2_tsujo.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "そんで通常版がこれや",
+        "color": "red",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "同じ人なんか",
+          "color": "purple",
+          "at": 1.89,
+          "se": "se/bm/B.mp3",
+          "seVolume": 0.22
+        },
+        {
+          "text": "大人っぽすぎやろ",
+          "color": "red",
+          "at": 3.13,
+          "se": null
+        }
+      ],
+      "voice": "hata-mei/voice/cut03.wav"
+    },
+    {
+      "type": "compare",
+      "layout": "side",
+      "dur": 4.28,
+      "images": [
+        {
+          "src": "hata-mei/p1_gentei_tate.jpg",
+          "label": "出典：本人の公式X"
+        },
+        {
+          "src": "hata-mei/p2_tsujo_tate.jpg",
+          "label": "出典：本人の公式X"
+        }
+      ],
+      "top": {
+        "text": "左が限定版\n右が通常版",
+        "color": "green",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
+      },
+      "bottom": [
+        {
+          "text": "ワイは限定版派やわ",
+          "color": "purple",
+          "at": 2.54,
+          "se": null
+        }
+      ],
+      "voice": "hata-mei/voice/cut04.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.13,
+      "image": {
+        "src": "hata-mei/p3_event.jpg",
+        "label": "出典：畑芽育の公式X"
+      },
+      "top": {
+        "text": "正体は俳優の畑芽育",
+        "color": "blue",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
+      },
+      "bottom": [
+        {
+          "text": "24歳でこの振れ幅や",
+          "color": "red",
+          "at": 2.05,
+          "se": null
+        }
+      ],
+      "voice": "hata-mei/voice/cut05.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.57,
+      "image": {
+        "src": "hata-mei/p2_tsujo_zen.jpg",
+        "label": "出典：畑芽育の公式X"
+      },
+      "top": {
+        "text": "本人も1stと\n見比べてほしいって",
+        "color": "blue",
+        "se": "se/bm/B.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "3年で大人びたんやな",
+          "color": "purple",
+          "at": 2.7,
+          "se": null
+        }
+      ],
+      "voice": "hata-mei/voice/cut06.wav"
+    },
+    {
+      "type": "single",
+      "dur": 5.78,
+      "image": {
+        "src": "hata-mei/p4_post.png",
+        "label": "出典：畑芽育の公式X"
+      },
+      "top": {
+        "text": "写真集は\n11月12日発売や",
+        "color": "green",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "どっちも同じ畑芽育やで",
+          "color": "red",
+          "at": 3.13,
+          "se": null
+        }
+      ],
+      "voice": "hata-mei/voice/cut07.wav"
+    }
+  ],
+  "voiceCredits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:青山龍星"
+  ],
+  "sfx": {
+    "title": "se/bm/T.mp3",
+    "titleVolume": 0.23,
+    "telop": null
+  }
+}

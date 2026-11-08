@@ -1,0 +1,127 @@
+{
+  "id": "hata-mei",
+  "sources": [
+    {
+      "name": "hyoushi",
+      "x_status": "2106227295136698801",
+      "index": 1,
+      "size": [
+        828,
+        1160
+      ]
+    },
+    {
+      "name": "hyoushi2",
+      "x_status": "2106227295136698801",
+      "index": 2,
+      "size": [
+        832,
+        1165
+      ]
+    },
+    {
+      "name": "event",
+      "x_status": "2098611163848384609",
+      "index": 1,
+      "size": [
+        1000,
+        1500
+      ]
+    }
+  ],
+  "files": [
+    {
+      "photo": "写真1",
+      "file": "p1_gentei.jpg",
+      "from": "hyoushi2",
+      "crop": [
+        40,
+        230,
+        800,
+        1080
+      ],
+      "what": "限定版の表紙。上の題字と下の撮影者の文字を切り取った（カット2）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_gentei_kao.jpg",
+      "from": "hyoushi2",
+      "crop": [
+        170,
+        250,
+        660,
+        800
+      ],
+      "what": "限定版の表紙の肩から上（カット1の左）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_gentei_tate.jpg",
+      "from": "hyoushi2",
+      "crop": [
+        190,
+        240,
+        650,
+        1080
+      ],
+      "what": "限定版の表紙の、顔を中心にした縦長の切り取り（カット4の左）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_tsujo.jpg",
+      "from": "hyoushi",
+      "crop": [
+        0,
+        240,
+        828,
+        960
+      ],
+      "what": "通常版の表紙。上の題字を切り取った（カット3）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_tsujo_kao.jpg",
+      "from": "hyoushi",
+      "crop": [
+        130,
+        260,
+        690,
+        840
+      ],
+      "what": "通常版の表紙の、あごの下までの顔（カット1のモザイク）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_tsujo_tate.jpg",
+      "from": "hyoushi",
+      "crop": [
+        170,
+        260,
+        630,
+        1100
+      ],
+      "what": "通常版の表紙の、顔を中心にした縦長の切り取り（カット4の右）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_tsujo_zen.jpg",
+      "from": "hyoushi",
+      "what": "通常版の表紙の全体（題字入り）（カット6）"
+    },
+    {
+      "photo": "写真3",
+      "file": "p3_event.jpg",
+      "from": "event",
+      "crop": [
+        0,
+        80,
+        850,
+        1260
+      ],
+      "what": "写真集の発売記念イベントのお知らせの写真。右の端の男性を切り取った（カット5）"
+    }
+  ],
+  "manual": [
+    "写真4：node scripts/xshot.js 2106227295136698801 public/hata-mei/p4_post.png（表紙2種類の投稿の画面。カット7）"
+  ]
+}
