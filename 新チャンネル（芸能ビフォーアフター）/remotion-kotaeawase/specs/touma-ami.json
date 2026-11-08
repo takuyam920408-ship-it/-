@@ -7,7 +7,7 @@
     {
       "type": "title",
       "pattern": "B",
-      "dur": 3.12,
+      "dur": 3.29,
       "title": "同じポーズの13歳\n6年後が大人びすぎｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
@@ -22,7 +22,7 @@
     },
     {
       "type": "single",
-      "dur": 4.17,
+      "dur": 4.2,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
         "label": "出典：公式X"
@@ -36,7 +36,7 @@
         {
           "text": "この時点で\n透明感すごいやん",
           "color": "red",
-          "at": 1.94,
+          "at": 1.97,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -68,7 +68,7 @@
     },
     {
       "type": "single",
-      "dur": 3.72,
+      "dur": 3.74,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
@@ -83,7 +83,7 @@
         {
           "text": "ほな答え合わせや",
           "color": "red",
-          "at": 2.28,
+          "at": 2.31,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -92,7 +92,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.77,
+      "dur": 4.79,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -107,14 +107,14 @@
         {
           "text": "6年でこうなるんか",
           "color": "purple",
-          "at": 1.92,
+          "at": 1.93,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         },
         {
           "text": "凛としすぎやろ",
           "color": "red",
-          "at": 3.52,
+          "at": 3.54,
           "se": null
         }
       ],
@@ -122,7 +122,7 @@
     },
     {
       "type": "single",
-      "dur": 4.45,
+      "dur": 4.6,
       "image": {
         "src": "touma-ami/p4_sanmai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -146,7 +146,7 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 5.6,
+      "dur": 5.69,
       "images": [
         {
           "src": "touma-ami/p1_13sai_hikaku.jpg",
@@ -175,6 +175,7 @@
     }
   ],
   "voiceCredits": [
+    "VOICEVOX:四国めたん",
     "VOICEVOX:青山龍星"
   ],
   "sfx": {
