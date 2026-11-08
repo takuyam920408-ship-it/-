@@ -1,0 +1,19 @@
+{
+  "id": "touma-ami",
+  "sources": [
+    { "name": "sanmai", "x_status": "2116473448457511310", "index": 1, "size": [1180, 1884] },
+    { "name": "tanjoubi", "x_status": "2117040190019805392", "index": 1, "size": [1536, 2048] }
+  ],
+  "files": [
+    { "photo": "写真1", "file": "p1_13sai.jpg", "from": "sanmai", "crop": [88, 0, 585, 852], "what": "2020年10月25日（中学2年生・13歳）の宣材写真。全体（カット2）" },
+    { "photo": "写真1", "file": "p1_13sai_kao.jpg", "from": "sanmai", "crop": [88, 30, 585, 620], "what": "同じ写真の肩から上（カット1の昔）" },
+    { "photo": "写真1", "file": "p1_13sai_hikaku.jpg", "from": "sanmai", "crop": [88, 0, 585, 706], "what": "同じ写真の日付の文字より上（カット8）" },
+    { "photo": "写真2", "file": "p2_16sai.jpg", "from": "sanmai", "crop": [603, 0, 1100, 852], "what": "2023年10月（高校2年生・16歳）の宣材写真（カット3）" },
+    { "photo": "写真3", "file": "p3_19sai.jpg", "from": "sanmai", "crop": [228, 946, 935, 1745], "what": "2026年10月（19歳）の宣材写真。日付の文字より上（カット5・カット8）" },
+    { "photo": "写真3", "file": "p3_19sai_kao.jpg", "from": "sanmai", "crop": [242, 984, 893, 1745], "what": "同じ写真の肩から上。昔と顔の大きさをそろえた（カット1・カット4のモザイク）" },
+    { "photo": "写真5", "file": "p5_20sai.jpg", "from": "tanjoubi", "what": "20歳の誕生日に投稿された写真（MYOJOのオフショット）（カット6）" }
+  ],
+  "manual": [
+    "写真4：https://x.com/ami_touma/status/2116473448457511310 の投稿の画面のスクショ（投稿の枠だけ。返信欄・ほかのアカウント・おすすめ欄・トレンド・自分のアカウントは入れない。いいねの数が見えるもの）を public/touma-ami/p4_post.png に置き、touma-ami.json のカット7の src を touma-ami/p4_post.png に替える"
+  ]
+}

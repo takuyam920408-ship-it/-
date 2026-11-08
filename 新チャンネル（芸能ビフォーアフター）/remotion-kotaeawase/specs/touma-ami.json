@@ -8,11 +8,11 @@
       "title": "同じポーズの13歳が\n19歳になったら\n大人びすぎやろｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
-        "label": "出典：本人の公式X"
+        "label": "出典：公式X"
       },
       "after": {
         "src": "touma-ami/p3_19sai_kao.jpg",
-        "label": "出典：本人の公式X"
+        "label": "出典：公式X"
       },
       "mosaic": 40
     },
@@ -21,7 +21,7 @@
       "dur": 3.8,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
-        "label": "出典：本人の公式X"
+        "label": "出典：公式X"
       },
       "top": {
         "text": "スカウト直後の13歳",
@@ -40,7 +40,7 @@
       "dur": 3.8,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
-        "label": "出典：本人の公式X"
+        "label": "出典：公式X"
       },
       "top": {
         "text": "3年後 高2でもう一回",
@@ -59,7 +59,7 @@
       "dur": 3.8,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
-        "label": "出典：本人の公式X"
+        "label": "出典：公式X"
       },
       "mosaic": 40,
       "top": {
@@ -76,13 +76,13 @@
     },
     {
       "type": "reveal",
-      "dur": 4.7,
+      "dur": 4.6,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
       },
       "top": {
-        "text": "そんで10代ラストの\n19歳がこれや",
+        "text": "そんで19歳がこれや",
         "color": "red"
       },
       "bottom": [
@@ -139,7 +139,7 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 4.8,
+      "dur": 5.0,
       "images": [
         {
           "src": "touma-ami/p1_13sai_hikaku.jpg",

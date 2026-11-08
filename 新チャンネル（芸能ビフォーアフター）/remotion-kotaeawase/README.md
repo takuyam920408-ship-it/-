@@ -13,6 +13,7 @@ npx remotion studio                      # ブラウザで見ながら調整す�
 ```
 
 - 画像・音声は `public/<id>/` に置き、spec からは `<id>/ファイル名` で指す
+- 画像は `python3 scripts/gazou.py <id>` で集める。`specs/<id>.gazou.json` に書いた本人・公式のXの投稿から画像を取り、決めた範囲で切り取って `public/<id>/` に置き、`画像の出どころ.json` を残す（Pillow と curl が必要）。スクショなど手で用意するものは `manual` に書いておくと、最後に表示される
 - 見本（`specs/mihon.json`・`public/mihon/`）はグレーの仮画像
 - **本番の回の画像・音声はリポジトリに入れない**（`.gitignore` で `public/` は `mihon` 以外を外してある）。芸能人の写真をGitHubに上げないため
 - クラウドの環境では入っているヘッドレスのChromeを使う。Macでは Remotion が自分で用意する
