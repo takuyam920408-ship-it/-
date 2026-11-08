@@ -4,66 +4,163 @@
     {
       "type": "title",
       "pattern": "A",
-      "dur": 4.0,
-      "title": "元欅坂の渡邉理佐\n1年8か月ぶりの\n今の姿がこれらしい…",
-      "before": { "src": "watanabe-risa/p1_keyaki_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "after": { "src": "watanabe-risa/p5_ima_kari.png", "label": "出典：渡邉理佐のInstagram" },
+      "dur": 4.1,
+      "title": "元欅坂の渡邉理佐\n1年8か月ぶりの姿\nどうなっとると思う？",
+      "before": {
+        "src": "watanabe-risa/p1_kuroihitsuji.jpg",
+        "label": "出典：non-no公式X",
+        "focusY": 0.4
+      },
+      "after": {
+        "src": "watanabe-risa/p5_ima_kao_kari.png",
+        "label": "出典：渡邉理佐のInstagram"
+      },
       "mosaic": 48
     },
     {
       "type": "single",
       "dur": 3.5,
-      "image": { "src": "watanabe-risa/p2_keyaki_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "欅坂46の1期生", "color": "green" },
-      "bottom": [{ "text": "この頃から\n完成しとるやん", "color": "red", "at": 1.4 }]
+      "image": {
+        "src": "watanabe-risa/p2_canmake.jpg",
+        "label": "出典：non-no公式X"
+      },
+      "top": {
+        "text": "欅坂46の1期生",
+        "color": "green"
+      },
+      "bottom": [
+        {
+          "text": "この頃から\n完成しとるやん",
+          "color": "red",
+          "at": 1.4
+        }
+      ]
     },
     {
       "type": "single",
-      "dur": 3.7,
-      "image": { "src": "watanabe-risa/p3_nonno_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "2017年に\nnon-noの専属モデル", "color": "green" },
-      "bottom": [{ "text": "欅坂で初めてって\nさすがやな", "color": "purple", "at": 2.1 }]
+      "dur": 3.8,
+      "image": {
+        "src": "watanabe-risa/p3_harucode.jpg",
+        "label": "出典：non-no公式X"
+      },
+      "top": {
+        "text": "2017年から\nnon-noモデル",
+        "color": "green"
+      },
+      "bottom": [
+        {
+          "text": "欅坂で初めてって\nさすがやな",
+          "color": "purple",
+          "at": 1.7
+        }
+      ]
     },
     {
       "type": "single",
       "dur": 4.0,
-      "image": { "src": "watanabe-risa/p4_2025_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "去年の2月に\n事務所を離れて", "color": "blue" },
-      "bottom": [{ "text": "インスタ止まって\nさみしかったで", "color": "purple", "at": 2.0 }]
+      "image": {
+        "src": "watanabe-risa/p4_nonno_sotsugyo.jpg",
+        "label": "出典：non-no公式X"
+      },
+      "top": {
+        "text": "去年2月に\n事務所を離れて",
+        "color": "blue"
+      },
+      "bottom": [
+        {
+          "text": "インスタ止まって\n寂しかったで",
+          "color": "purple",
+          "at": 1.7
+        }
+      ]
     },
     {
       "type": "reveal",
-      "dur": 4.8,
-      "image": { "src": "watanabe-risa/p5_ima_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "そんで1年8か月ぶりの\n今がこれや", "color": "red" },
+      "dur": 4.3,
+      "image": {
+        "src": "watanabe-risa/p5_ima_kari.png",
+        "label": "出典：渡邉理佐のInstagram"
+      },
+      "top": {
+        "text": "なお現在がこちら",
+        "color": "red"
+      },
       "bottom": [
-        { "text": "相変わらずやん", "color": "purple", "at": 2.2 },
-        { "text": "ウインクまでしとる", "color": "red", "at": 3.4 }
+        {
+          "text": "相変わらずやん",
+          "color": "purple",
+          "at": 1.4
+        },
+        {
+          "text": "ウインクは反則やろ",
+          "color": "red",
+          "at": 2.6
+        }
       ]
     },
     {
       "type": "single",
       "dur": 3.9,
-      "image": { "src": "watanabe-risa/p6_post_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "ファンからは\n“おかえり”の声", "color": "green" },
-      "bottom": [{ "text": "待っとった人\n多かったんやな", "color": "purple", "at": 2.0 }]
+      "image": {
+        "src": "watanabe-risa/p6_post_kari.png",
+        "label": "出典：渡邉理佐のInstagram"
+      },
+      "top": {
+        "text": "ファンからは\n“おかえり”の声",
+        "color": "green"
+      },
+      "bottom": [
+        {
+          "text": "待っとった人\n多かったんやな",
+          "color": "purple",
+          "at": 1.8
+        }
+      ]
     },
     {
       "type": "compare",
-      "dur": 4.0,
+      "dur": 3.7,
       "images": [
-        { "src": "watanabe-risa/p1_keyaki_kari.png", "label": "出典：渡邉理佐のInstagram" },
-        { "src": "watanabe-risa/p5_ima_kari.png", "label": "出典：渡邉理佐のInstagram" }
+        {
+          "src": "watanabe-risa/p1_kuroihitsuji.jpg",
+          "label": "出典：non-no公式X",
+          "focusY": 0.4
+        },
+        {
+          "src": "watanabe-risa/p5_ima_kao_kari.png",
+          "label": "出典：渡邉理佐のInstagram"
+        }
       ],
-      "top": { "text": "上が欅坂の頃\n下が今", "color": "green" },
-      "bottom": [{ "text": "いや前より\n大人っぽなったやろ", "color": "purple", "at": 1.5 }]
+      "top": {
+        "text": "上が欅坂の頃\n下が今",
+        "color": "green"
+      },
+      "bottom": [
+        {
+          "text": "ワイは欅坂の頃の方が\n好きやわ",
+          "color": "purple",
+          "at": 1.4
+        }
+      ]
     },
     {
       "type": "single",
       "dur": 5.0,
-      "image": { "src": "watanabe-risa/p5_ima_kari.png", "label": "出典：渡邉理佐のInstagram" },
-      "top": { "text": "元気そうで\nほんまよかった", "color": "blue" },
-      "bottom": [{ "text": "1年8か月ぶりでも\n理佐のままや", "color": "red", "at": 2.0 }]
+      "image": {
+        "src": "watanabe-risa/p5_ima_kao_kari.png",
+        "label": "出典：渡邉理佐のInstagram"
+      },
+      "top": {
+        "text": "おひさしぶりが\n聞けてよかった",
+        "color": "blue"
+      },
+      "bottom": [
+        {
+          "text": "1年8か月\n待った甲斐あったわ",
+          "color": "red",
+          "at": 2.1
+        }
+      ]
     }
   ]
 }
