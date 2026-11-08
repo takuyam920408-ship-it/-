@@ -8,7 +8,7 @@
     {
       "type": "title",
       "pattern": "A",
-      "dur": 3.38,
+      "dur": 3.34,
       "title": "渡邉理佐\n1年8か月ぶりの姿\nどうなっとる？",
       "before": {
         "src": "watanabe-risa/p1_kuroihitsuji.jpg",
@@ -24,7 +24,7 @@
     },
     {
       "type": "single",
-      "dur": 3.95,
+      "dur": 3.96,
       "image": {
         "src": "watanabe-risa/p2_canmake.jpg",
         "label": "出典：non-no公式X"
@@ -38,7 +38,7 @@
         {
           "text": "この頃から\n完成しとるやん",
           "color": "red",
-          "at": 1.96,
+          "at": 1.97,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -47,7 +47,7 @@
     },
     {
       "type": "single",
-      "dur": 4.07,
+      "dur": 4.09,
       "image": {
         "src": "watanabe-risa/p3_harucode.jpg",
         "label": "出典：non-no公式X"
@@ -61,7 +61,7 @@
         {
           "text": "グループ初って\nさすがやな",
           "color": "purple",
-          "at": 2.15,
+          "at": 2.18,
           "se": "se/bm/B.mp3",
           "seVolume": 0.22
         }
@@ -70,7 +70,7 @@
     },
     {
       "type": "single",
-      "dur": 3.82,
+      "dur": 3.92,
       "image": {
         "src": "watanabe-risa/p4_nonno_sotsugyo.jpg",
         "label": "出典：non-no公式X"
@@ -84,7 +84,7 @@
         {
           "text": "ずっと寂しかったで",
           "color": "purple",
-          "at": 2.32,
+          "at": 2.42,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -93,7 +93,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.73,
+      "dur": 4.86,
       "image": {
         "src": "watanabe-risa/p5_ima_kari.png",
         "label": "出典：渡邉理佐のInstagram"
@@ -108,14 +108,14 @@
         {
           "text": "相変わらずやん",
           "color": "purple",
-          "at": 2.02,
+          "at": 2.07,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         },
         {
           "text": "ウインクは反則やろ",
           "color": "red",
-          "at": 3.3,
+          "at": 3.34,
           "se": null
         }
       ],
@@ -123,7 +123,7 @@
     },
     {
       "type": "compare",
-      "dur": 4.49,
+      "dur": 4.56,
       "images": [
         {
           "src": "watanabe-risa/p1_kuroihitsuji.jpg",
@@ -153,7 +153,7 @@
     },
     {
       "type": "single",
-      "dur": 4.95,
+      "dur": 4.92,
       "image": {
         "src": "watanabe-risa/p6_post_kari.png",
         "label": "出典：渡邉理佐のInstagram"
@@ -176,7 +176,6 @@
     }
   ],
   "voiceCredits": [
-    "VOICEVOX:九州そら",
     "VOICEVOX:青山龍星"
   ],
   "sfx": {

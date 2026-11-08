@@ -64,7 +64,7 @@ npx remotion studio                      # ブラウザで見ながら調整す�
 2. 投稿のスクショ：`node scripts/xshot.js <status ID> public/<id>/p4_post.png`（Xの公式の埋め込み表示。日本時間・返信の欄は入れない。Playwright を使う）
 3. 効果音：`python3 scripts/se_lab.py`（ベンチマークと同じ効果音ラボの4つの音を public/se/bm/ に取る。リポジトリには入れない。概要欄は「効果音：効果音ラボ」）。つながらないときの代わりは `python3 scripts/se.py`（自作）
 4. 声：`VOICEVOX_DIR=<VOICEVOX COREのフォルダ> <そのフォルダ>/venv/bin/python scripts/koe.py <id>`（クラウドでは先に `bash scripts/setup_voicevox.sh <フォルダ>`）
-   - 声は2種類で、テロップ1つごとに交互（冒頭の文と最初のテロップ＝九州そら、次＝青山龍星…）。高さ・抑揚・速さ・こもり方はベンチマーク①1位に合わせてある（koe.py の DEFAULT_VOICES）
+   - 声は青山龍星（ノーマル）1人。高さ・抑揚は元のまま、速さだけベンチマーク①1位に合わせてある（koe.py の DEFAULT_VOICES）
    - 各カットの `dur`、下テロップの `at`、テロップごとの効果音を声に合わせて書き換える（元の spec は .bak に残す）。カット1も最後のカットも自動で決まる
    - `--dry` を付けると、長さだけ測る（ファイルも spec も書き換えない）。合計は27〜31秒（ベンチマーク①1位は29.2秒・7カット）
    - 読み間違える言葉は、spec の一番上の `"yomi"` で直す（例：`{"20歳": "はたち", "當真あみ": "とうまあみ"}`）。先に読みを確かめてから作る
@@ -72,11 +72,11 @@ npx remotion studio                      # ブラウザで見ながら調整す�
 6. 音量をそろえる：`ffmpeg -i out/<id>.mp4 -c:v copy -af loudnorm=I=-19.6:TP=-2.5:LRA=4 -c:a aac -b:a 192k out/<id>_kansei.mp4`
 7. サムネ：`node scripts/render.mjs <id> --stills` のカット1（`out/still/<id>_カット01.png`）
 
-クラウドの VOICEVOX CORE は、GitHub から VOICEVOX CORE 0.17.1 の wheel、VOICEVOX ONNX Runtime 1.23.2、voicevox_vvm の 2.vvm（九州そら）と 15.vvm（青山龍星）、PyPI の pyopenjtalk-plus に入っている Open JTalk の辞書で組み立てた（2026-11-08。scripts/setup_voicevox.sh）。
+クラウドの VOICEVOX CORE は、GitHub から VOICEVOX CORE 0.17.1 の wheel、VOICEVOX ONNX Runtime 1.23.2、voicevox_vvm の 15.vvm（青山龍星）、PyPI の pyopenjtalk-plus に入っている Open JTalk の辞書で組み立てた（2026-11-08。scripts/setup_voicevox.sh）。
 
 ## 声・効果音・BGM（手で入れる場合）
 
 - 声は koe.py で作るのが基本。手で作るときは、カットごとにテロップを上→下の順に読んだ音声を `public/<id>/voice/cut01.wav` のように置いて、各カットに `"voice": "<id>/voice/cut01.wav"` を足す
 - 各カットの `dur` は、音声の長さ＋0.26秒（最後のカットは＋1.1秒）。下テロップの `at` は、読み上げで下テロップを読み始める秒に合わせる
 - 効果音はテロップごとに `"se"` と `"seVolume"`（冒頭は spec の一番上の `"sfx": {"title": …}`）。BGMは入れない（使うときは spec の一番上に `"bgm"`、`"bgmVolume"` で音量、既定0.12）
-- 概要欄のクレジット：`VOICEVOX:九州そら、VOICEVOX:青山龍星`、効果音ラボ
+- 概要欄のクレジット：`VOICEVOX:青山龍星`、効果音ラボ
