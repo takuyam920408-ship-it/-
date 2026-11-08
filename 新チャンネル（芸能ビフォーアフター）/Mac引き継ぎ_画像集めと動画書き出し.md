@@ -113,11 +113,40 @@ Macでは、このフォルダを使って、画像（public/<id>/）と VOICEVO
 クラウドで、台本（4人の審査済み）・動画の設計図（spec）・画像の集め方（gazou.json）を作り、声・効果音（ベンチマークと同じ効果音ラボの音）を入れて書き出すところまで、クラウドでできる（kotaeawase-douga スキル）。Macでやるのは、ログインが要る写真（Instagram など）と予約投稿だけ。
 どちらの回も、ベンチマーク①1位と同じ7カット・テロップ14個・約29秒に組み直した（2026-11-08 ユーザーが「構成も合わせる」と決定）。声は青山龍星と四国めたんがテロップごとに交互（冒頭は青山。声色は元のまま）。
 
+### ★ 2026-11-09 の予約投稿（2026-11-08 ユーザーが承認：「2が画像素材まだみたいだから仕上げたら2本明日分として投稿開始」）
+
+| 時刻（日本時間） | 回 | 台本 |
+|---|---|---|
+| 2026-11-09 18:00 | 當真あみ | `當真あみ_台本.txt` |
+| 2026-11-09 21:00 | 渡邉理佐 | `渡邉理佐_台本.txt` |
+
+1. **チャンネルを確かめる**：YouTube Studio で、投稿先が「答え合わせ速報」（旧ゴッドブックス）であること。名前がまだ「ゴッドブックス」なら、投稿の前にユーザーに知らせる。反応集のチャンネルと取り違えない
+2. **最新を取る**：`git pull origin claude/serene-ramanujan-bampcq`
+3. **素材をそろえる**（`remotion-kotaeawase/` で）
+   - `npm install`
+   - `python3 scripts/gazou.py touma-ami` と `python3 scripts/gazou.py watanabe-risa`（Xの写真。写真はリポジトリに入れない）
+   - `python3 scripts/se_lab.py`（効果音ラボの4つの音。リポジトリに入れない）
+   - 声は `public/<id>/voice/cut01〜07.wav` がリポジトリに入っている（四国めたん・青山龍星、2026-11-08 にクラウドで作った）。**koe.py は回さない**（VOICEVOX が要り、秒数も変わるため）
+4. **渡邉理佐の写真5・6**（下の「2本目」の手順1〜3）。Instagram のログインが要るので Chrome で。spec の `_kari` の3か所を差し替える：`p5_ima_kari.png`→`p5_ima.jpg`、`p5_ima_kao_kari.png`→`p5_ima_kao.jpg`（2か所）、`p6_post_kari.png`→`p6_post.png`。写真は**リポジトリに入れない**（spec の変更だけコミット）
+5. **書き出す**（2本とも）
+   - `node scripts/render.mjs <id>`
+   - `ffmpeg -y -i out/<id>.mp4 -c:v copy -af loudnorm=I=-19.6:TP=-2.5:LRA=4 -c:a aac -b:a 192k out/<id>_kansei.mp4`
+   - `node scripts/render.mjs <id> --stills && cp out/still/<id>_カット01.png out/<id>_thumbnail.png`
+   - `python3 scripts/predeliver.py <id> ../〇〇_台本.txt ../〇〇_台本_編集カット割り.txt` が **NG 0件**（當真あみは、クラウドの書き出しで NG 0件・30.1秒を確認済み）
+   - 書き出した動画を数か所止めて見る（モザイク→公開、2枚比較、渡邉理佐の写真5・6の切り取り）
+6. **予約する**（YouTube Studio）：`out/<id>_kansei.mp4` をアップロード
+   - タイトル＝【YouTubeタイトル】、説明＝【概要欄】の全文＋最後の行に【ハッシュタグ】、タグ＝【タグ】
+   - 「いいえ、子ども向けではありません」、公開設定＝予約（上の表の日時）
+   - サムネ：設定できるなら `out/<id>_thumbnail.png`（カット1と同じ画面）
+   - 渡邉理佐：**コメントを「すべて保留」**にする（プレーン版【要確認】3。公開から数日）
+7. **終わったら**：台本メモ.txt の2本の行に「予約：2026-11-09 18:00」「予約：2026-11-09 21:00」を書き足してプッシュし、ユーザーに伝える。公開のあと、當真あみのコメント欄が使える状態かを確かめる
+- 渡邉理佐の写真5・6がどうしても取れないときは、當真あみだけ 11/9 18:00 に予約し、ユーザーに知らせる
+
 ### 1本目：當真あみ（2026-11-08）
 - 台本：`當真あみ_台本.txt`（プレーン版。タイトル・概要欄・タグ）／`當真あみ_台本_編集カット割り.txt`
 - 設計図：`remotion-kotaeawase/specs/touma-ami.json`（7カット・約29秒・公開約15秒）
 - 完成版はクラウドで作る（写真は公式Xだけなので、Macで集めるものはない）。Macでやること
-  1. **ユーザーの承認をもらってから**、答え合わせ速報のチャンネルに予約投稿（18:00か21:00の空いている枠）。タイトル・概要欄・タグ・ハッシュタグはプレーン版から。「子ども向けではない」。動画とサムネはクラウドから受け取る（`remotion-kotaeawase/out/touma-ami_kansei.mp4`・`touma-ami_thumbnail.png`。リポジトリには入っていないので、Macで作り直すなら下の「Macで書き出すとき」）
+  1. 2026-11-09 18:00 に予約する（上の「★ 2026-11-09 の予約投稿」。ユーザー承認済み）。動画はMacで書き出す（写真・効果音はリポジトリに入っていないため）
   2. 公開したあと、コメント欄が使える状態になっているかを確かめる（未成年の頃の写真が映るため、YouTubeがコメントを止めることがある）
 
 ### 2本目：渡邉理佐（2026-11-08）
@@ -129,11 +158,11 @@ Macでは、このフォルダを使って、画像（public/<id>/）と VOICEVO
   2. 写真6：投稿の画面のスクショ（写真とキャプションだけ。アカウント名と位置情報の行・コメント欄は入れない）を `p6_post.png`
   3. 3つのファイルを `remotion-kotaeawase/public/watanabe-risa/` に置き、spec の `_kari` のファイル名を差し替える。写真1と写真5をモザイク越しに並べて差が見えなければ、冒頭画面をパターンCにする（カット割り版【要確認】2）
   4. 写真はリポジトリに入れない。クラウドで仕上げるなら、3つのファイルをユーザーからクラウドのセッションに渡してもらう。Macで仕上げるなら下の「Macで書き出すとき」
-  5. ユーザーの承認をもらってから予約投稿
+  5. 2026-11-09 21:00 に予約する（上の「★ 2026-11-09 の予約投稿」。ユーザー承認済み）
 
 ### Macで書き出すとき
 - `cd remotion-kotaeawase && npm install`、`python3 scripts/gazou.py <id>`（Xの写真）、`python3 scripts/se_lab.py`（効果音）
-- 声：VOICEVOX CORE（macOS 用の wheel と ONNX Runtime、0.vvm＝四国めたん・15.vvm＝青山龍星、Open JTalk の辞書）を用意して `VOICEVOX_DIR=<フォルダ> python3 scripts/koe.py <id>`。声の設定（高さ・抑揚・速さ）は koe.py の DEFAULT_VOICES に入っているので、そのまま使う
+- 声：當真あみ・渡邉理佐の声は `public/<id>/voice/` にリポジトリで入っているので、作らなくてよい。新しい回で声を作るときは、VOICEVOX CORE（macOS 用の wheel と ONNX Runtime、0.vvm＝四国めたん・15.vvm＝青山龍星、Open JTalk の辞書）を用意して `VOICEVOX_DIR=<フォルダ> python3 scripts/koe.py <id>`（声の設定は koe.py の DEFAULT_VOICES のまま）。クラウドで作ってプッシュしてもよい
 - `node scripts/render.mjs <id>` → 音量を−19.6 LUFS にそろえる（README の手順6）→ `python3 scripts/predeliver.py <id> ../〇〇_台本.txt ../〇〇_台本_編集カット割り.txt` が NG 0件
 
 ---
