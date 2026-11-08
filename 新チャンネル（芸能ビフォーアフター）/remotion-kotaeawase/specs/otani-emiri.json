@@ -148,7 +148,7 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 6.32,
+      "dur": 5.76,
       "images": [
         {
           "src": "otani-emiri/p1_mukashi_tate.jpg",
@@ -169,7 +169,7 @@
       },
       "bottom": [
         {
-          "text": "28歳の方が\n着こなしとるやん",
+          "text": "今の方が\n着こなしとるやん",
           "color": "red",
           "at": 3.05,
           "se": null
