@@ -29,7 +29,7 @@ if [ ! -d ort ]; then
   mkdir -p ort && tar xzf ort.tgz -C ort && rm ort.tgz
 fi
 
-# 使う声の音声モデル：0.vvm＝四国めたん（声a）、15.vvm＝青山龍星（声b）。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
+# 使う声の音声モデル：15.vvm＝青山龍星（声a）、0.vvm＝四国めたん（声b）。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
 VVMS=${VVMS:-"0 15"}
 mkdir -p vvms
 missing=""; for v in $VVMS; do [ -f "vvms/$v.vvm" ] || missing="$missing /vvms/$v.vvm"; done

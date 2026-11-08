@@ -64,7 +64,7 @@ npx remotion studio                      # ブラウザで見ながら調整す�
 2. 投稿のスクショ：`node scripts/xshot.js <status ID> public/<id>/p4_post.png`（Xの公式の埋め込み表示。日本時間・返信の欄は入れない。Playwright を使う）
 3. 効果音：`python3 scripts/se_lab.py`（ベンチマークと同じ効果音ラボの4つの音を public/se/bm/ に取る。リポジトリには入れない。概要欄は「効果音：効果音ラボ」）。つながらないときの代わりは `python3 scripts/se.py`（自作）
 4. 声：`VOICEVOX_DIR=<VOICEVOX COREのフォルダ> <そのフォルダ>/venv/bin/python scripts/koe.py <id>`（クラウドでは先に `bash scripts/setup_voicevox.sh <フォルダ>`）
-   - 声は2種類で、テロップ1つごとに交互（冒頭の文と最初のテロップ＝四国めたん、次＝青山龍星…）。声色は元のまま、速さだけベンチマーク①1位に合わせてある（koe.py の DEFAULT_VOICES）
+   - 声は2種類で、テロップ1つごとに交互（冒頭の文と最初のテロップ＝青山龍星、次＝四国めたん…）。声色は元のまま、速さだけベンチマーク①1位に合わせてある（koe.py の DEFAULT_VOICES）
    - 各カットの `dur`、下テロップの `at`、テロップごとの効果音を声に合わせて書き換える（元の spec は .bak に残す）。カット1も最後のカットも自動で決まる
    - `--dry` を付けると、長さだけ測る（ファイルも spec も書き換えない）。合計は27〜31秒（ベンチマーク①1位は29.2秒・7カット）
    - 読み間違える言葉は、spec の一番上の `"yomi"` で直す（例：`{"20歳": "はたち", "當真あみ": "とうまあみ"}`）。先に読みを確かめてから作る
