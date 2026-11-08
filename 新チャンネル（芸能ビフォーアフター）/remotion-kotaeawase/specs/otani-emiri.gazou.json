@@ -1,0 +1,128 @@
+{
+  "id": "otani-emiri",
+  "sources": [
+    {
+      "name": "mukashi_up",
+      "x_status": "2114301822039179547",
+      "index": 1,
+      "size": [
+        1709,
+        2393
+      ]
+    },
+    {
+      "name": "ima_up",
+      "x_status": "2114301822039179547",
+      "index": 2,
+      "size": [
+        2695,
+        3773
+      ]
+    },
+    {
+      "name": "mukashi_zen",
+      "x_status": "2114301822039179547",
+      "index": 3,
+      "size": [
+        1741,
+        2437
+      ]
+    },
+    {
+      "name": "ima_zen",
+      "x_status": "2114301822039179547",
+      "index": 4,
+      "size": [
+        2264,
+        3170
+      ]
+    }
+  ],
+  "files": [
+    {
+      "photo": "写真1",
+      "file": "p1_mukashi_kao.jpg",
+      "from": "mukashi_up",
+      "crop": [
+        190,
+        300,
+        1485,
+        1000
+      ],
+      "what": "7年前の顔（カット1の上）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_mukashi.jpg",
+      "from": "mukashi_up",
+      "crop": [
+        0,
+        150,
+        1709,
+        2100
+      ],
+      "what": "7年前の上半身（カット2）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_mukashi_tate.jpg",
+      "from": "mukashi_up",
+      "crop": [
+        450,
+        250,
+        1250,
+        2150
+      ],
+      "what": "7年前の縦長の切り取り（カット7の左）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_ima_kao.jpg",
+      "from": "ima_up",
+      "crop": [
+        420,
+        480,
+        2220,
+        1580
+      ],
+      "what": "今の顔。あごの下まで（カット1のモザイク）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_ima.jpg",
+      "from": "ima_up",
+      "crop": [
+        200,
+        250,
+        2500,
+        2950
+      ],
+      "what": "今の上半身（カット4のモザイク・カット5の公開）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_ima_tate.jpg",
+      "from": "ima_up",
+      "crop": [
+        780,
+        380,
+        1880,
+        2990
+      ],
+      "what": "今の縦長の切り取り（カット7の右）"
+    },
+    {
+      "photo": "写真3",
+      "file": "p3_mukashi_zen.jpg",
+      "from": "mukashi_zen",
+      "what": "7年前の全身（カット3）"
+    },
+    {
+      "photo": "写真4",
+      "file": "p4_ima_zen.jpg",
+      "from": "ima_zen",
+      "what": "今の全身（カット6）"
+    }
+  ],
+  "manual": []
+}

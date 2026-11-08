@@ -1,0 +1,190 @@
+{
+  "id": "otani-emiri",
+  "yomi": {
+    "＝LOVE": "イコールラブ",
+    "大谷映美里": "おおたにえみり",
+    "28歳": "にじゅうはっさい"
+  },
+  "cuts": [
+    {
+      "type": "title",
+      "pattern": "A",
+      "dur": 3.05,
+      "title": "7年前の衣装\n28歳で着たら\nこうなるｗ",
+      "before": {
+        "src": "otani-emiri/p1_mukashi_kao.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "after": {
+        "src": "otani-emiri/p2_ima_kao.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "mosaic": 48,
+      "voice": "otani-emiri/voice/cut01.wav"
+    },
+    {
+      "type": "single",
+      "dur": 3.72,
+      "image": {
+        "src": "otani-emiri/p1_mukashi.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "7年前の\nライブの衣装",
+        "color": "green",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "この時点で\nお姫様やん",
+          "color": "red",
+          "at": 1.89,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        }
+      ],
+      "voice": "otani-emiri/voice/cut02.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.03,
+      "image": {
+        "src": "otani-emiri/p3_mukashi_zen.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "前髪ぱっつんに\n編み込みの髪",
+        "color": "blue",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "アイドルの\n王道すぎるやろ",
+          "color": "purple",
+          "at": 2.19,
+          "se": "se/bm/B.mp3",
+          "seVolume": 0.22
+        }
+      ],
+      "voice": "otani-emiri/voice/cut03.wav"
+    },
+    {
+      "type": "single",
+      "dur": 3.45,
+      "mosaic": 48,
+      "image": {
+        "src": "otani-emiri/p2_ima.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "同じ衣装を\n今年また着たって",
+        "color": "blue",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "どう変わったんやろ",
+          "color": "red",
+          "at": 2.11,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        }
+      ],
+      "voice": "otani-emiri/voice/cut04.wav"
+    },
+    {
+      "type": "reveal",
+      "dur": 4.71,
+      "image": {
+        "src": "otani-emiri/p2_ima.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "28歳の今がこれや",
+        "color": "red",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "おでこ出しとるやん",
+          "color": "purple",
+          "at": 1.95,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        },
+        {
+          "text": "一気に大人びたな",
+          "color": "red",
+          "at": 3.23,
+          "se": null
+        }
+      ],
+      "voice": "otani-emiri/voice/cut05.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.87,
+      "image": {
+        "src": "otani-emiri/p4_ima_zen.jpg",
+        "label": "出典：大谷映美里の公式X"
+      },
+      "top": {
+        "text": "正体は＝LOVEの\n大谷映美里",
+        "color": "blue",
+        "se": "se/bm/B.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "ワイは7年前の\n前髪派やわ",
+          "color": "purple",
+          "at": 2.53,
+          "se": null
+        }
+      ],
+      "voice": "otani-emiri/voice/cut06.wav"
+    },
+    {
+      "type": "compare",
+      "layout": "side",
+      "dur": 6.16,
+      "images": [
+        {
+          "src": "otani-emiri/p1_mukashi_tate.jpg",
+          "tag": "7年前",
+          "label": "出典：大谷映美里の公式X"
+        },
+        {
+          "src": "otani-emiri/p2_ima_tate.jpg",
+          "tag": "今",
+          "label": "出典：大谷映美里の公式X"
+        }
+      ],
+      "top": {
+        "text": "左が7年前\n右が28歳の今",
+        "color": "green",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "同じ衣装で\n大人の美女になっとる",
+          "color": "red",
+          "at": 3.05,
+          "se": null
+        }
+      ],
+      "voice": "otani-emiri/voice/cut07.wav"
+    }
+  ],
+  "voiceCredits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:青山龍星"
+  ],
+  "sfx": {
+    "title": "se/bm/T.mp3",
+    "titleVolume": 0.23,
+    "telop": null
+  }
+}
