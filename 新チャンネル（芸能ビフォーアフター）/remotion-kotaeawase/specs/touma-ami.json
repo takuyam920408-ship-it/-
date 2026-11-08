@@ -1,5 +1,10 @@
 {
   "id": "touma-ami",
+  "yomi": {
+    "當真あみ": "とうまあみ",
+    "20歳": "はたち",
+    "9600超え": "きゅうせんろっぴゃくごえ"
+  },
   "cuts": [
     {
       "type": "title",
@@ -14,11 +19,12 @@
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
       },
-      "mosaic": 40
+      "mosaic": 40,
+      "voice": "touma-ami/voice/cut01.wav"
     },
     {
       "type": "single",
-      "dur": 3.8,
+      "dur": 3.63,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
         "label": "出典：公式X"
@@ -31,13 +37,14 @@
         {
           "text": "この時点で\n透明感すごいやん",
           "color": "red",
-          "at": 2.0
+          "at": 1.69
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut02.wav"
     },
     {
       "type": "single",
-      "dur": 3.8,
+      "dur": 4.08,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
         "label": "出典：公式X"
@@ -50,13 +57,14 @@
         {
           "text": "この頃はまだ\nあどけなさ残っとる",
           "color": "purple",
-          "at": 1.9
+          "at": 2.15
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut03.wav"
     },
     {
       "type": "single",
-      "dur": 3.8,
+      "dur": 3.3,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
@@ -70,13 +78,14 @@
         {
           "text": "ほな答え合わせや",
           "color": "red",
-          "at": 2.3
+          "at": 1.99
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut04.wav"
     },
     {
       "type": "reveal",
-      "dur": 4.6,
+      "dur": 4.14,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -89,18 +98,20 @@
         {
           "text": "6年でこうなるんか",
           "color": "purple",
-          "at": 1.6
+          "at": 1.69
         },
         {
           "text": "凛としすぎやろ",
           "color": "red",
-          "at": 2.9
+          "at": 3.0
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut05.wav",
+      "se": "se/kokai_jan.wav"
     },
     {
       "type": "single",
-      "dur": 3.6,
+      "dur": 3.43,
       "image": {
         "src": "touma-ami/p5_20sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -113,15 +124,16 @@
         {
           "text": "あっという間に20歳やん",
           "color": "purple",
-          "at": 1.9
+          "at": 1.8
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut06.wav"
     },
     {
       "type": "single",
-      "dur": 4.1,
+      "dur": 4.2,
       "image": {
-        "src": "touma-ami/p4_post_kari.png",
+        "src": "touma-ami/p4_post.png",
         "label": "出典：當真あみ【公式】X"
       },
       "top": {
@@ -132,9 +144,10 @@
         {
           "text": "いや3枚とも\nほぼ変わらんやろ",
           "color": "purple",
-          "at": 2.1
+          "at": 2.43
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut07.wav"
     },
     {
       "type": "compare",
@@ -158,9 +171,10 @@
         {
           "text": "大人びても\n透明感そのままや",
           "color": "red",
-          "at": 2.2
+          "at": 2.15
         }
-      ]
+      ],
+      "voice": "touma-ami/voice/cut08.wav"
     }
   ]
 }

@@ -58,7 +58,22 @@ npx remotion studio                      # ブラウザで見ながら調整す�
 - タイトル枠は1行10字まで（画面の幅。数字は半角で2字＝全角1字くらい）。超えると折り返して4行になるので、行の分け方を変える
 - 公開より前のカットの出典ラベルに、答えが分かる名前を書かない（例：「出典：本人の公式X」）。公開の後は正式な名前にする
 
-## 声・効果音・BGM（Macで入れる）
+## 仕上げの手順（クラウドでもMacでもできる）
+
+1. 画像：`python3 scripts/gazou.py <id>`（本人・公式のXから取って切り取る）
+2. 投稿のスクショ：`node scripts/xshot.js <status ID> public/<id>/p4_post.png`（Xの公式の埋め込み表示。日本時間・返信の欄は入れない。Playwright を使う）
+3. 効果音：`python3 scripts/se.py`（自作の音を public/se/ に作る。権利の心配がない。概要欄は「効果音：自作」）
+4. 声：`VOICEVOX_DIR=<VOICEVOX COREのフォルダ> python3 scripts/koe.py <id> --speed 1.25`
+   - 青山龍星（ノーマル、声の番号13）で、テロップを上→下の順に読む。各カットの `dur` と下テロップの `at` を声に合わせて書き換える（元の spec は .bak に残す）
+   - 読み間違える言葉は、spec の一番上の `"yomi"` で直す（例：`{"20歳": "はたち", "當真あみ": "とうまあみ"}`）。先に読みを確かめてから作る
+   - 声に合わせたあと、カット1は冒頭の文の字数÷7＋0.3秒以上、最後のカットは5秒くらいに延ばす
+5. 書き出し：`node scripts/render.mjs <id>`
+6. 音量をそろえる：`ffmpeg -i out/<id>.mp4 -c:v copy -af loudnorm=I=-14:TP=-1.5:LRA=11 -c:a aac -b:a 192k out/<id>_kansei.mp4`
+7. サムネ：`node scripts/render.mjs <id> --stills` のカット1（`out/still/<id>_カット01.png`）
+
+クラウドの VOICEVOX CORE は、GitHub から VOICEVOX CORE 0.17.1 の wheel、VOICEVOX ONNX Runtime 1.23.2、voicevox_vvm の 15.vvm と、PyPI の pyopenjtalk-plus に入っている Open JTalk の辞書で組み立てた（2026-11-08）。
+
+## 声・効果音・BGM（Macで入れる場合）
 
 - 読み上げは VOICEVOX の青山龍星。カットごとに、テロップを上→下の順に読んだ音声を作り、`public/<id>/voice/cut01.wav` のように置いて、各カットに `"voice": "<id>/voice/cut01.wav"` を足す
 - 各カットの `dur` は、音声の長さ＋0.3秒以上にする。下テロップの `at` は、読み上げで下テロップを読み始める秒に合わせる
