@@ -4,6 +4,7 @@
 使い方：python3 scripts/gazou.py <id>
   specs/<id>.gazou.json を読み、
   - 本人・公式のXの投稿の画像を、埋め込み用の公開の仕組み（cdn.syndication.twimg.com）で取る
+  - 出版社・事務所などの公式サイトの画像は、sources に {"name", "image_url", "page_url", "account"} で書く（x_status の代わり）
   - 決めた範囲で切り取る（写真の中身は加工しない。切り取りだけ）
   - public/<id>/raw/ に元の画像、public/<id>/ に切り取った画像、public/<id>/画像の出どころ.json を書く
   画像は芸能人の写真なので、リポジトリには入れない（.gitignore で public/ を外してある）。
@@ -69,6 +70,19 @@ def main():
 
     sources = {}
     for src in conf['sources']:
+        if 'image_url' in src:
+            # 公式サイト（出版社・事務所など）の画像。page_url（載っているページ）と account（どこの公式か）を書いておく
+            path = os.path.join(raw, src['name'] + os.path.splitext(src['image_url'].split('?')[0])[1])
+            curl(src['image_url'], path)
+            size = Image.open(path).size
+            want = src.get('size')
+            if want and list(size) != list(want):
+                sys.exit(f"{src['name']}：画像の大きさが {size} で、切り取りの前提 {want} と違う。切り取りの範囲を見直す")
+            sources[src['name']] = {'path': path, 'page_url': src['page_url'], 'image_url': src['image_url'],
+                                    'account': src.get('account'), 'status_id': None, 'posted_at': src.get('posted_at'),
+                                    'likes_at_fetch': None}
+            print('取得', src['name'], size, src['page_url'])
+            continue
         sid = src['x_status']
         t = fetch_x(sid)
         media = [m for m in t.get('mediaDetails', []) if m.get('type') == 'photo']

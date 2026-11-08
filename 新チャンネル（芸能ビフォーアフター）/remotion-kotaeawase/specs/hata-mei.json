@@ -1,7 +1,6 @@
 {
   "id": "hata-mei",
   "yomi": {
-    "1stと": "ふぁーすとと",
     "畑芽育": "はためい",
     "24歳": "にじゅうよんさい"
   },
@@ -9,8 +8,8 @@
     {
       "type": "title",
       "pattern": "B",
-      "dur": 3.17,
-      "title": "同じ写真集の\n表紙2種類が\n別人すぎやろｗ",
+      "dur": 3.48,
+      "title": "1冊の写真集で\n表紙2種類が\n別人すぎやろｗ",
       "before": {
         "src": "hata-mei/p1_gentei_kao.jpg",
         "label": "出典：本人の公式X"
@@ -47,13 +46,13 @@
     },
     {
       "type": "reveal",
-      "dur": 4.45,
+      "dur": 4.37,
       "image": {
         "src": "hata-mei/p2_tsujo.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
-        "text": "そんで通常版がこれや",
+        "text": "通常版になるとこうなる",
         "color": "red",
         "se": "se/bm/D.mp3",
         "seVolume": 0.22
@@ -62,14 +61,14 @@
         {
           "text": "同じ人なんか",
           "color": "purple",
-          "at": 1.89,
+          "at": 1.81,
           "se": "se/bm/B.mp3",
           "seVolume": 0.22
         },
         {
           "text": "大人っぽすぎやろ",
           "color": "red",
-          "at": 3.13,
+          "at": 3.06,
           "se": null
         }
       ],
@@ -129,14 +128,22 @@
       "voice": "hata-mei/voice/cut05.wav"
     },
     {
-      "type": "single",
-      "dur": 4.57,
-      "image": {
-        "src": "hata-mei/p2_tsujo_zen.jpg",
-        "label": "出典：畑芽育の公式X"
-      },
+      "type": "compare",
+      "dur": 4.54,
+      "images": [
+        {
+          "src": "hata-mei/p5_zansho.jpg",
+          "tag": "2023年",
+          "label": "出典：KADOKAWA公式"
+        },
+        {
+          "src": "hata-mei/p2_tsujo_yoko.jpg",
+          "tag": "今",
+          "label": "出典：畑芽育の公式X"
+        }
+      ],
       "top": {
-        "text": "本人も1stと\n見比べてほしいって",
+        "text": "本人も前作と\n見比べてほしいって",
         "color": "blue",
         "se": "se/bm/B.mp3",
         "seVolume": 0.22
@@ -145,7 +152,7 @@
         {
           "text": "3年で大人びたんやな",
           "color": "purple",
-          "at": 2.7,
+          "at": 2.67,
           "se": null
         }
       ],
@@ -153,7 +160,7 @@
     },
     {
       "type": "single",
-      "dur": 5.78,
+      "dur": 6.18,
       "image": {
         "src": "hata-mei/p4_post.png",
         "label": "出典：畑芽育の公式X"
@@ -166,7 +173,7 @@
       },
       "bottom": [
         {
-          "text": "どっちも同じ畑芽育やで",
+          "text": "別人になれてこそ\n俳優やな",
           "color": "red",
           "at": 3.13,
           "se": null
