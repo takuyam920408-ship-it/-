@@ -9,8 +9,8 @@
     {
       "type": "title",
       "pattern": "A",
-      "dur": 3.05,
-      "title": "7年前の衣装\n28歳で着たら\nこうなるｗ",
+      "dur": 2.39,
+      "title": "7年前の衣装\nまた着たら\nこうなるｗ",
       "before": {
         "src": "otani-emiri/p1_mukashi_kao.jpg",
         "label": "出典：本人の公式X"
@@ -24,9 +24,9 @@
     },
     {
       "type": "single",
-      "dur": 3.72,
+      "dur": 3.69,
       "image": {
-        "src": "otani-emiri/p1_mukashi.jpg",
+        "src": "otani-emiri/p3_mukashi_zen.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
@@ -36,7 +36,7 @@
       },
       "bottom": [
         {
-          "text": "この時点で\nお姫様やん",
+          "text": "もう絵本の\nお姫様やん",
           "color": "red",
           "at": 1.89,
           "se": "se/bm/C.mp3",
@@ -49,7 +49,7 @@
       "type": "single",
       "dur": 4.03,
       "image": {
-        "src": "otani-emiri/p3_mukashi_zen.jpg",
+        "src": "otani-emiri/p1_mukashi.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
@@ -70,14 +70,14 @@
     },
     {
       "type": "single",
-      "dur": 3.45,
+      "dur": 3.55,
       "mosaic": 48,
       "image": {
         "src": "otani-emiri/p2_ima.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
-        "text": "同じ衣装を\n今年また着たって",
+        "text": "7年後に\n同じ衣装を着たら",
         "color": "blue",
         "se": null
       },
@@ -85,7 +85,7 @@
         {
           "text": "どう変わったんやろ",
           "color": "red",
-          "at": 2.11,
+          "at": 2.21,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         }
@@ -94,13 +94,13 @@
     },
     {
       "type": "reveal",
-      "dur": 4.71,
+      "dur": 5.21,
       "image": {
         "src": "otani-emiri/p2_ima.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
-        "text": "28歳の今がこれや",
+        "text": "28歳で着たらこうや",
         "color": "red",
         "se": "se/bm/D.mp3",
         "seVolume": 0.22
@@ -109,14 +109,14 @@
         {
           "text": "おでこ出しとるやん",
           "color": "purple",
-          "at": 1.95,
+          "at": 1.96,
           "se": "se/bm/C.mp3",
           "seVolume": 0.23
         },
         {
-          "text": "一気に大人びたな",
+          "text": "衣装が完全に脇役や",
           "color": "red",
-          "at": 3.23,
+          "at": 3.24,
           "se": null
         }
       ],
@@ -124,22 +124,22 @@
     },
     {
       "type": "single",
-      "dur": 4.87,
+      "dur": 4.21,
       "image": {
         "src": "otani-emiri/p4_ima_zen.jpg",
         "label": "出典：大谷映美里の公式X"
       },
       "top": {
-        "text": "正体は＝LOVEの\n大谷映美里",
+        "text": "＝LOVEの\n大谷映美里やで",
         "color": "blue",
         "se": "se/bm/B.mp3",
         "seVolume": 0.22
       },
       "bottom": [
         {
-          "text": "ワイは7年前の\n前髪派やわ",
+          "text": "ぱっつんの方が\n刺さるんやけど",
           "color": "purple",
-          "at": 2.53,
+          "at": 2.18,
           "se": null
         }
       ],
@@ -148,7 +148,7 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 6.16,
+      "dur": 6.32,
       "images": [
         {
           "src": "otani-emiri/p1_mukashi_tate.jpg",
@@ -169,7 +169,7 @@
       },
       "bottom": [
         {
-          "text": "同じ衣装で\n大人の美女になっとる",
+          "text": "28歳の方が\n着こなしとるやん",
           "color": "red",
           "at": 3.05,
           "se": null
