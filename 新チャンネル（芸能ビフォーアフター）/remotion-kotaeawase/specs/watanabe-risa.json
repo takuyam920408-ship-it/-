@@ -1,7 +1,6 @@
 {
   "id": "watanabe-risa",
   "yomi": {
-    "欅坂46": "けやきざかふぉーてぃーしっくす",
     "non-no": "のんの",
     "待った甲斐": "まったかい"
   },
@@ -10,7 +9,7 @@
       "type": "title",
       "pattern": "A",
       "dur": 4.66,
-      "title": "元欅坂の渡邉理佐\n1年8か月ぶりの姿\nどうなっとると思う？",
+      "title": "渡邉理佐\n1年8か月ぶりの姿\nどうなっとる？",
       "before": {
         "src": "watanabe-risa/p1_kuroihitsuji.jpg",
         "label": "出典：non-no公式X",
@@ -31,7 +30,7 @@
         "label": "出典：non-no公式X"
       },
       "top": {
-        "text": "欅坂46の1期生",
+        "text": "欅坂の1期生やった",
         "color": "green",
         "se": null
       },
@@ -60,7 +59,7 @@
       },
       "bottom": [
         {
-          "text": "欅坂で初めてって\nさすがやな",
+          "text": "グループ初って\nさすがやな",
           "color": "purple",
           "at": 2.15,
           "se": "se/bm/B.mp3",
@@ -123,29 +122,6 @@
       "voice": "watanabe-risa/voice/cut05.wav"
     },
     {
-      "type": "single",
-      "dur": 3.69,
-      "image": {
-        "src": "watanabe-risa/p6_post_kari.png",
-        "label": "出典：渡邉理佐のInstagram"
-      },
-      "top": {
-        "text": "ファンからは\n“おかえり”の声",
-        "color": "green",
-        "se": "se/bm/B.mp3",
-        "seVolume": 0.22
-      },
-      "bottom": [
-        {
-          "text": "待っとった人\n多かったんやな",
-          "color": "purple",
-          "at": 1.73,
-          "se": null
-        }
-      ],
-      "voice": "watanabe-risa/voice/cut06.wav"
-    },
-    {
       "type": "compare",
       "dur": 4.49,
       "images": [
@@ -177,15 +153,15 @@
     },
     {
       "type": "single",
-      "dur": 5.17,
+      "dur": 3.69,
       "image": {
-        "src": "watanabe-risa/p5_ima_kao_kari.png",
+        "src": "watanabe-risa/p6_post_kari.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
-        "text": "おひさしぶりが\nほんま嬉しいわ",
-        "color": "blue",
-        "se": "se/bm/D.mp3",
+        "text": "ファンからは\n“おかえり”の声",
+        "color": "green",
+        "se": "se/bm/B.mp3",
         "seVolume": 0.22
       },
       "bottom": [
@@ -196,7 +172,7 @@
           "se": null
         }
       ],
-      "voice": "watanabe-risa/voice/cut08.wav"
+      "voice": "watanabe-risa/voice/cut06.wav"
     }
   ],
   "voiceCredits": [

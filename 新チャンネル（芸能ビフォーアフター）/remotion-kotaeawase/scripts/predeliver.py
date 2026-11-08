@@ -70,7 +70,8 @@ def main():
 
     # 2. 秒数と公開の位置
     total = sum(c['dur'] for c in cuts)
-    check(25 <= total <= 33, f'合計 {total:.1f}秒（25〜33秒）')
+    check(27 <= total <= 31, f'合計 {total:.1f}秒（27〜31秒。ベンチマーク①1位は29.2秒）')
+    check(len(cuts) == 7, f'{len(cuts)}カット（ベンチマーク①1位と同じ7カット）', '注意')
     m = re.search(r'【型】\s*([ABC])', plain)
     t = 0
     for c in cuts:
@@ -106,7 +107,9 @@ def main():
         if c.get('voice') and os.path.exists(os.path.join(pub, c['voice'])):
             vl = wav_len(os.path.join(pub, c['voice']))
             check(c['dur'] >= vl + 0.25 - 0.01, f'カット{i} 秒数 {c["dur"]} ≥ 声 {vl:.2f}＋0.25（ベンチマークは0.26）')
-    check(180 <= tot_chars <= 210, f'テロップ合計 {tot_chars}字（180〜210字）', '注意')
+    n_telops = sum(len(texts_of(c)) for c in cuts)
+    check(n_telops == 14, f'テロップ {n_telops}個（ベンチマーク①1位は14個）', '注意')
+    check(160 <= tot_chars <= 190, f'テロップ合計 {tot_chars}字（160〜190字。ベンチマーク①1位は約175字）', '注意')
 
     # 4. 2つの台本と設計図のテロップが同じか
     for i, c in enumerate(cuts, 1):

@@ -1,16 +1,14 @@
 {
   "id": "touma-ami",
   "yomi": {
-    "當真あみ": "とうまあみ",
-    "20歳": "はたち",
-    "9600超え": "きゅうせんろっぴゃくごえ"
+    "當真あみ": "とうまあみ"
   },
   "cuts": [
     {
       "type": "title",
       "pattern": "B",
       "dur": 3.99,
-      "title": "同じポーズの13歳が\n19歳になったら\n大人びすぎやろｗ",
+      "title": "同じポーズの13歳\n6年後が大人びすぎｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
         "label": "出典：公式X"
@@ -24,7 +22,7 @@
     },
     {
       "type": "single",
-      "dur": 3.92,
+      "dur": 4.12,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
         "label": "出典：公式X"
@@ -47,13 +45,13 @@
     },
     {
       "type": "single",
-      "dur": 4.85,
+      "dur": 4.89,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
         "label": "出典：公式X"
       },
       "top": {
-        "text": "3年後 高2でもう一回",
+        "text": "16歳でもう一回",
         "color": "green",
         "se": null
       },
@@ -70,7 +68,7 @@
     },
     {
       "type": "single",
-      "dur": 3.61,
+      "dur": 3.77,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
@@ -94,7 +92,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.54,
+      "dur": 4.68,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -116,7 +114,7 @@
         {
           "text": "凛としすぎやろ",
           "color": "red",
-          "at": 3.36,
+          "at": 3.5,
           "se": null
         }
       ],
@@ -124,9 +122,9 @@
     },
     {
       "type": "single",
-      "dur": 3.63,
+      "dur": 3.75,
       "image": {
-        "src": "touma-ami/p5_20sai.jpg",
+        "src": "touma-ami/p4_post.png",
         "label": "出典：當真あみ【公式】X"
       },
       "top": {
@@ -137,41 +135,18 @@
       },
       "bottom": [
         {
-          "text": "あっという間に20歳やん",
+          "text": "いや3枚とも\nほぼ変わらんやろ",
           "color": "purple",
-          "at": 1.91,
+          "at": 2.88,
           "se": null
         }
       ],
       "voice": "touma-ami/voice/cut06.wav"
     },
     {
-      "type": "single",
-      "dur": 4.75,
-      "image": {
-        "src": "touma-ami/p4_post.png",
-        "label": "出典：當真あみ【公式】X"
-      },
-      "top": {
-        "text": "公式の投稿は\nいいね9600超え",
-        "color": "red",
-        "se": "se/bm/C.mp3",
-        "seVolume": 0.23
-      },
-      "bottom": [
-        {
-          "text": "いや3枚とも\nほぼ変わらんやろ",
-          "color": "purple",
-          "at": 2.8,
-          "se": null
-        }
-      ],
-      "voice": "touma-ami/voice/cut07.wav"
-    },
-    {
       "type": "compare",
       "layout": "side",
-      "dur": 5.36,
+      "dur": 5.53,
       "images": [
         {
           "src": "touma-ami/p1_13sai_hikaku.jpg",
@@ -192,7 +167,7 @@
         {
           "text": "大人びても\n透明感そのままや",
           "color": "red",
-          "at": 2.37,
+          "at": 2.54,
           "se": null
         }
       ],
@@ -201,7 +176,7 @@
   ],
   "voiceCredits": [
     "VOICEVOX:九州そら",
-    "VOICEVOX:白上虎太郎"
+    "VOICEVOX:青山龍星"
   ],
   "sfx": {
     "title": "se/bm/T.mp3",

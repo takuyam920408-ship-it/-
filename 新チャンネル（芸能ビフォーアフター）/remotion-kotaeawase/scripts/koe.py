@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
-"""読み上げの声（VOICEVOX の青山龍星）を作り、カットの秒数と下テロップを出す時間を声に合わせる。
+"""読み上げの声（VOICEVOX）を作り、カットの秒数と下テロップを出す時間を声に合わせる。
 
-使い方：python3 scripts/koe.py <id> [--speed 1.25]
+使い方：python3 scripts/koe.py <id> [--dry]
   - specs/<id>.json の各カットのテロップを、上→下の順に読んだ声を作る
     （冒頭はタイトル枠の文）。public/<id>/voice/cutNN.wav に置き、spec の "voice" に書く
+  - --dry：声の長さだけ測って、カットごとの秒数と合計を出す（ファイルも spec も書き換えない）。台本の長さの確かめに使う
   - 声は2種類で、テロップ1つごとに交互にしゃべる（ベンチマーク①1位の動画を測って合わせた。2026-11-08）
-    冒頭の文と最初のテロップは "a"、そのあとは b, a, b… と交互。spec の一番上の "voices" で声の番号を選ぶ
-    例：{"a": 13, "b": 8}（13＝青山龍星、8＝春日部つむぎ）。書かなければ a 13・b 8
+    冒頭の文と最初のテロップは "a"（高い声：九州そら）、そのあとは b（低い声：青山龍星）, a, b… と交互
+    spec の一番上の "voices" で変えられる。例：{"b": {"id": 13, "pitch": 0.061, "intonation": 0.2, "speed": 1.04}}（番号だけでもよい）
     "voiceMode": "jouge" にすると、上テロップ＝a、下テロップ＝b の分け方になる
   - 効果音もテロップごとに書く（ベンチマークと同じ鳴らし方）：冒頭＝T、公開の上テロップと最後のカットの上テロップ＝D、
     声aのテロップ＝なし、声bのテロップ＝C（小パンチ）・B（パフ）・C・C・B…の順。T＝和太鼓でドドン、D＝きらーん1
     音のファイルは scripts/se_lab.py で効果音ラボから取る（public/se/bm/。リポジトリには入れない）
-  - 下テロップの "at" を、その文を読み始める秒にする。カットの "dur" は、声の長さ＋0.35秒にする
+  - 間もベンチマークに合わせる：カットの頭0.03秒、文と文の間0.27秒、次のカットまで0.26秒、最後のカットは声のあと1.1秒
+    下テロップの "at" は、その文を読み始める秒にする
   - 読み間違える言葉は、spec の一番上の "yomi"（画面の文字 → 読み）で直す。例：{"20歳": "はたち"}
   - 画面に出さない記号（ｗ、“”、改行）は読まない
   - spec は書き換える（元の spec は specs/<id>.json.bak に残す）
 
 必要なもの（VOICEVOX CORE。環境変数 VOICEVOX_DIR に、次の3つを置いたフォルダを指定する）
-  ort/…/libvoicevox_onnxruntime.so（VOICEVOX ONNX Runtime）、dict/（Open JTalk の辞書）、15.vvm（青山龍星が入った音声モデル）
+  ort/…/libvoicevox_onnxruntime.so（VOICEVOX ONNX Runtime）、dict/（Open JTalk の辞書）、
+  2.vvm（九州そら）と 15.vvm（青山龍星）。クラウドでは scripts/setup_voicevox.sh で組み立てる
   Python の voicevox_core（0.16以降）
-クレジット：概要欄に、使った声を全部書く（例：「VOICEVOX:青山龍星」「VOICEVOX:春日部つむぎ」）。青山龍星は、企業が携わる形なら、ななはぴへ事前確認
+クレジット：概要欄に、使った声を全部書く（「VOICEVOX:九州そら、VOICEVOX:青山龍星」）。koe.py が spec の voiceCredits に残す
 """
 import glob
 import io
@@ -36,7 +39,7 @@ AOYAMA_NORMAL = 13  # 青山龍星（ノーマル）
 # 音色（声の響き）がいちばん近い声を選んだ。a＝高い声（ベンチマーク 275Hz・抑揚0.86・1秒8.6音）、b＝低い声（103Hz・0.78・1秒8.8音）
 DEFAULT_VOICES = {
     'a': {'id': 16, 'pitch': 0.101, 'intonation': 0.28, 'speed': 1.44},   # 九州そら（ノーマル）
-    'b': {'id': 12, 'pitch': -0.5, 'intonation': 0.24, 'speed': 1.12},    # 白上虎太郎（ふつう）
+    'b': {'id': 13, 'pitch': 0.061, 'intonation': 0.20, 'speed': 1.04},   # 青山龍星（ノーマル）。音色は白上虎太郎がいちばん近かったが、ユーザーの判断で青山龍星（2026-11-08）
 }
 LOWPASS = 5800  # ベンチマークの声は5.8kHzより上がない（AquesTalk）。同じこもり方にする
 LEAD = 0.03  # カットの頭の間（秒）。ベンチマークはテロップ・効果音・声が同時に出る
@@ -82,7 +85,8 @@ def main():
     if not args:
         sys.exit(__doc__)
     ep = args[0]
-    speed = float(args[args.index('--speed') + 1]) if '--speed' in args else 1.25
+    speed = float(args[args.index('--speed') + 1]) if '--speed' in args else 1.25  # voices に speed がないときだけ使う
+    dry = '--dry' in args
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     spec_path = os.path.join(root, 'specs', f'{ep}.json')
     spec = json.load(open(spec_path, encoding='utf-8'))
@@ -108,7 +112,8 @@ def main():
     spec['voiceCredits'] = sorted({'VOICEVOX:' + names[v['id']].split('（')[0] for v in voices.values()})
     n_cuts = len(spec['cuts'])
     out_dir = os.path.join(root, 'public', ep, 'voice')
-    os.makedirs(out_dir, exist_ok=True)
+    if not dry:
+        os.makedirs(out_dir, exist_ok=True)
 
     def say(text, voice):
         style = voice['id']
@@ -164,7 +169,12 @@ def main():
             starts.append(round(t, 2))
             pcm += frames
             t += len(frames) / (rate * ch * sw)
-            print(f'カット{i}：{spoken}（{len(frames) / (rate * ch * sw):.2f}秒）')
+            print(f'カット{i}：{who}「{spoken}」{len(frames) / (rate * ch * sw):.2f}秒')
+        cut['dur'] = round(t + (END_HOLD if i == n_cuts else TAIL), 2)
+        total += cut['dur']
+        print(f'　→ カット{i}は {cut["dur"]:.2f}秒（{total - cut["dur"]:.1f}〜{total:.1f}秒）')
+        if dry:
+            continue
         f = os.path.join(out_dir, f'cut{i:02d}.wav')
         with wave.open(f, 'wb') as w:
             w.setnchannels(ch)
@@ -179,10 +189,11 @@ def main():
         if cut['type'] != 'title':
             for b, s in zip(cut['bottom'], starts[1:]):
                 b['at'] = s
-        cut['dur'] = round(t + (END_HOLD if i == n_cuts else TAIL), 2)
         if use_se:
             cut.pop('se', None)  # 公開の効果音は上テロップの D で鳴らす
-        total += cut['dur']
+    if dry:
+        print(f'合計 {total:.1f}秒（ベンチマーク①1位は29.2秒。27〜31秒に入れる）')
+        return
     if use_se:
         spec.setdefault('sfx', {})['title'] = se_set['T']
         spec['sfx']['titleVolume'] = SE_VOL['T']
@@ -190,9 +201,9 @@ def main():
     shutil.copy(spec_path, spec_path + '.bak')
     json.dump(spec, open(spec_path, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
     open(spec_path, 'a').write('\n')
-    print(f'合計 {total:.1f}秒（話す速さ {speed}）')
-    if not 25 <= total <= 33:
-        print('※合計が25〜33秒の外。--speed を変えるか、テロップを削る')
+    print(f'合計 {total:.1f}秒')
+    if not 27 <= total <= 31:
+        print('※合計が27〜31秒の外（ベンチマーク①1位は29.2秒）。テロップの字数を直す')
 
 
 if __name__ == '__main__':

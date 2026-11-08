@@ -1,15 +1,16 @@
 #!/bin/bash
-# VOICEVOX CORE（青山龍星だけ）を組み立てる。クラウドのセッションで声を作るときに1回まわす。
+# VOICEVOX CORE（九州そら・青山龍星）を組み立てる。クラウドのセッションで声を作るときに1回まわす。
 # 使い方：bash scripts/setup_voicevox.sh <置き場所>   例：bash scripts/setup_voicevox.sh ~/voicevox
-# できあがり：<置き場所>/venv（voicevox_core 入りの Python）、ort/、dict/、vvms/（15.vvm＝青山龍星、0.vvm＝春日部つむぎ）
+# できあがり：<置き場所>/venv（voicevox_core 入りの Python）、ort/、dict/、vvms/（2.vvm＝九州そら、15.vvm＝青山龍星）
 # 声を作る：VOICEVOX_DIR=<置き場所> <置き場所>/venv/bin/python scripts/koe.py <id>
 #
 # 公式のダウンロードツールは GitHub の API を使うため、クラウドでは動かない。代わりに直接取る：
 #   - VOICEVOX CORE の wheel と VOICEVOX ONNX Runtime：GitHub のリリース
-#   - 音声モデル（15.vvm・0.vvm）：voicevox_vvm リポジトリ（そのファイルだけ取り出す）
+#   - 音声モデル（2.vvm・15.vvm）：voicevox_vvm リポジトリ（そのファイルだけ取り出す）
 #   - Open JTalk の辞書：PyPI の pyopenjtalk-plus に入っているもの
 # GitHub のリリースのダウンロードは、混んでいると 504 になることがある（2026-11-08 に何度か出た）。時間をおいてもう一度まわす
-# 利用規約：音声モデルは voicevox_vvm の TERMS、青山龍星は「VOICEVOX:青山龍星」のクレジットで個人は商用可（企業が携わるなら、ななはぴへ事前確認）
+# 利用規約：音声モデルは voicevox_vvm の TERMS。概要欄に「VOICEVOX:九州そら、VOICEVOX:青山龍星」と書けば、どちらも商用（収益化）可
+# （青山龍星は、企業が携わる形なら、ななはぴへ事前確認）
 set -euo pipefail
 DIR=${1:?置き場所を指定してください}
 CORE=0.17.1
@@ -28,8 +29,8 @@ if [ ! -d ort ]; then
   mkdir -p ort && tar xzf ort.tgz -C ort && rm ort.tgz
 fi
 
-# 使う声の音声モデル：2.vvm＝九州そら（声a）、9.vvm＝白上虎太郎（声b）。15.vvm＝青山龍星・0.vvm＝春日部つむぎは前に使った声。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
-VVMS=${VVMS:-"2 9 15 0"}
+# 使う声の音声モデル：2.vvm＝九州そら（声a）、15.vvm＝青山龍星（声b）。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
+VVMS=${VVMS:-"2 15"}
 mkdir -p vvms
 missing=""; for v in $VVMS; do [ -f "vvms/$v.vvm" ] || missing="$missing /vvms/$v.vvm"; done
 if [ -n "$missing" ]; then
@@ -62,5 +63,5 @@ syn = Synthesizer(Onnxruntime.load_once(filename=glob.glob('$DIR/ort/**/libvoice
 for f in glob.glob('$DIR/vvms/*.vvm'):
     with VoiceModelFile.open(f) as m:
         syn.load_voice_model(m)
-print('OK：青山龍星', len(syn.tts('答え合わせ速報', 13)), 'バイト／春日部つむぎ', len(syn.tts('答え合わせ速報', 8)), 'バイト')
+print('OK：九州そら', len(syn.tts('答え合わせ速報', 16)), 'バイト／青山龍星', len(syn.tts('答え合わせ速報', 13)), 'バイト')
 PY

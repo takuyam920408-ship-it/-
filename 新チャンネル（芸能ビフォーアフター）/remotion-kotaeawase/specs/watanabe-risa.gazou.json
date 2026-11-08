@@ -1,21 +1,72 @@
 {
   "id": "watanabe-risa",
   "sources": [
-    { "name": "kuroihitsuji", "x_status": "1124595782299074560", "index": 2, "size": [1080, 827] },
-    { "name": "canmake", "x_status": "1175001784399683584", "index": 1, "size": [1080, 1080] },
-    { "name": "harucode", "x_status": "1005785434838982656", "index": 1, "size": [1080, 1318] },
-    { "name": "nonno_sotsugyo", "x_status": "1869940835594187131", "index": 1, "size": [924, 616] }
+    {
+      "name": "kuroihitsuji",
+      "x_status": "1124595782299074560",
+      "index": 2,
+      "size": [
+        1080,
+        827
+      ]
+    },
+    {
+      "name": "canmake",
+      "x_status": "1175001784399683584",
+      "index": 1,
+      "size": [
+        1080,
+        1080
+      ]
+    },
+    {
+      "name": "harucode",
+      "x_status": "1005785434838982656",
+      "index": 1,
+      "size": [
+        1080,
+        1318
+      ]
+    },
+    {
+      "name": "nonno_sotsugyo",
+      "x_status": "1869940835594187131",
+      "index": 1,
+      "size": [
+        924,
+        616
+      ]
+    }
   ],
   "files": [
-    { "photo": "写真1", "file": "p1_kuroihitsuji.jpg", "from": "kuroihitsuji", "what": "2019年、欅坂46『黒い羊』の衣装の顔のアップ（カット1の昔・カット7の上）" },
-    { "photo": "写真2", "file": "p2_canmake.jpg", "from": "canmake", "what": "2019年、メイクの企画の写真（カット2）" },
-    { "photo": "写真3", "file": "p3_harucode.jpg", "from": "harucode", "what": "2018年、春のコーデの全身（カット3）" },
-    { "photo": "写真4", "file": "p4_nonno_sotsugyo.jpg", "from": "nonno_sotsugyo", "what": "2024年12月、non-no専属モデル卒業のお知らせ（カット4）" }
+    {
+      "photo": "写真1",
+      "file": "p1_kuroihitsuji.jpg",
+      "from": "kuroihitsuji",
+      "what": "2019年、欅坂46『黒い羊』の衣装の顔のアップ（カット1の昔・カット6の上）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_canmake.jpg",
+      "from": "canmake",
+      "what": "2019年、メイクの企画の写真（カット2）"
+    },
+    {
+      "photo": "写真3",
+      "file": "p3_harucode.jpg",
+      "from": "harucode",
+      "what": "2018年、春のコーデの全身（カット3）"
+    },
+    {
+      "photo": "写真4",
+      "file": "p4_nonno_sotsugyo.jpg",
+      "from": "nonno_sotsugyo",
+      "what": "2024年12月、non-no専属モデル卒業のお知らせ（カット4）"
+    }
   ],
   "manual": [
-    "写真5：https://www.instagram.com/p/DfMji9Wk9-K/ のウインクの近影（Instagram。Macで保存）。全体を p5_ima.jpg、あごの下までの顔のアップを p5_ima_kao.jpg にする。場所が分かる背景は切り取る",
-    "写真6：同じ投稿の画面のスクショ（写真とキャプションだけ。アカウント名と位置情報の行・コメント欄は入れない）を p6_post.png にする",
-    "写真7：同じ投稿に2枚目があれば p7_ima2.jpg にする（カット8）。なければカット8は p5_ima_kao.jpg",
+    "写真5：https://www.instagram.com/p/DfMji9Wk9-K/ のウインクの近影（Instagram。Macで保存）。全体を p5_ima.jpg（カット5）、あごの下までの顔のアップを p5_ima_kao.jpg（カット1のモザイク・カット6の下）にする。場所が分かる背景は切り取る",
+    "写真6：同じ投稿の画面のスクショ（写真とキャプションだけ。アカウント名と位置情報の行・コメント欄は入れない）を p6_post.png にする（カット7）",
     "置いたら specs/watanabe-risa.json の _kari のファイル名を差し替える"
   ]
 }
