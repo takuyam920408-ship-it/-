@@ -83,9 +83,13 @@
         1745
       ],
       "what": "同じ写真の肩から上。昔と顔の大きさをそろえた（カット1・カット4のモザイク）"
+    },
+    {
+      "photo": "写真4",
+      "file": "p4_sanmai.jpg",
+      "from": "sanmai",
+      "what": "投稿の画像そのもの（3枚が並んだ1枚。切り取らない）（カット6）"
     }
   ],
-  "manual": [
-    "写真4：https://x.com/ami_touma/status/2116473448457511310 の投稿の画面のスクショ（Xの公式の埋め込み表示。node scripts/xshot.js 2116473448457511310 public/touma-ami/p4_post.png）。カット6で使う"
-  ]
+  "manual": []
 }
