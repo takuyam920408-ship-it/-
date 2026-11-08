@@ -124,7 +124,8 @@ def main():
         check(not miss, f'画像の出どころ.json の元のページが、全部概要欄にある{"（ない：" + ", ".join(miss) + "）" if miss else ""}')
     else:
         check(False, '画像の出どころ.json がない（scripts/gazou.py で作る）', '注意')
-    check('VOICEVOX:青山龍星' in desc, '概要欄に「VOICEVOX:青山龍星」')
+    for cr in spec.get('voiceCredits', ['VOICEVOX:青山龍星']):
+        check(cr in desc, f'概要欄に「{cr}」')
     check('効果音' in desc, '概要欄に効果音のクレジット')
     memo = re.findall(r'（[^）]*(あとで|要確認|TODO|〇〇)[^）]*）', desc)
     check(not memo, '概要欄にメモ（あとで・〇〇など）が残っていない')

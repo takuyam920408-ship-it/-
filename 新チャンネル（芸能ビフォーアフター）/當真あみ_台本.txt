@@ -70,7 +70,7 @@
 　https://www.oricon.co.jp/pressrelease/2965016/
 
 ▼読み上げの声・効果音
-・読み上げ：VOICEVOX:青山龍星
+・読み上げ：VOICEVOX:青山龍星、VOICEVOX:春日部つむぎ
 ・効果音：自作
 【要確認】
 1. 効果音は自作（remotion-kotaeawase/scripts/se.py で作ったもの）。BGMは入れていない（2026-11-08）

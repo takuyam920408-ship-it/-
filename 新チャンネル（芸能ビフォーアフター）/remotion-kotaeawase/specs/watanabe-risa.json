@@ -25,7 +25,7 @@
     },
     {
       "type": "single",
-      "dur": 4.02,
+      "dur": 3.93,
       "image": {
         "src": "watanabe-risa/p2_canmake.jpg",
         "label": "出典：non-no公式X"
@@ -45,7 +45,7 @@
     },
     {
       "type": "single",
-      "dur": 4.01,
+      "dur": 3.92,
       "image": {
         "src": "watanabe-risa/p3_harucode.jpg",
         "label": "出典：non-no公式X"
@@ -65,7 +65,7 @@
     },
     {
       "type": "single",
-      "dur": 3.46,
+      "dur": 3.41,
       "image": {
         "src": "watanabe-risa/p4_nonno_sotsugyo.jpg",
         "label": "出典：non-no公式X"
@@ -85,7 +85,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.26,
+      "dur": 4.15,
       "image": {
         "src": "watanabe-risa/p5_ima_kari.png",
         "label": "出典：渡邉理佐のInstagram"
@@ -103,7 +103,7 @@
         {
           "text": "ウインクは反則やろ",
           "color": "red",
-          "at": 2.86
+          "at": 2.78
         }
       ],
       "se": "se/kokai_kira.wav",
@@ -111,7 +111,7 @@
     },
     {
       "type": "single",
-      "dur": 3.39,
+      "dur": 3.29,
       "image": {
         "src": "watanabe-risa/p6_post_kari.png",
         "label": "出典：渡邉理佐のInstagram"
@@ -131,7 +131,7 @@
     },
     {
       "type": "compare",
-      "dur": 3.92,
+      "dur": 3.89,
       "images": [
         {
           "src": "watanabe-risa/p1_kuroihitsuji.jpg",
@@ -176,5 +176,9 @@
       ],
       "voice": "watanabe-risa/voice/cut08.wav"
     }
+  ],
+  "voiceCredits": [
+    "VOICEVOX:春日部つむぎ",
+    "VOICEVOX:青山龍星"
   ]
 }

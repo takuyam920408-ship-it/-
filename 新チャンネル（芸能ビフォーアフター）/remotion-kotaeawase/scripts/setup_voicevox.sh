@@ -1,12 +1,12 @@
 #!/bin/bash
 # VOICEVOX CORE（青山龍星だけ）を組み立てる。クラウドのセッションで声を作るときに1回まわす。
 # 使い方：bash scripts/setup_voicevox.sh <置き場所>   例：bash scripts/setup_voicevox.sh ~/voicevox
-# できあがり：<置き場所>/venv（voicevox_core 入りの Python）、ort/、dict/、15.vvm
+# できあがり：<置き場所>/venv（voicevox_core 入りの Python）、ort/、dict/、vvms/（15.vvm＝青山龍星、0.vvm＝春日部つむぎ）
 # 声を作る：VOICEVOX_DIR=<置き場所> <置き場所>/venv/bin/python scripts/koe.py <id>
 #
 # 公式のダウンロードツールは GitHub の API を使うため、クラウドでは動かない。代わりに直接取る：
 #   - VOICEVOX CORE の wheel と VOICEVOX ONNX Runtime：GitHub のリリース
-#   - 15.vvm（青山龍星が入った音声モデル）：voicevox_vvm リポジトリ（その1ファイルだけ取り出す）
+#   - 音声モデル（15.vvm・0.vvm）：voicevox_vvm リポジトリ（そのファイルだけ取り出す）
 #   - Open JTalk の辞書：PyPI の pyopenjtalk-plus に入っているもの
 # GitHub のリリースのダウンロードは、混んでいると 504 になることがある（2026-11-08 に何度か出た）。時間をおいてもう一度まわす
 # 利用規約：音声モデルは voicevox_vvm の TERMS、青山龍星は「VOICEVOX:青山龍星」のクレジットで個人は商用可（企業が携わるなら、ななはぴへ事前確認）
@@ -28,13 +28,17 @@ if [ ! -d ort ]; then
   mkdir -p ort && tar xzf ort.tgz -C ort && rm ort.tgz
 fi
 
-if [ ! -f 15.vvm ]; then
+# 使う声の音声モデル：15.vvm＝青山龍星（説明）、0.vvm＝春日部つむぎ（ツッコミ）。ほかの声を使うときは VVMS で足す（どの声がどの .vvm かは voicevox_vvm の README）
+VVMS=${VVMS:-"15 0"}
+mkdir -p vvms
+missing=""; for v in $VVMS; do [ -f "vvms/$v.vvm" ] || missing="$missing /vvms/$v.vvm"; done
+if [ -n "$missing" ]; then
   rm -rf vvm_tmp
   GIT_LFS_SKIP_SMUDGE=1 git clone -q --depth 1 --filter=blob:none --sparse https://github.com/VOICEVOX/voicevox_vvm vvm_tmp
-  git -C vvm_tmp sparse-checkout set --no-cone /vvms/15.vvm /TERMS.txt /README.md
-  cp vvm_tmp/vvms/15.vvm 15.vvm
+  git -C vvm_tmp sparse-checkout set --no-cone $missing /TERMS.txt /README.md
+  for v in $VVMS; do [ -f "vvm_tmp/vvms/$v.vvm" ] && cp "vvm_tmp/vvms/$v.vvm" "vvms/$v.vvm"; done
   cp vvm_tmp/TERMS.txt vvm_TERMS.txt
-  grep -q "青山龍星" vvm_tmp/README.md && echo "15.vvm に青山龍星が入っていることを確認"
+  cp vvm_tmp/README.md vvm_README.md
   rm -rf vvm_tmp
 fi
 
@@ -55,7 +59,8 @@ venv/bin/python - <<PY
 from voicevox_core.blocking import Onnxruntime, OpenJtalk, Synthesizer, VoiceModelFile
 import glob
 syn = Synthesizer(Onnxruntime.load_once(filename=glob.glob('$DIR/ort/**/libvoicevox_onnxruntime.so', recursive=True)[0]), OpenJtalk('$DIR/dict'))
-with VoiceModelFile.open('$DIR/15.vvm') as m:
-    syn.load_voice_model(m)
-print('OK：青山龍星で声を作れます（試し：', len(syn.tts('答え合わせ速報', 13)), 'バイト）')
+for f in glob.glob('$DIR/vvms/*.vvm'):
+    with VoiceModelFile.open(f) as m:
+        syn.load_voice_model(m)
+print('OK：青山龍星', len(syn.tts('答え合わせ速報', 13)), 'バイト／春日部つむぎ', len(syn.tts('答え合わせ速報', 8)), 'バイト')
 PY

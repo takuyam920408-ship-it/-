@@ -9,7 +9,7 @@
     {
       "type": "title",
       "pattern": "B",
-      "dur": 3.8,
+      "dur": 3.73,
       "title": "同じポーズの13歳が\n19歳になったら\n大人びすぎやろｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
@@ -24,7 +24,7 @@
     },
     {
       "type": "single",
-      "dur": 3.63,
+      "dur": 3.6,
       "image": {
         "src": "touma-ami/p1_13sai.jpg",
         "label": "出典：公式X"
@@ -44,7 +44,7 @@
     },
     {
       "type": "single",
-      "dur": 4.08,
+      "dur": 4.05,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
         "label": "出典：公式X"
@@ -64,7 +64,7 @@
     },
     {
       "type": "single",
-      "dur": 3.3,
+      "dur": 3.24,
       "image": {
         "src": "touma-ami/p3_19sai_kao.jpg",
         "label": "出典：公式X"
@@ -85,7 +85,7 @@
     },
     {
       "type": "reveal",
-      "dur": 4.14,
+      "dur": 4.1,
       "image": {
         "src": "touma-ami/p3_19sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -103,7 +103,7 @@
         {
           "text": "凛としすぎやろ",
           "color": "red",
-          "at": 3.0
+          "at": 2.96
         }
       ],
       "voice": "touma-ami/voice/cut05.wav",
@@ -111,7 +111,7 @@
     },
     {
       "type": "single",
-      "dur": 3.43,
+      "dur": 3.37,
       "image": {
         "src": "touma-ami/p5_20sai.jpg",
         "label": "出典：當真あみ【公式】X"
@@ -131,7 +131,7 @@
     },
     {
       "type": "single",
-      "dur": 4.2,
+      "dur": 4.25,
       "image": {
         "src": "touma-ami/p4_post.png",
         "label": "出典：當真あみ【公式】X"
@@ -176,5 +176,9 @@
       ],
       "voice": "touma-ami/voice/cut08.wav"
     }
+  ],
+  "voiceCredits": [
+    "VOICEVOX:春日部つむぎ",
+    "VOICEVOX:青山龍星"
   ]
 }
