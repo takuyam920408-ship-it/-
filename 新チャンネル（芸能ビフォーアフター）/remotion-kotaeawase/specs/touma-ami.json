@@ -7,7 +7,7 @@
     {
       "type": "title",
       "pattern": "B",
-      "dur": 3.99,
+      "dur": 3.04,
       "title": "同じポーズの13歳\n6年後が大人びすぎｗ",
       "before": {
         "src": "touma-ami/p1_13sai_kao.jpg",
@@ -45,7 +45,7 @@
     },
     {
       "type": "single",
-      "dur": 4.89,
+      "dur": 3.94,
       "image": {
         "src": "touma-ami/p2_16sai.jpg",
         "label": "出典：公式X"
@@ -59,7 +59,7 @@
         {
           "text": "この頃はまだ\nあどけなさ残っとる",
           "color": "purple",
-          "at": 2.69,
+          "at": 1.74,
           "se": "se/bm/B.mp3",
           "seVolume": 0.22
         }
@@ -122,13 +122,13 @@
     },
     {
       "type": "single",
-      "dur": 3.75,
+      "dur": 4.38,
       "image": {
         "src": "touma-ami/p4_post.png",
         "label": "出典：當真あみ【公式】X"
       },
       "top": {
-        "text": "正体は女優の當真あみ",
+        "text": "この子の正体は\n女優の當真あみ",
         "color": "blue",
         "se": "se/bm/B.mp3",
         "seVolume": 0.22
@@ -137,7 +137,7 @@
         {
           "text": "いや3枚とも\nほぼ変わらんやろ",
           "color": "purple",
-          "at": 2.88,
+          "at": 2.42,
           "se": null
         }
       ],
@@ -171,7 +171,7 @@
           "se": null
         }
       ],
-      "voice": "touma-ami/voice/cut08.wav"
+      "voice": "touma-ami/voice/cut07.wav"
     }
   ],
   "voiceCredits": [

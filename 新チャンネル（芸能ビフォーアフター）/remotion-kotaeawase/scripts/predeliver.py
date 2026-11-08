@@ -109,7 +109,7 @@ def main():
             check(c['dur'] >= vl + 0.25 - 0.01, f'カット{i} 秒数 {c["dur"]} ≥ 声 {vl:.2f}＋0.25（ベンチマークは0.26）')
     n_telops = sum(len(texts_of(c)) for c in cuts)
     check(n_telops == 14, f'テロップ {n_telops}個（ベンチマーク①1位は14個）', '注意')
-    check(160 <= tot_chars <= 190, f'テロップ合計 {tot_chars}字（160〜190字。ベンチマーク①1位は約175字）', '注意')
+    check(150 <= tot_chars <= 190, f'テロップ合計 {tot_chars}字（150〜190字。ベンチマーク①1位は約175字。長さは声で測った秒数で決める）', '注意')
 
     # 4. 2つの台本と設計図のテロップが同じか
     for i, c in enumerate(cuts, 1):
