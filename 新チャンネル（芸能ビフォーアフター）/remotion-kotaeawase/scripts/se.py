@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """公開の瞬間の効果音を、数式から作る（自作なので権利の心配がない）。
-使い方：python3 scripts/se.py → public/se/kokai_kira.wav（明るい「キラーン」）と public/se/kokai_jan.wav（驚きの「ジャン」）
+使い方：python3 scripts/se.py → public/se/ に次を作る
+  kokai_kira.wav（公開：明るい「キラーン」）／kokai_jan.wav（公開：驚きの「ジャン」）
+  pon.wav（テロップが出るたびの「ポン」）／don.wav（冒頭の「ドン」）／shu.wav（カットの切り替えの「シュッ」。使うかは spec で選ぶ）
 """
 import os
 import wave
@@ -45,3 +47,30 @@ t = np.arange(int(SR * dur)) / SR
 chord = sum(np.sin(2 * np.pi * f * t) + 0.3 * np.sin(2 * np.pi * 2 * f * t) for f in [523.25, 659.25, 783.99, 1046.5])
 env = np.minimum(1, t / 0.008) * np.exp(-t * 4.0)
 save('kokai_jan.wav', chord * env)
+
+
+# ポン：テロップが出るときの短い音（高めの音が少し下がる）
+dur = 0.16
+t = np.arange(int(SR * dur)) / SR
+f = 1250 * np.exp(-t * 6)
+x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 28) * np.minimum(1, t / 0.002)
+save('pon.wav', x)
+
+# ドン：冒頭の画面が出るときの低い音
+dur = 0.7
+t = np.arange(int(SR * dur)) / SR
+f = 140 * np.exp(-t * 3) + 45
+body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 5.5)
+rng = np.random.default_rng(7)
+click = rng.standard_normal(len(t)) * np.exp(-t * 60) * 0.35
+save('don.wav', (body + click) * np.minimum(1, t / 0.003))
+
+# シュッ：風を切る音（雑音の高さを上げていく）
+dur = 0.32
+t = np.arange(int(SR * dur)) / SR
+rng = np.random.default_rng(3)
+noise = rng.standard_normal(len(t))
+# 簡単なフィルター：差分をとって高い音を強め、だんだん強くしてから消す
+hi = np.diff(noise, prepend=0)
+env = np.sin(np.pi * t / dur) ** 2
+save('shu.wav', (0.6 * hi + 0.4 * noise) * env * 0.6)

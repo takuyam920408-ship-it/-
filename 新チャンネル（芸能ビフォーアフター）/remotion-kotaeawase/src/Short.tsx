@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AbsoluteFill, Audio, Sequence, continueRender, delayRender, staticFile, useVideoConfig } from 'remotion';
-import { Background } from './parts';
+import { Background, ShowCredit, TelopSfx } from './parts';
 import { BodyCutView, CompareCutView, TitleCutView } from './cuts';
 import type { Cut, Spec } from './spec';
 
@@ -32,7 +32,13 @@ export const Short: React.FC<{ spec: Spec }> = ({ spec }) => {
   const { fps } = useVideoConfig();
   useFonts(spec);
   let from = 0;
+  const vol = spec.sfx?.volume ?? 0.5;
+  const titleSe = spec.sfx?.title === undefined ? 'se/don.wav' : spec.sfx.title;
+  const telopSe = spec.sfx?.telop === undefined ? 'se/pon.wav' : spec.sfx.telop;
+  const cutSe = spec.sfx?.cut ?? null;
   return (
+    <ShowCredit.Provider value={spec.creditLabels ?? false}>
+    <TelopSfx.Provider value={{ src: telopSe, volume: vol }}>
     <AbsoluteFill>
       <Background />
       {spec.cuts.map((cut, i) => {
@@ -45,11 +51,15 @@ export const Short: React.FC<{ spec: Spec }> = ({ spec }) => {
             {cut.type === 'single' || cut.type === 'reveal' || cut.type === 'wide' ? <BodyCutView cut={cut} /> : null}
             {cut.type === 'compare' ? <CompareCutView cut={cut} /> : null}
             {cut.voice ? <Audio src={staticFile(cut.voice)} /> : null}
-            {'se' in cut && cut.se ? <Audio src={staticFile(cut.se)} /> : null}
+            {'se' in cut && cut.se ? <Audio src={staticFile(cut.se)} volume={Math.min(1, vol * 1.6)} /> : null}
+            {cut.type === 'title' && titleSe ? <Audio src={staticFile(titleSe)} volume={vol} /> : null}
+            {cut.type !== 'title' && cutSe ? <Audio src={staticFile(cutSe)} volume={vol * 0.7} /> : null}
           </Sequence>
         );
       })}
       {spec.bgm ? <Audio src={staticFile(spec.bgm)} volume={spec.bgmVolume ?? 0.12} loop /> : null}
     </AbsoluteFill>
+    </TelopSfx.Provider>
+    </ShowCredit.Provider>
   );
 };

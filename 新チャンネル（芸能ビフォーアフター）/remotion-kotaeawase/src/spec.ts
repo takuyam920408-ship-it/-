@@ -47,9 +47,19 @@ export type CompareCut = {
 
 export type Cut = TitleCut | BodyCut | CompareCut;
 
+export type Sfx = {
+  title?: string | null; // 冒頭の画面が出るときの音（既定 se/don.wav）
+  telop?: string | null; // テロップが出るたびの音（既定 se/pon.wav）
+  cut?: string | null; // カットが切り替わるたびの音（既定なし。例 se/shu.wav）
+  volume?: number; // 効果音の大きさ（既定 0.5）。公開の se は 1.6倍で鳴らす
+};
+
 export type Spec = {
   id: string;
   cuts: Cut[];
+  yomi?: Record<string, string>; // 読み上げの読みの直し（scripts/koe.py が使う）
+  sfx?: Sfx;
+  creditLabels?: boolean; // 画面に「出典：〇〇」のラベルを出すか（既定 false。出典は概要欄に書く。2026-11-08 ユーザーが決定）
   bgm?: string;
   bgmVolume?: number;
 };

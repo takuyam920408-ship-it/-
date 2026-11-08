@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   AbsoluteFill,
+  Audio,
   Img,
+  Sequence,
   continueRender,
   delayRender,
   spring,
@@ -13,6 +15,10 @@ import { BG_DARK, BG_LIGHT, BG_ROTATE_DEG_PER_SEC, FONT, H, INK, TEXT_COLORS } f
 import type { Photo, Telop } from './spec';
 
 export type Rect = { x: number; y: number; w: number; h: number };
+
+// 動画全体の設定（出典ラベルを出すか、テロップの効果音）
+export const ShowCredit = React.createContext(false);
+export const TelopSfx = React.createContext<{ src: string | null; volume: number }>({ src: null, volume: 0.5 });
 
 // 背景：オレンジの放射線（濃い帯と淡い帯を7.5度ずつ交互に）。動画のあいだ、カットをまたいでずっとゆっくり回す
 export const Background: React.FC = () => {
@@ -113,6 +119,7 @@ export const PhotoBox: React.FC<{
   onRect?: (r: Rect) => void;
 }> = ({ photo, box, mosaic, fit = 'contain', focusY: focusYProp, onRect }) => {
   const focusY = photo.focusY ?? focusYProp ?? 0.3;
+  const showCredit = useContext(ShowCredit);
   const size = useImageSize(photo.src);
   const rect = size ? (fit === 'cover' ? box : fitContain(size, box)) : null;
   useEffect(() => {
@@ -146,7 +153,7 @@ export const PhotoBox: React.FC<{
           {photo.tag}
         </div>
       ) : null}
-      {photo.label ? (
+      {photo.label && showCredit ? (
         <div
           style={{
             position: 'absolute', top: 16, ...(photo.tag ? { right: 16 } : { left: 16 }),
@@ -166,8 +173,15 @@ export const TelopBox: React.FC<{ telop: Telop; startFrame: number }> = ({ telop
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const p = spring({ frame: frame - startFrame, fps, config: { damping: 14, mass: 0.5 } });
+  const sfx = useContext(TelopSfx);
   if (frame < startFrame) return null;
   return (
+    <>
+    {sfx.src ? (
+      <Sequence from={startFrame} durationInFrames={Math.round(fps * 0.5)} layout="none">
+        <Audio src={staticFile(sfx.src)} volume={sfx.volume} />
+      </Sequence>
+    ) : null}
     <div
       style={{
         background: '#fff', border: `6px solid ${INK}`, borderRadius: 16, padding: '14px 34px',
@@ -178,6 +192,7 @@ export const TelopBox: React.FC<{ telop: Telop; startFrame: number }> = ({ telop
     >
       {telop.text}
     </div>
+    </>
   );
 };
 
