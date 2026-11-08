@@ -71,18 +71,27 @@ export const BodyCutView: React.FC<{ cut: BodyCut }> = ({ cut }) => {
   }
   return (
     <>
-      <PhotoBox photo={cut.image} box={PHOTO} />
+      <PhotoBox photo={cut.image} box={PHOTO} mosaic={cut.type === 'single' ? cut.mosaic : undefined} />
       <TopTelop telop={cut.top} y={TOP_TELOP_Y} />
       <BottomTelops telops={cut.bottom} anchorBottom={BOTTOM_EDGE} />
     </>
   );
 };
 
-// 本編：2枚比較（上＝昔、下＝今）
+// 本編：2枚比較（vertical＝上が昔・下が今／side＝左が昔・右が今）
 export const CompareCutView: React.FC<{ cut: CompareCut }> = ({ cut }) => (
   <>
-    <PhotoBox photo={cut.images[0]} box={{ x: 120, y: 386, w: 840, h: 566 }} fit="cover" />
-    <PhotoBox photo={cut.images[1]} box={{ x: 120, y: 967, w: 840, h: 566 }} fit="cover" />
+    {cut.layout === 'side' ? (
+      <>
+        <PhotoBox photo={cut.images[0]} box={{ x: 55, y: 386, w: 480, h: 1147 }} fit="cover" />
+        <PhotoBox photo={cut.images[1]} box={{ x: 545, y: 386, w: 480, h: 1147 }} fit="cover" />
+      </>
+    ) : (
+      <>
+        <PhotoBox photo={cut.images[0]} box={{ x: 120, y: 386, w: 840, h: 566 }} fit="cover" />
+        <PhotoBox photo={cut.images[1]} box={{ x: 120, y: 967, w: 840, h: 566 }} fit="cover" />
+      </>
+    )}
     <TopTelop telop={cut.top} y={TOP_TELOP_Y} />
     <BottomTelops telops={cut.bottom} anchorBottom={BOTTOM_EDGE} />
   </>

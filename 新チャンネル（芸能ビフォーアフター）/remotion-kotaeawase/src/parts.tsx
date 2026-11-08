@@ -105,7 +105,8 @@ export const PhotoBox: React.FC<{
   fit?: 'contain' | 'cover';
   focusY?: number;
   onRect?: (r: Rect) => void;
-}> = ({ photo, box, mosaic, fit = 'contain', focusY = 0.3, onRect }) => {
+}> = ({ photo, box, mosaic, fit = 'contain', focusY: focusYProp, onRect }) => {
+  const focusY = photo.focusY ?? focusYProp ?? 0.3;
   const size = useImageSize(photo.src);
   const rect = size ? (fit === 'cover' ? box : fitContain(size, box)) : null;
   useEffect(() => {

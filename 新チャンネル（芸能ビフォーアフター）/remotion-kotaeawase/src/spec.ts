@@ -10,6 +10,7 @@ export type Photo = {
   src: string; // public/ からのパス
   label?: string; // 出典ラベル（例：出典：本人のX）
   tag?: string; // 2枚比較のラベル（例：10年前／今）
+  focusY?: number; // 枠いっぱいに切り取るとき（冒頭画面・2枚比較）、縦のどこを中心にするか（0＝上の端〜1＝下の端。既定0.3）
 };
 
 export type TitleCut = {
@@ -29,6 +30,7 @@ export type BodyCut = {
   image: Photo;
   top: Telop;
   bottom: Telop[]; // reveal だけ2つまで
+  mosaic?: number; // single だけ：公開の直前の溜めで、今の写真をモザイクのまま見せるとき（マスの大きさpx）
   voice?: string;
   se?: string;
 };
@@ -36,7 +38,8 @@ export type BodyCut = {
 export type CompareCut = {
   type: 'compare';
   dur: number;
-  images: [Photo, Photo]; // 上＝昔、下＝今
+  images: [Photo, Photo]; // 上（左）＝昔、下（右）＝今
+  layout?: 'vertical' | 'side'; // vertical＝上下に並べる（既定。横長の写真向き）／side＝左右に並べる（縦長の写真向き）
   top: Telop;
   bottom: Telop[];
   voice?: string;
