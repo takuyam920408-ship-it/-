@@ -145,6 +145,6 @@
     }
   ],
   "manual": [
-    "写真4：node scripts/xshot.js 2106227295136698801 public/hata-mei/p4_post.png のあと、表紙2枚の画像の下の端（時刻・いいねの行の上）で切り取って public/hata-mei/p4_post_kiri.png にする（python3 -c \"from PIL import Image; Image.open('public/hata-mei/p4_post.png').crop((0,0,1096,1290)).save('public/hata-mei/p4_post_kiri.png')\"。カット7）"
+    "写真4：node scripts/xshot.js 2106227295136698801 public/hata-mei/p4_post.png のあと、表紙2枚の画像の下の端（時刻・いいねの行の上、y=1290）から下を白で塗り、元と同じ縦横の public/hata-mei/p4_post_kiri.png にする（python3 -c \"from PIL import Image; s=Image.open('public/hata-mei/p4_post.png').convert('RGB'); o=Image.new('RGB',s.size,(255,255,255)); o.paste(s.crop((0,0,s.width,1290)),(0,0)); o.save('public/hata-mei/p4_post_kiri.png')\"。カット7）"
   ]
 }
