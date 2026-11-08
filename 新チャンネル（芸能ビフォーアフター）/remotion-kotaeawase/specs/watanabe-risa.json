@@ -9,7 +9,7 @@
     {
       "type": "title",
       "pattern": "A",
-      "dur": 4.09,
+      "dur": 4.01,
       "title": "元欅坂の渡邉理佐\n1年8か月ぶりの姿\nどうなっとると思う？",
       "before": {
         "src": "watanabe-risa/p1_kuroihitsuji.jpg",
@@ -25,113 +25,129 @@
     },
     {
       "type": "single",
-      "dur": 3.93,
+      "dur": 3.81,
       "image": {
         "src": "watanabe-risa/p2_canmake.jpg",
         "label": "出典：non-no公式X"
       },
       "top": {
         "text": "欅坂46の1期生",
-        "color": "green"
+        "color": "green",
+        "se": null
       },
       "bottom": [
         {
           "text": "この頃から\n完成しとるやん",
           "color": "red",
-          "at": 2.25
+          "at": 2.18,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
         }
       ],
       "voice": "watanabe-risa/voice/cut02.wav"
     },
     {
       "type": "single",
-      "dur": 3.92,
+      "dur": 3.8,
       "image": {
         "src": "watanabe-risa/p3_harucode.jpg",
         "label": "出典：non-no公式X"
       },
       "top": {
         "text": "2017年から\nnon-noモデル",
-        "color": "green"
+        "color": "green",
+        "se": null
       },
       "bottom": [
         {
           "text": "欅坂で初めてって\nさすがやな",
           "color": "purple",
-          "at": 1.93
+          "at": 1.86,
+          "se": "se/bm/B.mp3",
+          "seVolume": 0.14
         }
       ],
       "voice": "watanabe-risa/voice/cut03.wav"
     },
     {
       "type": "single",
-      "dur": 3.41,
+      "dur": 3.29,
       "image": {
         "src": "watanabe-risa/p4_nonno_sotsugyo.jpg",
         "label": "出典：non-no公式X"
       },
       "top": {
         "text": "non-noを卒業して\n事務所も離れて",
-        "color": "blue"
+        "color": "blue",
+        "se": null
       },
       "bottom": [
         {
           "text": "ずっと寂しかったで",
           "color": "purple",
-          "at": 2.11
+          "at": 2.04,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
         }
       ],
       "voice": "watanabe-risa/voice/cut04.wav"
     },
     {
       "type": "reveal",
-      "dur": 4.15,
+      "dur": 4.1,
       "image": {
         "src": "watanabe-risa/p5_ima_kari.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
         "text": "そして届いた\n1枚がこちら",
-        "color": "red"
+        "color": "red",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.13
       },
       "bottom": [
         {
           "text": "相変わらずやん",
           "color": "purple",
-          "at": 1.82
+          "at": 1.75,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
         },
         {
           "text": "ウインクは反則やろ",
           "color": "red",
-          "at": 2.78
+          "at": 2.76,
+          "se": null
         }
       ],
-      "se": "se/kokai_kira.wav",
       "voice": "watanabe-risa/voice/cut05.wav"
     },
     {
       "type": "single",
-      "dur": 3.29,
+      "dur": 3.3,
       "image": {
         "src": "watanabe-risa/p6_post_kari.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
         "text": "ファンからは\n“おかえり”の声",
-        "color": "green"
+        "color": "green",
+        "se": "se/bm/B.mp3",
+        "seVolume": 0.14
       },
       "bottom": [
         {
           "text": "待っとった人\n多かったんやな",
           "color": "purple",
-          "at": 1.6
+          "at": 1.56,
+          "se": null
         }
       ],
       "voice": "watanabe-risa/voice/cut06.wav"
     },
     {
       "type": "compare",
-      "dur": 3.89,
+      "dur": 3.82,
       "images": [
         {
           "src": "watanabe-risa/p1_kuroihitsuji.jpg",
@@ -145,33 +161,39 @@
       ],
       "top": {
         "text": "上が欅坂の頃\n下が今",
-        "color": "green"
+        "color": "green",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
       },
       "bottom": [
         {
           "text": "ワイは欅坂の頃の\nクール派やわ",
           "color": "purple",
-          "at": 1.83
+          "at": 1.78,
+          "se": null
         }
       ],
       "voice": "watanabe-risa/voice/cut07.wav"
     },
     {
       "type": "single",
-      "dur": 5.0,
+      "dur": 4.51,
       "image": {
         "src": "watanabe-risa/p5_ima_kao_kari.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
         "text": "おひさしぶりが\nほんま嬉しいわ",
-        "color": "blue"
+        "color": "blue",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.13
       },
       "bottom": [
         {
           "text": "1年8か月\n待った甲斐あったわ",
           "color": "red",
-          "at": 1.86
+          "at": 1.74,
+          "se": null
         }
       ],
       "voice": "watanabe-risa/voice/cut08.wav"
@@ -180,5 +202,14 @@
   "voiceCredits": [
     "VOICEVOX:春日部つむぎ",
     "VOICEVOX:青山龍星"
-  ]
+  ],
+  "voices": {
+    "a": 13,
+    "b": 8
+  },
+  "sfx": {
+    "title": "se/bm/T.mp3",
+    "titleVolume": 0.23,
+    "telop": null
+  }
 }

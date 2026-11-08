@@ -5,3 +5,4 @@ public/*
 __pycache__/
 !public/se/
 specs/*.bak
+public/se/bm/

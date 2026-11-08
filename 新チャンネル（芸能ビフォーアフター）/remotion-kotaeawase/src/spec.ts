@@ -4,6 +4,8 @@ export type Telop = {
   text: string; // 改行は \n（1行11字まで、2行まで）
   color?: 'blue' | 'green' | 'red' | 'orange' | 'purple' | 'magenta';
   at?: number; // カットが始まってから何秒後に出すか（上テロップは省略で0秒）
+  se?: string | null; // このテロップが出るときの効果音（scripts/koe.py が書く）。null で鳴らさない。省略で sfx.telop
+  seVolume?: number; // その効果音の大きさ
 };
 
 export type Photo = {
@@ -52,6 +54,7 @@ export type Sfx = {
   telop?: string | null; // テロップが出るたびの音（既定 se/pon.wav）
   cut?: string | null; // カットが切り替わるたびの音（既定なし。例 se/shu.wav）
   volume?: number; // 効果音の大きさ（既定 0.5）。公開の se は 1.6倍で鳴らす
+  titleVolume?: number; // 冒頭の効果音の大きさ
 };
 
 export type Spec = {

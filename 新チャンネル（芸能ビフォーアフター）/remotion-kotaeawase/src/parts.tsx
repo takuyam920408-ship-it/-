@@ -175,11 +175,12 @@ export const TelopBox: React.FC<{ telop: Telop; startFrame: number }> = ({ telop
   const p = spring({ frame: frame - startFrame, fps, config: { damping: 14, mass: 0.5 } });
   const sfx = useContext(TelopSfx);
   if (frame < startFrame) return null;
+  const seSrc = telop.se === undefined ? sfx.src : telop.se;
   return (
     <>
-    {sfx.src ? (
-      <Sequence from={startFrame} durationInFrames={Math.round(fps * 0.5)} layout="none">
-        <Audio src={staticFile(sfx.src)} volume={sfx.volume} />
+    {seSrc ? (
+      <Sequence from={startFrame} durationInFrames={Math.round(fps * 2.0)} layout="none">
+        <Audio src={staticFile(seSrc)} volume={telop.seVolume ?? sfx.volume} />
       </Sequence>
     ) : null}
     <div

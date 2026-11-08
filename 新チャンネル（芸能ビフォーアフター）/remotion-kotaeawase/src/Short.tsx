@@ -52,7 +52,7 @@ export const Short: React.FC<{ spec: Spec }> = ({ spec }) => {
             {cut.type === 'compare' ? <CompareCutView cut={cut} /> : null}
             {cut.voice ? <Audio src={staticFile(cut.voice)} /> : null}
             {'se' in cut && cut.se ? <Audio src={staticFile(cut.se)} volume={Math.min(1, vol * 1.6)} /> : null}
-            {cut.type === 'title' && titleSe ? <Audio src={staticFile(titleSe)} volume={vol} /> : null}
+            {cut.type === 'title' && titleSe ? <Audio src={staticFile(titleSe)} volume={spec.sfx?.titleVolume ?? vol} /> : null}
             {cut.type !== 'title' && cutSe ? <Audio src={staticFile(cutSe)} volume={vol * 0.7} /> : null}
           </Sequence>
         );
