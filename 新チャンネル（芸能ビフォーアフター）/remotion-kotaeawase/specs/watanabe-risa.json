@@ -57,44 +57,44 @@
     },
     {
       "type": "single",
-      "dur": 4.0,
+      "dur": 3.8,
       "image": {
         "src": "watanabe-risa/p4_nonno_sotsugyo.jpg",
         "label": "出典：non-no公式X"
       },
       "top": {
-        "text": "去年2月に\n事務所を離れて",
+        "text": "non-noを卒業して\n事務所も離れて",
         "color": "blue"
       },
       "bottom": [
         {
-          "text": "インスタ止まって\n寂しかったで",
+          "text": "ずっと寂しかったで",
           "color": "purple",
-          "at": 1.7
+          "at": 2.2
         }
       ]
     },
     {
       "type": "reveal",
-      "dur": 4.3,
+      "dur": 4.6,
       "image": {
         "src": "watanabe-risa/p5_ima_kari.png",
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
-        "text": "なお現在がこちら",
+        "text": "そして届いた\n1枚がこちら",
         "color": "red"
       },
       "bottom": [
         {
           "text": "相変わらずやん",
           "color": "purple",
-          "at": 1.4
+          "at": 1.9
         },
         {
           "text": "ウインクは反則やろ",
           "color": "red",
-          "at": 2.6
+          "at": 3.1
         }
       ]
     },
@@ -137,7 +137,7 @@
       },
       "bottom": [
         {
-          "text": "ワイは欅坂の頃の方が\n好きやわ",
+          "text": "ワイは欅坂の頃の\nクール派やわ",
           "color": "purple",
           "at": 1.4
         }
@@ -151,7 +151,7 @@
         "label": "出典：渡邉理佐のInstagram"
       },
       "top": {
-        "text": "おひさしぶりが\n聞けてよかった",
+        "text": "おひさしぶりが\nほんま嬉しいわ",
         "color": "blue"
       },
       "bottom": [
