@@ -5,6 +5,10 @@ export const FPS = 30;
 
 export const BG_DARK = '#FF8A1F';
 export const BG_LIGHT = '#FFC48A';
+// 背景の放射線は、ずっとゆっくり回す（ベンチマーク①の1位動画を測ると、左回りに1秒約13度。2026-11-08）
+export const BG_ROTATE_DEG_PER_SEC = -12; // マイナス＝左回り。1周30秒
+// 冒頭画面の写真は、カットのあいだに少しずつ大きくする（ベンチマーク①の冒頭画面と同じ）
+export const TITLE_ZOOM = 0.05; // カットの終わりで1.05倍
 export const INK = '#141414';
 export const MAGENTA = '#E4007F';
 export const ARROW_RED = '#E51A1A';

@@ -9,19 +9,24 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import { BG_DARK, BG_LIGHT, FONT, H, INK, TEXT_COLORS } from './theme';
+import { BG_DARK, BG_LIGHT, BG_ROTATE_DEG_PER_SEC, FONT, H, INK, TEXT_COLORS } from './theme';
 import type { Photo, Telop } from './spec';
 
 export type Rect = { x: number; y: number; w: number; h: number };
 
-// 背景：オレンジの放射線（24本の帯。動かさない）
-export const Background: React.FC = () => (
-  <AbsoluteFill
-    style={{
-      background: `repeating-conic-gradient(from 0deg at 50% 46%, ${BG_DARK} 0deg 7.5deg, ${BG_LIGHT} 7.5deg 15deg)`,
-    }}
-  />
-);
+// 背景：オレンジの放射線（濃い帯と淡い帯を7.5度ずつ交互に）。動画のあいだ、カットをまたいでずっとゆっくり回す
+export const Background: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const angle = ((frame / fps) * BG_ROTATE_DEG_PER_SEC) % 360;
+  return (
+    <AbsoluteFill
+      style={{
+        background: `repeating-conic-gradient(from ${angle.toFixed(3)}deg at 50% 46%, ${BG_DARK} 0deg 7.5deg, ${BG_LIGHT} 7.5deg 15deg)`,
+      }}
+    />
+  );
+};
 
 // 画像の元の大きさを読む（読み終わるまで書き出しを待つ）
 export const useImageSize = (src: string) => {
@@ -93,7 +98,8 @@ const MosaicCanvas: React.FC<{ src: string; rect: Rect; block: number; fit: 'con
     img.onerror = () => continueRender(handle);
     img.src = staticFile(src);
   }, [src, rect.w, rect.h, block, fit, focusY, handle]);
-  return <canvas ref={ref} width={rect.w} height={rect.h} style={{ display: 'block' }} />;
+  // 冒頭画面のズームで引き伸ばされても、マスの境目がぼやけないようにする
+  return <canvas ref={ref} width={rect.w} height={rect.h} style={{ display: 'block', imageRendering: 'pixelated' }} />;
 };
 
 // 写真＋出典ラベル（＋2枚比較のラベル）。mosaic を渡すとモザイクをかける

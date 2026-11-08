@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FONT, MAGENTA, ARROW_RED, PHOTO, BOTTOM_EDGE, TOP_TELOP_Y } from './theme';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
+import { FONT, MAGENTA, ARROW_RED, PHOTO, BOTTOM_EDGE, TOP_TELOP_Y, TITLE_ZOOM } from './theme';
 import { ArrowDown, ArrowRight, BottomTelops, PhotoBox, TopTelop, type Rect } from './parts';
 import type { BodyCut, CompareCut, TitleCut } from './spec';
 
@@ -8,6 +9,8 @@ const TITLE_LINE = 1.2;
 
 // 冒頭画面（サムネも兼ねる）
 export const TitleCutView: React.FC<{ cut: TitleCut }> = ({ cut }) => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
   const lines = cut.title.split('\n').length;
   const titleTop = cut.pattern === 'A' && lines <= 2 ? 200 : 170;
   const titleH = Math.round(lines * TITLE_FONT * TITLE_LINE + 16 * 2 + 12 * 2);
@@ -38,9 +41,14 @@ export const TitleCutView: React.FC<{ cut: TitleCut }> = ({ cut }) => {
     body = <PhotoBox photo={cut.after} box={{ x: 120, y: imgTop, w: 840, h: 1540 - imgTop }} mosaic={mosaic} fit="cover" />;
   }
 
+  // 写真（と矢印）は、カットのあいだに少しずつ大きくする。タイトル枠は動かさない
+  const bottomY = cut.pattern === 'A' ? 1580 : cut.pattern === 'B' ? 1520 : 1540;
+  const zoom = 1 + TITLE_ZOOM * Math.min(1, frame / Math.max(1, durationInFrames - 1));
   return (
     <>
-      {body}
+      <AbsoluteFill style={{ transform: `scale(${zoom})`, transformOrigin: `540px ${Math.round((imgTop + bottomY) / 2)}px` }}>
+        {body}
+      </AbsoluteFill>
       <div style={{ position: 'absolute', top: titleTop, left: 0, right: 0, display: 'flex', justifyContent: 'center' }}>
         <div
           style={{
