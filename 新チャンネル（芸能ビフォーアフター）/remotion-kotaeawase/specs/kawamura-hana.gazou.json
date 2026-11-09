@@ -1,0 +1,116 @@
+{
+  "id": "kawamura-hana",
+  "sources": [
+    {
+      "name": "mizuki",
+      "x_status": "2118839045912670477",
+      "index": 1,
+      "size": [
+        800,
+        1200
+      ]
+    },
+    {
+      "name": "sano",
+      "x_status": "2118839045912670477",
+      "index": 2,
+      "size": [
+        800,
+        1200
+      ]
+    },
+    {
+      "name": "nakatsu",
+      "x_status": "2118839045912670477",
+      "index": 3,
+      "size": [
+        800,
+        1200
+      ]
+    },
+    {
+      "name": "kv",
+      "x_status": "2118825764971823292",
+      "index": 2,
+      "size": [
+        1200,
+        849
+      ]
+    },
+    {
+      "name": "switch",
+      "x_status": "2098251798914179261",
+      "index": 1,
+      "size": [
+        1108,
+        1477
+      ]
+    },
+    {
+      "name": "comment",
+      "x_status": "2119271189176533298",
+      "index": 2,
+      "size": [
+        959,
+        1199
+      ]
+    }
+  ],
+  "files": [
+    {
+      "photo": "写真1",
+      "file": "p1_mizuki.jpg",
+      "from": "mizuki",
+      "what": "芦屋瑞稀役のソロビジュアル（カット1のモザイク・カット4の公開）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_kv_logo.jpg",
+      "from": "kv",
+      "crop": [
+        0,
+        0,
+        320,
+        849
+      ],
+      "what": "キービジュアルの左の題字と放送日（人の顔は入れない）（カット2）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_kv.jpg",
+      "from": "kv",
+      "what": "キービジュアルの全体（カット3はまるごとモザイク）"
+    },
+    {
+      "photo": "写真3",
+      "file": "p3_sano.jpg",
+      "from": "sano",
+      "what": "佐野泉役（長谷川慎）のソロビジュアル（カット5の左）"
+    },
+    {
+      "photo": "写真4",
+      "file": "p4_nakatsu.jpg",
+      "from": "nakatsu",
+      "what": "中津秀一役（藤原樹）のソロビジュアル（カット5の右）"
+    },
+    {
+      "photo": "写真5",
+      "file": "p5_switch.jpg",
+      "from": "switch",
+      "what": "東海テレビ『スイッチ！』出演時の写真。本人を中心に切り取った（カット6）",
+      "crop": [
+        430,
+        250,
+        1060,
+        1400
+      ]
+    },
+    {
+      "photo": "写真6",
+      "file": "p6_comment.jpg",
+      "from": "comment",
+      "what": "河村花のキャストコメントの画像（カット7）"
+    }
+  ],
+  "manual": []
+}

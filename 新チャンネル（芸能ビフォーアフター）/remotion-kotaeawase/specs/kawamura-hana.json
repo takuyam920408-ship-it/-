@@ -1,0 +1,191 @@
+{
+  "id": "kawamura-hana",
+  "yomi": {
+    "河村花": "かわむらはな",
+    "堀北真希": "ほりきたまき",
+    "前田敦子": "まえだあつこ",
+    "25歳": "にじゅうごさい",
+    "瑞稀": "みずき",
+    "THE RAMPAGE": "ザ ランペイジ",
+    "2人": "ふたり",
+    "次はこの子": "つぎはこのこ"
+  },
+  "bgm": "bgm/kakekko.mp3",
+  "bgmVolume": 0.1,
+  "cuts": [
+    {
+      "type": "title",
+      "pattern": "C",
+      "dur": 3.02,
+      "title": "堀北真希がやった役\n次はこの子が\nやるらしいｗ",
+      "after": {
+        "src": "kawamura-hana/p1_mizuki.jpg",
+        "label": "出典：ドラマ公式X"
+      },
+      "mosaic": 48,
+      "voice": "kawamura-hana/voice/cut01.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.05,
+      "image": {
+        "src": "kawamura-hana/p2_kv_logo.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "花ざかりが\n15年ぶりに復活",
+        "color": "green",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "30周年やって",
+          "color": "red",
+          "at": 2.47,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut02.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.06,
+      "mosaic": 40,
+      "image": {
+        "src": "kawamura-hana/p2_kv.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "前の瑞稀は\n堀北真希と前田敦子",
+        "color": "blue",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "今回は誰や？",
+          "color": "purple",
+          "at": 2.66,
+          "se": "se/bm/B.mp3",
+          "seVolume": 0.22
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut03.wav"
+    },
+    {
+      "type": "reveal",
+      "dur": 4.7,
+      "image": {
+        "src": "kawamura-hana/p1_mizuki.jpg",
+        "label": "出典：ドラマ公式X"
+      },
+      "top": {
+        "text": "河村花ちゃんや",
+        "color": "red",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "男装がハマりすぎやろ",
+          "color": "purple",
+          "at": 1.47,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        },
+        {
+          "text": "普通にイケメンやん",
+          "color": "red",
+          "at": 3.24,
+          "se": null
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut04.wav"
+    },
+    {
+      "type": "compare",
+      "layout": "side",
+      "dur": 4.01,
+      "images": [
+        {
+          "src": "kawamura-hana/p3_sano.jpg",
+          "label": "出典：ドラマ公式X"
+        },
+        {
+          "src": "kawamura-hana/p4_nakatsu.jpg",
+          "label": "出典：ドラマ公式X"
+        }
+      ],
+      "top": {
+        "text": "相手役は\nTHE RAMPAGEの2人",
+        "color": "green",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
+      },
+      "bottom": [
+        {
+          "text": "メンツ強すぎやろ",
+          "color": "red",
+          "at": 2.71,
+          "se": null
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut05.wav"
+    },
+    {
+      "type": "single",
+      "dur": 4.63,
+      "image": {
+        "src": "kawamura-hana/p5_switch.jpg",
+        "label": "出典：河村花の公式X"
+      },
+      "top": {
+        "text": "25歳 愛知出身の俳優",
+        "color": "green",
+        "se": "se/bm/B.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "いや私服の方が\nかわいいやろ",
+          "color": "purple",
+          "at": 2.68,
+          "se": null
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut06.wav"
+    },
+    {
+      "type": "single",
+      "dur": 5.62,
+      "image": {
+        "src": "kawamura-hana/p6_comment.jpg",
+        "label": "出典：ドラマ公式X"
+      },
+      "top": {
+        "text": "瑞稀は私が演じたい\nって本人が",
+        "color": "blue",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "令和の瑞稀は\nこの子で決まりや",
+          "color": "red",
+          "at": 2.63,
+          "se": null
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut07.wav"
+    }
+  ],
+  "voiceCredits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:青山龍星"
+  ],
+  "sfx": {
+    "title": "se/bm/T.mp3",
+    "titleVolume": 0.23,
+    "telop": null
+  }
+}

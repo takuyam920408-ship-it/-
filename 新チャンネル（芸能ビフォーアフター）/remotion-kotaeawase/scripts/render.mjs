@@ -11,6 +11,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const id = process.argv[2] || 'mihon';
 const stills = process.argv.includes('--stills');
 const spec = JSON.parse(fs.readFileSync(path.join(root, 'specs', `${id}.json`), 'utf8'));
+// BGMの曲（YouTubeのオーディオライブラリから落とす。リポジトリには入れない）がこのPCにないときは、BGMなしで書き出す
+if (spec.bgm && !fs.existsSync(path.join(root, 'public', spec.bgm))) {
+  console.warn(`※BGMの ${spec.bgm} がないので、BGMなしで書き出す（本番はMacで曲を置いてから書き出す）`);
+  delete spec.bgm;
+}
 
 // クラウドの環境では入っているヘッドレスのChromeを使う。Macでは Remotion が自分で用意する
 const candidates = [
