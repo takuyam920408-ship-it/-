@@ -8,7 +8,8 @@
     "瑞稀": "みずき",
     "THE RAMPAGE": "ザ ランペイジ",
     "2人": "ふたり",
-    "次はこの子": "つぎはこのこ"
+    "月9": "げつく",
+    "男装せん方が": "だんそうせんほうが"
   },
   "bgm": "bgm/kakekko.mp3",
   "bgmVolume": 0.1,
@@ -16,10 +17,10 @@
     {
       "type": "title",
       "pattern": "C",
-      "dur": 3.02,
-      "title": "堀北真希がやった役\n次はこの子が\nやるらしいｗ",
+      "dur": 3.18,
+      "title": "令和の花ざかり\n男装の瑞稀役\n誰か分かる？",
       "after": {
-        "src": "kawamura-hana/p1_mizuki.jpg",
+        "src": "kawamura-hana/p1_mizuki_kao.jpg",
         "label": "出典：ドラマ公式X"
       },
       "mosaic": 48,
@@ -27,37 +28,37 @@
     },
     {
       "type": "single",
-      "dur": 4.05,
-      "image": {
-        "src": "kawamura-hana/p2_kv_logo.jpg",
-        "label": "出典：本人の公式X"
-      },
-      "top": {
-        "text": "花ざかりが\n15年ぶりに復活",
-        "color": "green",
-        "se": null
-      },
-      "bottom": [
-        {
-          "text": "30周年やって",
-          "color": "red",
-          "at": 2.47,
-          "se": "se/bm/C.mp3",
-          "seVolume": 0.23
-        }
-      ],
-      "voice": "kawamura-hana/voice/cut02.wav"
-    },
-    {
-      "type": "single",
-      "dur": 4.06,
-      "mosaic": 40,
+      "dur": 3.9,
       "image": {
         "src": "kawamura-hana/p2_kv.jpg",
         "label": "出典：本人の公式X"
       },
       "top": {
-        "text": "前の瑞稀は\n堀北真希と前田敦子",
+        "text": "花ざかりが\n15年ぶりにドラマ化",
+        "color": "green",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "世代は泣くやつやん",
+          "color": "red",
+          "at": 2.41,
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23
+        }
+      ],
+      "voice": "kawamura-hana/voice/cut02.wav",
+      "mosaic": 40
+    },
+    {
+      "type": "single",
+      "dur": 4.85,
+      "image": {
+        "src": "kawamura-hana/p2_kv_logo.jpg",
+        "label": "出典：本人の公式X"
+      },
+      "top": {
+        "text": "前の瑞稀は\n堀北真希さん 前田敦子",
         "color": "blue",
         "se": null
       },
@@ -65,7 +66,7 @@
         {
           "text": "今回は誰や？",
           "color": "purple",
-          "at": 2.66,
+          "at": 3.45,
           "se": "se/bm/B.mp3",
           "seVolume": 0.22
         }
@@ -105,15 +106,17 @@
     {
       "type": "compare",
       "layout": "side",
-      "dur": 4.01,
+      "dur": 4.33,
       "images": [
         {
           "src": "kawamura-hana/p3_sano.jpg",
-          "label": "出典：ドラマ公式X"
+          "label": "出典：ドラマ公式X",
+          "tag": "長谷川慎"
         },
         {
           "src": "kawamura-hana/p4_nakatsu.jpg",
-          "label": "出典：ドラマ公式X"
+          "label": "出典：ドラマ公式X",
+          "tag": "藤原樹"
         }
       ],
       "top": {
@@ -124,7 +127,7 @@
       },
       "bottom": [
         {
-          "text": "メンツ強すぎやろ",
+          "text": "このメンツは見てまうわ",
           "color": "red",
           "at": 2.71,
           "se": null
@@ -134,22 +137,22 @@
     },
     {
       "type": "single",
-      "dur": 4.63,
+      "dur": 4.31,
       "image": {
         "src": "kawamura-hana/p5_switch.jpg",
         "label": "出典：河村花の公式X"
       },
       "top": {
-        "text": "25歳 愛知出身の俳優",
+        "text": "月9にも出とった25歳",
         "color": "green",
         "se": "se/bm/B.mp3",
         "seVolume": 0.22
       },
       "bottom": [
         {
-          "text": "いや私服の方が\nかわいいやろ",
+          "text": "いや男装せん方が\nかわいいやろ",
           "color": "purple",
-          "at": 2.68,
+          "at": 2.12,
           "se": null
         }
       ],
