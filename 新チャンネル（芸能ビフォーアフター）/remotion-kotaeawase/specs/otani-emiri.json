@@ -186,5 +186,7 @@
     "title": "se/bm/T.mp3",
     "titleVolume": 0.23,
     "telop": null
-  }
+  },
+  "bgm": "bgm/kakekko.mp3",
+  "bgmVolume": 0.1
 }

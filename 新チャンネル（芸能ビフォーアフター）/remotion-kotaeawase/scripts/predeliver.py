@@ -62,6 +62,8 @@ def main():
         for k in ('voice', 'se'):
             if c.get(k):
                 srcs.append(c[k])
+    if spec.get('bgm'):
+        srcs.append(spec['bgm'])
     missing = [s for s in srcs if not os.path.exists(os.path.join(pub, s))]
     check(not missing, f'素材のファイルがそろっている{"（ない：" + ", ".join(missing) + "）" if missing else ""}')
     kari = [s for s in srcs if '_kari' in s]
