@@ -50,27 +50,27 @@
         "label": "出典：CUTIE STREET公式X"
       },
       "top": {
-        "text": "正解は\n真ん中の緑の子や",
+        "text": "正解は\nぱーてぃーちゃん信子",
         "color": "red",
         "se": "se/bm/D.mp3",
         "seVolume": 0.22
       },
       "bottom": [
         {
-          "text": "ぱーてぃーちゃんの\n信子やで",
+          "text": "誰が分かるねん",
           "color": "purple",
           "se": "se/bm/B.mp3",
           "seVolume": 0.22,
-          "at": 2.18
+          "at": 2.03
         },
         {
-          "text": "誰が分かるねん",
+          "text": "ギャル感ゼロやん",
           "color": "red",
           "se": null,
-          "at": 3.98
+          "at": 3.28
         }
       ],
-      "dur": 5.24,
+      "dur": 4.58,
       "voice": "nobuko/voice/cut03.wav"
     },
     {
