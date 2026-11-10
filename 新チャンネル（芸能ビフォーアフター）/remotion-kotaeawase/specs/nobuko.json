@@ -1,0 +1,187 @@
+{
+  "id": "nobuko",
+  "yomi": {
+    "信子": "のぶこ",
+    "1人": "ひとり",
+    "8人": "はちにん"
+  },
+  "bgm": "bgm/kakekko.mp3",
+  "bgmVolume": 0.1,
+  "cuts": [
+    {
+      "type": "title",
+      "pattern": "C",
+      "title": "きゅーすとに1人\nニセモノ混ざっとる\n分かる？",
+      "after": {
+        "src": "nobuko/p1_kyusuto9.jpg",
+        "label": "出典：CUTIE STREET公式X"
+      },
+      "mosaic": 0,
+      "dur": 2.65,
+      "voice": "nobuko/voice/cut01.wav"
+    },
+    {
+      "type": "single",
+      "image": {
+        "src": "nobuko/p2_kyusuto8.jpg",
+        "label": "出典：CUTIE STREET公式X"
+      },
+      "top": {
+        "text": "これが本物の\nきゅーすと8人や",
+        "color": "green",
+        "se": null
+      },
+      "bottom": [
+        {
+          "text": "この中に混ざって\nバレへんのか",
+          "color": "purple",
+          "se": "se/bm/C.mp3",
+          "seVolume": 0.23,
+          "at": 2.33
+        }
+      ],
+      "dur": 4.44,
+      "voice": "nobuko/voice/cut02.wav"
+    },
+    {
+      "type": "reveal",
+      "image": {
+        "src": "nobuko/p1_mannaka.jpg",
+        "label": "出典：CUTIE STREET公式X"
+      },
+      "top": {
+        "text": "正解は\n真ん中の緑の子や",
+        "color": "red",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "ぱーてぃーちゃんの\n信子やで",
+          "color": "purple",
+          "se": "se/bm/B.mp3",
+          "seVolume": 0.22,
+          "at": 2.18
+        },
+        {
+          "text": "誰が分かるねん",
+          "color": "red",
+          "se": null,
+          "at": 3.98
+        }
+      ],
+      "dur": 5.24,
+      "voice": "nobuko/voice/cut03.wav"
+    },
+    {
+      "type": "compare",
+      "layout": "side",
+      "images": [
+        {
+          "src": "nobuko/p4_udon.jpg",
+          "label": "出典：信子のX",
+          "tag": "いつも"
+        },
+        {
+          "src": "nobuko/p1_nobuko_kao.jpg",
+          "label": "出典：CUTIE STREET公式X",
+          "tag": "モニタリング"
+        }
+      ],
+      "top": {
+        "text": "普段の信子と\n並べたらこうや",
+        "color": "green",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
+      },
+      "bottom": [
+        {
+          "text": "髪色から\n別人すぎるやろ",
+          "color": "purple",
+          "se": null,
+          "at": 2.24
+        }
+      ],
+      "dur": 4.26,
+      "voice": "nobuko/voice/cut04.wav"
+    },
+    {
+      "type": "single",
+      "image": {
+        "src": "nobuko/p3_prbt.jpg",
+        "label": "出典：プレバト公式X"
+      },
+      "top": {
+        "text": "同じ夜のプレバトは\nこれやで",
+        "color": "blue",
+        "se": "se/bm/C.mp3",
+        "seVolume": 0.23
+      },
+      "bottom": [
+        {
+          "text": "ワイはギャルの\n信子派やわ",
+          "color": "purple",
+          "se": null,
+          "at": 2.13
+        }
+      ],
+      "dur": 3.94,
+      "voice": "nobuko/voice/cut05.wav"
+    },
+    {
+      "type": "single",
+      "image": {
+        "src": "nobuko/p1_nobuko.jpg",
+        "label": "出典：CUTIE STREET公式X"
+      },
+      "top": {
+        "text": "名乗ったのは\n青のりグリーン担当",
+        "color": "blue",
+        "se": "se/bm/B.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "青のりは\nずるいやろ",
+          "color": "red",
+          "se": null,
+          "at": 2.43
+        }
+      ],
+      "dur": 3.8,
+      "voice": "nobuko/voice/cut06.wav"
+    },
+    {
+      "type": "single",
+      "image": {
+        "src": "nobuko/p5_post_kiri.png",
+        "label": "出典：CUTIE STREET公式X"
+      },
+      "top": {
+        "text": "観客も名乗るまで\n分からんかった",
+        "color": "green",
+        "se": "se/bm/D.mp3",
+        "seVolume": 0.22
+      },
+      "bottom": [
+        {
+          "text": "ニセモノが本物すぎて\n分からんわ",
+          "color": "red",
+          "se": null,
+          "at": 2.33
+        }
+      ],
+      "dur": 5.51,
+      "voice": "nobuko/voice/cut07.wav"
+    }
+  ],
+  "sfx": {
+    "title": "se/bm/T.mp3",
+    "titleVolume": 0.23,
+    "telop": null
+  },
+  "voiceCredits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:青山龍星"
+  ]
+}
