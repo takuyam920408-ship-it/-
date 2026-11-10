@@ -1,19 +1,122 @@
 {
   "id": "nobuko",
   "sources": [
-    { "name": "cs9", "x_status": "2118328729286135960", "index": 2, "size": [2048, 1536] },
-    { "name": "cs8", "x_status": "2118328729286135960", "index": 3, "size": [2048, 1536] },
-    { "name": "prbt", "x_status": "2118267095305601124", "index": 1, "size": [1080, 1920] },
-    { "name": "udon", "x_status": "1967798728657604668", "index": 1, "size": [1108, 1477] }
+    {
+      "name": "cs9",
+      "x_status": "2118328729286135960",
+      "index": 2,
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    {
+      "name": "cs8",
+      "x_status": "2118328729286135960",
+      "index": 3,
+      "size": [
+        2048,
+        1536
+      ]
+    },
+    {
+      "name": "prbt",
+      "x_status": "2118267095305601124",
+      "index": 1,
+      "size": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "name": "udon",
+      "x_status": "1967798728657604668",
+      "index": 1,
+      "size": [
+        1108,
+        1477
+      ]
+    }
   ],
   "files": [
-    { "photo": "写真1", "file": "p1_kyusuto9.jpg", "from": "cs9", "crop": [380, 40, 1620, 1510], "what": "信子が混ざった9人の集合写真の真ん中（カット1の冒頭画面。モザイクなし）" },
-    { "photo": "写真1", "file": "p1_mannaka.jpg", "from": "cs9", "crop": [700, 170, 1300, 880], "what": "真ん中の3人（緑の衣装の信子と両どなり）（カット3の公開）" },
-    { "photo": "写真1", "file": "p1_nobuko_kao.jpg", "from": "cs9", "crop": [890, 200, 1120, 745], "what": "信子の顔から胸元まで（カット4の右）" },
-    { "photo": "写真1", "file": "p1_nobuko.jpg", "from": "cs9", "crop": [840, 200, 1160, 780], "what": "信子の上半身（緑の衣装。カット6）" },
-    { "photo": "写真2", "file": "p2_kyusuto8.jpg", "from": "cs8", "what": "CUTIE STREETの8人だけの写真（カット2）" },
-    { "photo": "写真3", "file": "p3_prbt.jpg", "from": "prbt", "crop": [0, 0, 535, 630], "what": "プレバトの告知画像の左上の信子だけ（ほかの出演者は入れない）（カット5）" },
-    { "photo": "写真4", "file": "p4_udon.jpg", "from": "udon", "crop": [400, 40, 870, 1150], "what": "いつもの髪の信子の顔から胸元まで（カット4の左）" }
+    {
+      "photo": "写真1",
+      "file": "p1_kyusuto9.jpg",
+      "from": "cs9",
+      "crop": [
+        380,
+        40,
+        1620,
+        1510
+      ],
+      "what": "信子が混ざった9人の集合写真の真ん中（カット1の冒頭画面。モザイクなし）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_mannaka.jpg",
+      "from": "cs9",
+      "crop": [
+        700,
+        170,
+        1300,
+        880
+      ],
+      "what": "真ん中の3人（緑の衣装の信子と両どなり）（カット3の公開）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_nobuko_kao.jpg",
+      "from": "cs9",
+      "crop": [
+        890,
+        200,
+        1120,
+        745
+      ],
+      "what": "信子の顔から胸元まで（カット4の右）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_nobuko.jpg",
+      "from": "cs9",
+      "crop": [
+        840,
+        200,
+        1160,
+        780
+      ],
+      "what": "信子の上半身（緑の衣装。カット6）"
+    },
+    {
+      "photo": "写真2",
+      "file": "p2_kyusuto8.jpg",
+      "from": "cs8",
+      "what": "CUTIE STREETの8人だけの写真（カット2）"
+    },
+    {
+      "photo": "写真3",
+      "file": "p3_prbt.jpg",
+      "from": "prbt",
+      "crop": [
+        0,
+        0,
+        535,
+        630
+      ],
+      "what": "プレバトの告知画像の左上の信子だけ（ほかの出演者は入れない）（カット5）"
+    },
+    {
+      "photo": "写真4",
+      "file": "p4_udon.jpg",
+      "from": "udon",
+      "crop": [
+        440,
+        40,
+        830,
+        960
+      ],
+      "what": "いつもの髪の信子の顔から胸元まで（カット4の左）"
+    }
   ],
   "manual": [
     "写真5：node scripts/xshot.js 2118328729286135960 public/nobuko/p5_post.png のあと、3枚の画像の下の端（時刻・いいねの行の上、y=1330）から下を白で塗り、元と同じ縦横の public/nobuko/p5_post_kiri.png にする（python3 -c \"from PIL import Image; s=Image.open('public/nobuko/p5_post.png').convert('RGB'); o=Image.new('RGB',s.size,(255,255,255)); o.paste(s.crop((0,0,s.width,1330)),(0,0)); o.save('public/nobuko/p5_post_kiri.png')\"。カット7）"
