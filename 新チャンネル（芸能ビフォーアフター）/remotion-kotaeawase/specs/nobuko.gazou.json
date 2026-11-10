@@ -116,9 +116,13 @@
         960
       ],
       "what": "いつもの髪の信子の顔から胸元まで（カット4の左）"
+    },
+    {
+      "photo": "写真1",
+      "file": "p1_kyusuto9_zen.jpg",
+      "from": "cs9",
+      "what": "信子が混ざった9人の集合写真の全体（切り取らない。カット7）"
     }
   ],
-  "manual": [
-    "写真5：node scripts/xshot.js 2118328729286135960 public/nobuko/p5_post.png のあと、3枚の画像の下の端（時刻・いいねの行の上、y=1330）から下を白で塗り、元と同じ縦横の public/nobuko/p5_post_kiri.png にする（python3 -c \"from PIL import Image; s=Image.open('public/nobuko/p5_post.png').convert('RGB'); o=Image.new('RGB',s.size,(255,255,255)); o.paste(s.crop((0,0,s.width,1330)),(0,0)); o.save('public/nobuko/p5_post_kiri.png')\"。カット7）"
-  ]
+  "manual": []
 }

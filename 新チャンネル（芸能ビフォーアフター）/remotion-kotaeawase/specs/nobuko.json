@@ -119,13 +119,13 @@
       },
       "bottom": [
         {
-          "text": "ワイはギャルの\n信子派やわ",
+          "text": "ギャル信子の方が\nしっくりくるわ",
           "color": "purple",
           "se": null,
           "at": 2.13
         }
       ],
-      "dur": 3.94,
+      "dur": 4.31,
       "voice": "nobuko/voice/cut05.wav"
     },
     {
@@ -154,7 +154,7 @@
     {
       "type": "single",
       "image": {
-        "src": "nobuko/p5_post_kiri.png",
+        "src": "nobuko/p1_kyusuto9_zen.jpg",
         "label": "出典：CUTIE STREET公式X"
       },
       "top": {
